@@ -50,21 +50,11 @@ do
         fi
 
     else
-        # For other branches, run lighter checks
-        echo -e "${YELLOW}📋 Running basic checks...${NC}"
-
-        # 1. Format check
-        echo -e "${YELLOW}📝 Checking code formatting...${NC}"
-        if ! pnpm run format; then
-            echo -e "${RED}❌ Format check failed!${NC}"
-            echo -e "${YELLOW}💡 Run 'pnpm run format:fix' to fix formatting issues${NC}"
-            exit 1
-        fi
-
-        # 2. Type check
-        echo -e "${YELLOW}🔍 Running TypeScript type check...${NC}"
-        if ! pnpm run typecheck; then
-            echo -e "${RED}❌ Type check failed!${NC}"
+        # For other branches, run checks
+        echo -e "${YELLOW}🔍 Running checks...${NC}"
+        if ! pnpm run check; then
+            echo -e "${RED}❌ Checks failed!${NC}"
+            echo -e "${YELLOW}💡 Run 'pnpm run fix' to fix auto-fixable issues${NC}"
             exit 1
         fi
 

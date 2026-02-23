@@ -18,7 +18,7 @@ This project provides a robust testing environment for XRPL stablecoin flows, fo
 
 ## Project Structure
 
-```
+```txt
 xrpl-stablecoin-flow/
 ├── src/
 │   ├── config/

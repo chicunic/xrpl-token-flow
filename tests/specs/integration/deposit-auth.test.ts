@@ -28,16 +28,16 @@
  *   - Test successes: Alice -> Bob USD/XRP transfers work normally again
  */
 import {
-  AccountLinesTrustline,
-  AccountSet,
+  type AccountLinesTrustline,
+  type AccountSet,
   AccountSetAsfFlags,
-  Client,
+  type Client,
   convertStringToHex,
-  DepositPreauth,
+  type DepositPreauth,
   dropsToXrp,
-  Payment,
-  TransactionMetadata,
-  TrustSet,
+  type Payment,
+  type TransactionMetadata,
+  type TrustSet,
   Wallet,
   xrpToDrops,
 } from 'xrpl';

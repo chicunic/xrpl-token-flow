@@ -6,9 +6,17 @@
  */
 import * as bip39 from 'bip39';
 import 'dotenv/config';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
-import { Client, dropsToXrp, Payment, TransactionMetadata, Wallet, XrplError, xrpToDrops } from 'xrpl';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+  type Client,
+  dropsToXrp,
+  type Payment,
+  type TransactionMetadata,
+  Wallet,
+  type XrplError,
+  xrpToDrops,
+} from 'xrpl';
 
 import { getXRPLClient } from '../config/xrpl.config';
 

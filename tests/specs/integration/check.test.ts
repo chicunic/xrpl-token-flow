@@ -26,19 +26,19 @@
  * over when payments are received.
  */
 import {
-  AccountLinesTrustline,
-  AccountSet,
+  type AccountLinesTrustline,
+  type AccountSet,
   AccountSetAsfFlags,
-  CheckCancel,
-  CheckCash,
-  CheckCreate,
-  Client,
+  type CheckCancel,
+  type CheckCash,
+  type CheckCreate,
+  type Client,
+  type CreatedNode,
   convertStringToHex,
-  CreatedNode,
   dropsToXrp,
-  Payment,
-  TransactionMetadata,
-  TrustSet,
+  type Payment,
+  type TransactionMetadata,
+  type TrustSet,
   Wallet,
 } from 'xrpl';
 import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';

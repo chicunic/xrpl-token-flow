@@ -22,18 +22,18 @@
  * to receive payments through checks, providing control over when payments are accepted.
  */
 import {
-  AccountLinesTrustline,
-  AccountSet,
+  type AccountLinesTrustline,
+  type AccountSet,
   AccountSetAsfFlags,
-  CheckCash,
-  CheckCreate,
-  Client,
+  type CheckCash,
+  type CheckCreate,
+  type Client,
+  type CreatedNode,
   convertStringToHex,
-  CreatedNode,
   dropsToXrp,
-  Payment,
-  TransactionMetadata,
-  TrustSet,
+  type Payment,
+  type TransactionMetadata,
+  type TrustSet,
   TrustSetFlags,
   Wallet,
 } from 'xrpl';

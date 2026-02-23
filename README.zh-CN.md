@@ -18,7 +18,7 @@
 
 ## 项目结构
 
-```
+```txt
 xrpl-stablecoin-flow/
 ├── src/
 │   ├── config/

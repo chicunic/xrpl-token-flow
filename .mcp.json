@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "gemini-cloud-assist": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@google-cloud/gemini-cloud-assist-mcp@latest"],
+      "timeout": 600000,
+      "env": {}
+    },
+    "observability": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@google-cloud/observability-mcp"],
+      "env": {}
+    }
+  }
+}

@@ -21,12 +21,12 @@
  * For enforced protection, use DepositAuth instead.
  */
 import {
-  AccountSet,
+  type AccountSet,
   AccountSetAsfFlags,
-  Client,
+  type Client,
   dropsToXrp,
-  Payment,
-  TransactionMetadata,
+  type Payment,
+  type TransactionMetadata,
   Wallet,
   xrpToDrops,
 } from 'xrpl';

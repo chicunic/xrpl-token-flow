@@ -19,15 +19,15 @@
  *   - Alice transfers USD to Bob (should fail)
  */
 import {
-  AccountLinesTrustline,
-  AccountSet,
+  type AccountLinesTrustline,
+  type AccountSet,
   AccountSetAsfFlags,
-  Client,
+  type Client,
   convertStringToHex,
   dropsToXrp,
-  Payment,
-  TransactionMetadata,
-  TrustSet,
+  type Payment,
+  type TransactionMetadata,
+  type TrustSet,
   Wallet,
 } from 'xrpl';
 import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';

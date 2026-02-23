@@ -25,15 +25,15 @@
  * requiring explicit clearing to enable rippling through that trust line.
  */
 import {
-  AccountLinesTrustline,
-  AccountSet,
+  type AccountLinesTrustline,
+  type AccountSet,
   AccountSetAsfFlags,
-  Client,
+  type Client,
   convertStringToHex,
   dropsToXrp,
-  Payment,
-  TransactionMetadata,
-  TrustSet,
+  type Payment,
+  type TransactionMetadata,
+  type TrustSet,
   TrustSetFlags,
   Wallet,
 } from 'xrpl';
