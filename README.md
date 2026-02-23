@@ -33,13 +33,17 @@ xrpl-stablecoin-flow/
 │   │   ├── deposit-auth-check-flow.test.ts
 │   │   ├── deposit-auth.test.ts
 │   │   ├── disallow-xrp.test.ts
+│   │   ├── edge-cases.test.ts
 │   │   ├── global-freeze.test.ts
+│   │   ├── individual-freeze.test.ts
+│   │   ├── multi-issuer.test.ts
 │   │   ├── no-ripple-flow.test.ts
-│   │   └── require-auth.test.ts
+│   │   ├── require-auth.test.ts
+│   │   └── transfer-rate.test.ts
 │   └── utils/
 │       ├── data.ts             # Shared test constants
-│       ├── helpers.ts          # Test helper functions
-│       └── mock.factory.ts     # Mock data factory
+│       ├── mock.factory.ts     # Mock data factory
+│       └── test.helper.ts     # Shared test helper utilities
 ├── jest.config.js              # Jest configuration
 ├── tsconfig.json              # TypeScript configuration
 └── package.json               # Package dependencies and scripts
@@ -47,10 +51,10 @@ xrpl-stablecoin-flow/
 
 ## Prerequisites
 
-- **Node.js**: ≥22.0.0
+- **Node.js**: ≥25.0.0
 - **pnpm**: Package manager
 - **TypeScript**: ^5.9.2
-- **XRPL**: ^4.4.0
+- **XRPL**: ^4.4.1
 
 ## Test Suites
 
@@ -126,6 +130,21 @@ Tests [GlobalFreeze flag](https://xrpl.org/docs/concepts/tokens/fungible-tokens/
 pnpm test global-freeze
 ```
 
+#### IndividualFreeze (`individual-freeze.test.ts`)
+
+Tests [Individual Freeze](https://xrpl.org/docs/concepts/tokens/fungible-tokens/freezes#individual-freeze) functionality:
+
+- Freezing a specific trust line
+- Verifying freeze effects on token transfers
+- Unfreezing a trust line
+- Permanent no-freeze opt-out via asfNoFreeze
+
+**Run test:**
+
+```bash
+pnpm test individual-freeze
+```
+
 #### RequireAuth (`require-auth.test.ts`)
 
 Tests the [RequireAuth flag](https://xrpl.org/docs/concepts/tokens/fungible-tokens/authorized-trust-lines) functionality for token issuers:
@@ -139,6 +158,21 @@ Tests the [RequireAuth flag](https://xrpl.org/docs/concepts/tokens/fungible-toke
 
 ```bash
 pnpm test require-auth
+```
+
+#### TransferRate (`transfer-rate.test.ts`)
+
+Tests [TransferRate](https://xrpl.org/docs/concepts/tokens/transfer-fees) functionality:
+
+- Setting transfer fee on issuer accounts
+- Verifying fee deduction on user-to-user transfers
+- Confirming issuer operations are fee-exempt
+- Clearing transfer rate
+
+**Run test:**
+
+```bash
+pnpm test transfer-rate
 ```
 
 ### 2. Payment Flow Tests
@@ -171,6 +205,20 @@ Tests check operations with [deposit authorization](https://xrpl.org/docs/concep
 pnpm test deposit-auth-check-flow
 ```
 
+#### Multi-Issuer (`multi-issuer.test.ts`)
+
+Tests multi-issuer token scenarios:
+
+- Two issuers issuing the same currency code
+- Verifying tokens from different issuers are distinct assets
+- Rippling behavior across multiple issuers
+
+**Run test:**
+
+```bash
+pnpm test multi-issuer
+```
+
 ### 3. Payment Tests
 
 #### Check Operations (`check.test.ts`)
@@ -185,6 +233,24 @@ Tests [XRPL Check](https://xrpl.org/docs/concepts/payment-types/checks) function
 
 ```bash
 pnpm test check
+```
+
+### 4. Edge Case Tests
+
+#### Edge Cases (`edge-cases.test.ts`)
+
+Tests various boundary and error conditions:
+
+- Self-payment rejection (temREDUNDANT)
+- Zero amount payment rejection (temBAD_AMOUNT)
+- Over-limit payment failure (tecPATH_PARTIAL)
+- Transaction memo (MemoType + MemoData)
+- Trust line deletion (limit=0, balance=0)
+
+**Run test:**
+
+```bash
+pnpm test edge-cases
 ```
 
 ## License

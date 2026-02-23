@@ -33,13 +33,17 @@ xrpl-stablecoin-flow/
 │   │   ├── deposit-auth-check-flow.test.ts
 │   │   ├── deposit-auth.test.ts
 │   │   ├── disallow-xrp.test.ts
+│   │   ├── edge-cases.test.ts
 │   │   ├── global-freeze.test.ts
+│   │   ├── individual-freeze.test.ts
+│   │   ├── multi-issuer.test.ts
 │   │   ├── no-ripple-flow.test.ts
-│   │   └── require-auth.test.ts
+│   │   ├── require-auth.test.ts
+│   │   └── transfer-rate.test.ts
 │   └── utils/
 │       ├── data.ts             # 共享测试常量
-│       ├── helpers.ts          # 测试辅助函数
-│       └── mock.factory.ts     # 模拟数据工厂
+│       ├── mock.factory.ts     # 模拟数据工厂
+│       └── test.helper.ts     # 共享测试辅助工具
 ├── jest.config.js              # Jest 配置
 ├── tsconfig.json              # TypeScript 配置
 └── package.json               # 包依赖和脚本
@@ -47,10 +51,10 @@ xrpl-stablecoin-flow/
 
 ## 先决条件
 
-- **Node.js**: ≥22.0.0
+- **Node.js**: ≥25.0.0
 - **pnpm**: 包管理器
 - **TypeScript**: ^5.9.2
-- **XRPL**: ^4.4.0
+- **XRPL**: ^4.4.1
 
 ## 测试套件
 
@@ -126,6 +130,21 @@ pnpm test disallow-xrp
 pnpm test global-freeze
 ```
 
+#### IndividualFreeze (`individual-freeze.test.ts`)
+
+测试[单独冻结](https://xrpl.org/docs/concepts/tokens/fungible-tokens/freezes#individual-freeze)功能:
+
+- 冻结特定信任线
+- 验证冻结对代币转账的影响
+- 解冻信任线
+- 通过 asfNoFreeze 永久放弃冻结权限
+
+**运行测试:**
+
+```bash
+pnpm test individual-freeze
+```
+
 #### RequireAuth (`require-auth.test.ts`)
 
 测试代币发行者的 [RequireAuth 标志](https://xrpl.org/docs/concepts/tokens/fungible-tokens/authorized-trust-lines)功能:
@@ -139,6 +158,21 @@ pnpm test global-freeze
 
 ```bash
 pnpm test require-auth
+```
+
+#### TransferRate (`transfer-rate.test.ts`)
+
+测试[转账费率](https://xrpl.org/docs/concepts/tokens/transfer-fees)功能:
+
+- 在发行者账户上设置转账费率
+- 验证用户间转账的费用扣除
+- 确认发行者操作免手续费
+- 清除转账费率
+
+**运行测试:**
+
+```bash
+pnpm test transfer-rate
 ```
 
 ### 2. 支付流程测试
@@ -171,6 +205,20 @@ pnpm test no-ripple-flow
 pnpm test deposit-auth-check-flow
 ```
 
+#### Multi-Issuer (`multi-issuer.test.ts`)
+
+测试多发行者代币场景:
+
+- 两个发行者发行相同货币代码
+- 验证不同发行者的代币是独立资产
+- 多发行者间的波纹传播行为
+
+**运行测试:**
+
+```bash
+pnpm test multi-issuer
+```
+
 ### 3. 支付测试
 
 #### Check Operations (`check.test.ts`)
@@ -185,6 +233,24 @@ pnpm test deposit-auth-check-flow
 
 ```bash
 pnpm test check
+```
+
+### 4. 边界条件测试
+
+#### Edge Cases (`edge-cases.test.ts`)
+
+测试各种边界条件和错误情况:
+
+- 自付款拒绝 (temREDUNDANT)
+- 零金额支付拒绝 (temBAD_AMOUNT)
+- 超限额支付失败 (tecPATH_PARTIAL)
+- 交易备注 (MemoType + MemoData)
+- 信任线删除 (limit=0, balance=0)
+
+**运行测试:**
+
+```bash
+pnpm test edge-cases
 ```
 
 ## 许可证
