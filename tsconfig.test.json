@@ -4,7 +4,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "rootDir": ".",
-    "types": ["jest", "node", "@types/jest"],
+    "types": ["vitest/globals", "node"],
     "paths": {
       "@/*": ["src/*"],
       "@tests/*": ["tests/*"]

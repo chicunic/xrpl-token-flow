@@ -44,7 +44,7 @@ xrpl-stablecoin-flow/
 │       ├── data.ts             # Shared test constants
 │       ├── mock.factory.ts     # Mock data factory
 │       └── test.helper.ts     # Shared test helper utilities
-├── jest.config.js              # Jest configuration
+├── vitest.config.ts            # Vitest configuration
 ├── tsconfig.json              # TypeScript configuration
 └── package.json               # Package dependencies and scripts
 ```

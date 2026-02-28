@@ -1,4 +1,4 @@
-// Shared test helper utilities for XRPL integration tests
+import { expect } from 'vitest';
 import {
   type AccountLinesTrustline,
   type AccountSet,
@@ -18,12 +18,10 @@ import { getXRPLClient } from '../../src/config/xrpl.config';
 import { fundWallet } from '../../src/services/fund.service';
 import { CURRENCY, DOMAIN, TRUST_AMOUNT } from './data';
 
-// Convert a plaintext currency code to 40-char hex (as stored on-ledger)
 export function currencyToHex(currency: string): string {
   return convertStringToHex(currency).padEnd(40, '0');
 }
 
-// Sign, submit, and assert the transaction result
 export async function submitTransaction(
   client: Client,
   tx: SubmittableTransaction,
@@ -37,7 +35,6 @@ export async function submitTransaction(
   return txResult!;
 }
 
-// Get account flags as a bigint
 export async function getAccountFlags(client: Client, address: string): Promise<bigint> {
   const accountInfo = await client.request({
     command: 'account_info',

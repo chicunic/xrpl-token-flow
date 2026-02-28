@@ -44,7 +44,7 @@ xrpl-stablecoin-flow/
 │       ├── data.ts             # 共享测试常量
 │       ├── mock.factory.ts     # 模拟数据工厂
 │       └── test.helper.ts     # 共享测试辅助工具
-├── jest.config.js              # Jest 配置
+├── vitest.config.ts            # Vitest 配置
 ├── tsconfig.json              # TypeScript 配置
 └── package.json               # 包依赖和脚本
 ```

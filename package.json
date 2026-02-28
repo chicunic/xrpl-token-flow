@@ -4,11 +4,11 @@
   "description": "XRPL stablecoin flow management service",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check": "pnpm run typecheck && biome check",
+    "check": "pnpm run typecheck && biome check --enforce-assist=true",
     "fix": "biome check --write --unsafe",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "postinstall": "chmod +x setup-hooks.sh && ./setup-hooks.sh"
   },
   "keywords": [
@@ -21,21 +21,20 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^17.2.2",
-    "xrpl": "^4.4.1"
+    "dotenv": "^17.3.1",
+    "xrpl": "^4.6.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.3",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.3.1",
+    "@biomejs/biome": "2.4.4",
+    "@types/node": "^25.3.2",
+    "@vitest/coverage-v8": "^4.0.18",
     "bip39": "^3.1.0",
-    "jest": "^30.1.3",
-    "ts-jest": "^29.4.1",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=25"
   },
-  "packageManager": "pnpm@10.30.1+sha512.3590e550d5384caa39bd5c7c739f72270234b2f6059e13018f975c313b1eb9fefcc09714048765d4d9efe961382c312e624572c0420762bdc5d5940cdf9be73a"
+  "packageManager": "pnpm@11.0.0-dev.1005+sha512.91f84a392eea348ea4852a182912d2520273a4336f933b78cc44bc931eb999923c097e9433a9b355adc1f725725ea99082fc9f032a559df832632e764c92c798"
 }

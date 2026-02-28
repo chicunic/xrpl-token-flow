@@ -5,10 +5,10 @@ let client: Client;
 
 export const initializeXRPLClient = async (): Promise<void> => {
   try {
-    const network = process.env.XRPL_NETWORK ?? 'devnet';
+    const network = process.env.XRPL_NETWORK ?? 'testnet';
     const defaultEndpoints = {
-      devnet: 'wss://s.devnet.rippletest.net:51233',
       testnet: 'wss://s.altnet.rippletest.net:51233',
+      devnet: 'wss://s.devnet.rippletest.net:51233',
     };
     const xrplEndpoint =
       process.env.XRPL_ENDPOINT ??
