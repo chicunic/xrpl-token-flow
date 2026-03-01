@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.4",
-    "@types/node": "^25.3.2",
+    "@types/node": "^25.3.3",
     "@vitest/coverage-v8": "^4.0.18",
     "bip39": "^3.1.0",
     "tsx": "^4.21.0",
@@ -34,7 +34,7 @@
     "vitest": "^4.0.18"
   },
   "engines": {
-    "node": ">=25"
+    "node": ">=24"
   },
-  "packageManager": "pnpm@11.0.0-dev.1005+sha512.91f84a392eea348ea4852a182912d2520273a4336f933b78cc44bc931eb999923c097e9433a9b355adc1f725725ea99082fc9f032a559df832632e764c92c798"
+  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
 }

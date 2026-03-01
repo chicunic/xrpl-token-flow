@@ -3,6 +3,7 @@ import {
   AccountSetAsfFlags,
   type Client,
   type Payment,
+  type TransactionMetadata,
   type TrustSet,
   TrustSetFlags,
   type Wallet,
@@ -281,7 +282,7 @@ describe('Individual Freeze Test', () => {
 
       const signed = issuerWallet.sign(clearNoFreezeTx);
       const result = await client.submitAndWait(signed.tx_blob);
-      const txResult = (result.result.meta as any)?.TransactionResult;
+      const txResult = (result.result.meta as TransactionMetadata)?.TransactionResult;
       // Flag stays set either way
       expect(['tesSUCCESS', 'tecNO_PERMISSION']).toContain(txResult);
 

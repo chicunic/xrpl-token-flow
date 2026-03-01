@@ -1,5 +1,13 @@
 # XRPL 稳定币流
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D25-green.svg)](https://nodejs.org/)
+[![XRPL](https://img.shields.io/badge/XRPL-4.x-brightgreen.svg)](https://xrpl.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.x-6E9F18.svg)](https://vitest.dev/)
+[![Biome](https://img.shields.io/badge/Biome-2.x-60a5fa.svg)](https://biomejs.dev/)
+[![pnpm](https://img.shields.io/badge/pnpm-11.x-f69220.svg)](https://pnpm.io/)
+
 一个全面的 TypeScript 测试框架，用于 XRPL (XRP 账本) 稳定币操作，具有针对各种 XRPL 账户标志和功能的广泛集成测试。
 
 ## 概述
@@ -22,11 +30,12 @@
 xrpl-stablecoin-flow/
 ├── src/
 │   ├── config/
-│   │   └── xrpl.config.ts      # XRPL 客户端配置
+│   │   └── xrpl.config.ts          # XRPL 客户端配置
 │   └── services/
-│       └── fund.service.ts     # 钱包资助服务
+│       └── fund.service.ts         # 钱包资助服务
 ├── tests/
-│   ├── specs/integration/      # 集成测试套件
+│   ├── setup.ts                    # 全局测试设置 (控制台输出、生命周期钩子)
+│   ├── specs/integration/          # 集成测试套件
 │   │   ├── allow-trustline-clawback.test.ts
 │   │   ├── check.test.ts
 │   │   ├── default-ripple.test.ts
@@ -41,20 +50,56 @@ xrpl-stablecoin-flow/
 │   │   ├── require-auth.test.ts
 │   │   └── transfer-rate.test.ts
 │   └── utils/
-│       ├── data.ts             # 共享测试常量
-│       ├── mock.factory.ts     # 模拟数据工厂
-│       └── test.helper.ts     # 共享测试辅助工具
-├── vitest.config.ts            # Vitest 配置
-├── tsconfig.json              # TypeScript 配置
-└── package.json               # 包依赖和脚本
+│       ├── data.ts                 # 共享测试常量
+│       └── test.helper.ts          # 共享测试辅助工具
+├── .env.example                    # 环境变量模板
+├── biome.json                      # Biome 代码检查与格式化配置
+├── setup-hooks.sh                  # Git hooks 设置脚本
+├── vitest.config.ts                # Vitest 配置
+├── tsconfig.json                   # TypeScript 配置
+└── package.json                    # 包依赖和脚本
 ```
 
 ## 先决条件
 
-- **Node.js**: ≥25.0.0
+- **Node.js**: >=25
 - **pnpm**: 包管理器
-- **TypeScript**: ^5.9.2
-- **XRPL**: ^4.4.1
+
+## 快速开始
+
+1. 克隆仓库并安装依赖:
+
+```bash
+pnpm install
+```
+
+1. 复制环境变量模板并配置:
+
+```bash
+cp .env.example .env
+```
+
+1. 在 `.env` 中配置以下环境变量:
+
+```bash
+# XRPL 配置
+XRPL_NETWORK=devnet                               # mainnet | testnet | devnet
+# XRPL_ENDPOINT=wss://s.devnet.rippletest.net:51233  # 自定义端点 (可选)
+
+FUND_MNEMONIC=<your-mnemonic>                      # 钱包资助助记词
+```
+
+## 脚本
+
+| Command | Description |
+| - | - |
+| `pnpm test` | 运行所有测试 |
+| `pnpm test <name>` | 运行指定测试套件 |
+| `pnpm test:watch` | 以监听模式运行测试 |
+| `pnpm test:coverage` | 运行测试并生成覆盖率报告 |
+| `pnpm typecheck` | TypeScript 类型检查 |
+| `pnpm check` | 运行类型检查 + Biome 代码检查 |
+| `pnpm fix` | 自动修复代码检查和格式化问题 |
 
 ## 测试套件
 
@@ -68,8 +113,6 @@ xrpl-stablecoin-flow/
 - 执行代币追回
 - 余额调整和验证
 
-**运行测试:**
-
 ```bash
 pnpm test allow-trustline-clawback
 ```
@@ -81,8 +124,6 @@ pnpm test allow-trustline-clawback
 - 设置 DefaultRipple 标志
 - 自动波纹传播行为
 - 多跳支付场景
-
-**运行测试:**
 
 ```bash
 pnpm test default-ripple
@@ -96,8 +137,6 @@ pnpm test default-ripple
 - 授权存款流程
 - 支付授权机制
 
-**运行测试:**
-
 ```bash
 pnpm test deposit-auth
 ```
@@ -110,8 +149,6 @@ pnpm test deposit-auth
 - 防止向已标记账户的 XRP 支付
 - 仅代币交易流程
 
-**运行测试:**
-
 ```bash
 pnpm test disallow-xrp
 ```
@@ -123,8 +160,6 @@ pnpm test disallow-xrp
 - 在发行者账户上应用全局冻结
 - 冻结期间防止代币转账
 - 解冻和恢复操作
-
-**运行测试:**
 
 ```bash
 pnpm test global-freeze
@@ -139,8 +174,6 @@ pnpm test global-freeze
 - 解冻信任线
 - 通过 asfNoFreeze 永久放弃冻结权限
 
-**运行测试:**
-
 ```bash
 pnpm test individual-freeze
 ```
@@ -154,8 +187,6 @@ pnpm test individual-freeze
 - 代币转账授权过程
 - 未授权转账预防
 
-**运行测试:**
-
 ```bash
 pnpm test require-auth
 ```
@@ -168,8 +199,6 @@ pnpm test require-auth
 - 验证用户间转账的费用扣除
 - 确认发行者操作免手续费
 - 清除转账费率
-
-**运行测试:**
 
 ```bash
 pnpm test transfer-rate
@@ -185,8 +214,6 @@ pnpm test transfer-rate
 - 防止通过账户进行波纹传播
 - 直接支付路径
 
-**运行测试:**
-
 ```bash
 pnpm test no-ripple-flow
 ```
@@ -199,8 +226,6 @@ pnpm test no-ripple-flow
 - 授权工作流程
 - 授权支票兑现
 
-**运行测试:**
-
 ```bash
 pnpm test deposit-auth-check-flow
 ```
@@ -212,8 +237,6 @@ pnpm test deposit-auth-check-flow
 - 两个发行者发行相同货币代码
 - 验证不同发行者的代币是独立资产
 - 多发行者间的波纹传播行为
-
-**运行测试:**
 
 ```bash
 pnpm test multi-issuer
@@ -228,8 +251,6 @@ pnpm test multi-issuer
 - 创建支付支票
 - 支票授权和兑现
 - 支票取消流程
-
-**运行测试:**
 
 ```bash
 pnpm test check
@@ -247,8 +268,6 @@ pnpm test check
 - 交易备注 (MemoType + MemoData)
 - 信任线删除 (limit=0, balance=0)
 
-**运行测试:**
-
 ```bash
 pnpm test edge-cases
 ```
@@ -256,14 +275,3 @@ pnpm test edge-cases
 ## 许可证
 
 MIT
-
-## 关键词
-
-- XRP
-- XRPL
-- 稳定币
-- TypeScript
-- 测试
-- 集成测试
-- 区块链
-- 加密货币

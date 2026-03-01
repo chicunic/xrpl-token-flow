@@ -1,5 +1,13 @@
 # XRPL Stablecoin Flow
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D25-green.svg)](https://nodejs.org/)
+[![XRPL](https://img.shields.io/badge/XRPL-4.x-brightgreen.svg)](https://xrpl.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.x-6E9F18.svg)](https://vitest.dev/)
+[![Biome](https://img.shields.io/badge/Biome-2.x-60a5fa.svg)](https://biomejs.dev/)
+[![pnpm](https://img.shields.io/badge/pnpm-11.x-f69220.svg)](https://pnpm.io/)
+
 A comprehensive TypeScript testing framework for XRPL (XRP Ledger) stablecoin operations, featuring extensive integration tests for various XRPL account flags and features.
 
 ## Overview
@@ -22,11 +30,12 @@ This project provides a robust testing environment for XRPL stablecoin flows, fo
 xrpl-stablecoin-flow/
 ├── src/
 │   ├── config/
-│   │   └── xrpl.config.ts      # XRPL client configuration
+│   │   └── xrpl.config.ts          # XRPL client configuration
 │   └── services/
-│       └── fund.service.ts     # Wallet funding service
+│       └── fund.service.ts         # Wallet funding service
 ├── tests/
-│   ├── specs/integration/      # Integration test suites
+│   ├── setup.ts                    # Global test setup (console output, lifecycle hooks)
+│   ├── specs/integration/          # Integration test suites
 │   │   ├── allow-trustline-clawback.test.ts
 │   │   ├── check.test.ts
 │   │   ├── default-ripple.test.ts
@@ -41,20 +50,56 @@ xrpl-stablecoin-flow/
 │   │   ├── require-auth.test.ts
 │   │   └── transfer-rate.test.ts
 │   └── utils/
-│       ├── data.ts             # Shared test constants
-│       ├── mock.factory.ts     # Mock data factory
-│       └── test.helper.ts     # Shared test helper utilities
-├── vitest.config.ts            # Vitest configuration
-├── tsconfig.json              # TypeScript configuration
-└── package.json               # Package dependencies and scripts
+│       ├── data.ts                 # Shared test constants
+│       └── test.helper.ts          # Shared test helper utilities
+├── .env.example                    # Environment variable template
+├── biome.json                      # Biome linter & formatter configuration
+├── setup-hooks.sh                  # Git hooks setup script
+├── vitest.config.ts                # Vitest configuration
+├── tsconfig.json                   # TypeScript configuration
+└── package.json                    # Package dependencies and scripts
 ```
 
 ## Prerequisites
 
-- **Node.js**: ≥25.0.0
+- **Node.js**: >=25
 - **pnpm**: Package manager
-- **TypeScript**: ^5.9.2
-- **XRPL**: ^4.4.1
+
+## Getting Started
+
+1. Clone the repository and install dependencies:
+
+```bash
+pnpm install
+```
+
+1. Copy the environment variable template and configure:
+
+```bash
+cp .env.example .env
+```
+
+1. Configure the following environment variables in `.env`:
+
+```bash
+# XRPL Configuration
+XRPL_NETWORK=devnet                               # mainnet | testnet | devnet
+# XRPL_ENDPOINT=wss://s.devnet.rippletest.net:51233  # Custom endpoint (optional)
+
+FUND_MNEMONIC=<your-mnemonic>                      # Mnemonic for wallet funding
+```
+
+## Scripts
+
+| Command | Description |
+| - | - |
+| `pnpm test` | Run all tests |
+| `pnpm test <name>` | Run a specific test suite |
+| `pnpm test:watch` | Run tests in watch mode |
+| `pnpm test:coverage` | Run tests with coverage report |
+| `pnpm typecheck` | TypeScript type checking |
+| `pnpm check` | Run type checking + Biome linting |
+| `pnpm fix` | Auto-fix linting and formatting issues |
 
 ## Test Suites
 
@@ -68,8 +113,6 @@ Tests [clawback functionality](https://xrpl.org/docs/references/protocol/transac
 - Executing token clawbacks
 - Balance adjustments and validations
 
-**Run test:**
-
 ```bash
 pnpm test allow-trustline-clawback
 ```
@@ -81,8 +124,6 @@ Tests [DefaultRipple flag](https://xrpl.org/docs/concepts/tokens/fungible-tokens
 - Setting DefaultRipple flag
 - Automatic rippling behavior
 - Multi-hop payment scenarios
-
-**Run test:**
 
 ```bash
 pnpm test default-ripple
@@ -96,8 +137,6 @@ Tests [DepositAuth flag](https://xrpl.org/docs/concepts/accounts/depositauth) re
 - Authorized deposit flows
 - Payment authorization mechanisms
 
-**Run test:**
-
 ```bash
 pnpm test deposit-auth
 ```
@@ -110,8 +149,6 @@ Tests [DisallowXRP flag](https://xrpl.org/docs/concepts/accounts/depositauth) re
 - Preventing XRP payments to flagged accounts
 - Token-only transaction flows
 
-**Run test:**
-
 ```bash
 pnpm test disallow-xrp
 ```
@@ -123,8 +160,6 @@ Tests [GlobalFreeze flag](https://xrpl.org/docs/concepts/tokens/fungible-tokens/
 - Applying global freeze on issuer accounts
 - Preventing token transfers during freeze
 - Unfreezing and resuming operations
-
-**Run test:**
 
 ```bash
 pnpm test global-freeze
@@ -139,8 +174,6 @@ Tests [Individual Freeze](https://xrpl.org/docs/concepts/tokens/fungible-tokens/
 - Unfreezing a trust line
 - Permanent no-freeze opt-out via asfNoFreeze
 
-**Run test:**
-
 ```bash
 pnpm test individual-freeze
 ```
@@ -154,8 +187,6 @@ Tests the [RequireAuth flag](https://xrpl.org/docs/concepts/tokens/fungible-toke
 - Token transfer authorization process
 - Unauthorized transfer prevention
 
-**Run test:**
-
 ```bash
 pnpm test require-auth
 ```
@@ -168,8 +199,6 @@ Tests [TransferRate](https://xrpl.org/docs/concepts/tokens/transfer-fees) functi
 - Verifying fee deduction on user-to-user transfers
 - Confirming issuer operations are fee-exempt
 - Clearing transfer rate
-
-**Run test:**
 
 ```bash
 pnpm test transfer-rate
@@ -185,8 +214,6 @@ Tests [NoRipple flag](https://xrpl.org/docs/concepts/tokens/fungible-tokens/ripp
 - Preventing rippling through accounts
 - Direct payment paths
 
-**Run test:**
-
 ```bash
 pnpm test no-ripple-flow
 ```
@@ -199,8 +226,6 @@ Tests check operations with [deposit authorization](https://xrpl.org/docs/concep
 - Authorization workflows
 - Authorized check cashing
 
-**Run test:**
-
 ```bash
 pnpm test deposit-auth-check-flow
 ```
@@ -212,8 +237,6 @@ Tests multi-issuer token scenarios:
 - Two issuers issuing the same currency code
 - Verifying tokens from different issuers are distinct assets
 - Rippling behavior across multiple issuers
-
-**Run test:**
 
 ```bash
 pnpm test multi-issuer
@@ -228,8 +251,6 @@ Tests [XRPL Check](https://xrpl.org/docs/concepts/payment-types/checks) function
 - Creating payment checks
 - Check authorization and cashing
 - Check cancellation flows
-
-**Run test:**
 
 ```bash
 pnpm test check
@@ -247,8 +268,6 @@ Tests various boundary and error conditions:
 - Transaction memo (MemoType + MemoData)
 - Trust line deletion (limit=0, balance=0)
 
-**Run test:**
-
 ```bash
 pnpm test edge-cases
 ```
@@ -256,14 +275,3 @@ pnpm test edge-cases
 ## License
 
 MIT
-
-## Keywords
-
-- XRP
-- XRPL
-- Stablecoin
-- TypeScript
-- Testing
-- Integration Tests
-- Blockchain
-- Cryptocurrency
