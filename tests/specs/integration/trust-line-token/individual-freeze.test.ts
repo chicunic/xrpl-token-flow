@@ -1,31 +1,27 @@
-import {
-  type AccountSet,
-  AccountSetAsfFlags,
-  type Client,
-  type Payment,
-  type TransactionMetadata,
-  type TrustSet,
-  TrustSetFlags,
-  type Wallet,
-} from 'xrpl';
-import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
-
-import { getXRPLClient, initializeXRPLClient } from '../../../src/config/xrpl.config';
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '../../utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
 import {
   createTrustLine,
   currencyToHex,
   findTrustLine,
-  getAccountFlags,
   getTokenBalance,
-  hasFlag,
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
   submitTransaction,
-} from '../../utils/test.helper';
+} from '@tests/utils/test.helper';
+import {
+  freezeTrustLine,
+  setAccountFlag,
+  transferTokens,
+  unfreezeTrustLine,
+  verifyAccountFlag,
+} from '@tests/utils/trust-line-token.helper';
+import type { Client, TransactionMetadata, Wallet } from 'xrpl';
+import { AccountSetAsfFlags, TrustSetFlags } from 'xrpl';
+import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
+import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
 
-describe('Individual Freeze Test', () => {
+describe('Trust Line Token IndividualFreeze', () => {
   let client: Client;
   let issuerWallet: Wallet;
   let aliceWallet: Wallet;
@@ -33,12 +29,7 @@ describe('Individual Freeze Test', () => {
 
   beforeAll(async () => {
     console.log('🚀 Starting Individual Freeze Test');
-    console.log('Test Flow:');
-    console.log('  Phase 1: Setup - Create Issuer, Alice, Bob, trust lines, mint tokens');
-    console.log('  Phase 2: Issuer freezes Alice trust line (TrustSet + tfSetFreeze)');
-    console.log('  Phase 3: Alice transfer fails, Bob unaffected, Issuer can still operate');
-    console.log('  Phase 4: Unfreeze Alice (tfClearFreeze), verify transfer restored');
-    console.log('  Phase 5: Set asfNoFreeze — verify issuer can never freeze again (permanent)');
+
     await initializeXRPLClient();
     client = getXRPLClient();
   }, 30000);
@@ -82,17 +73,7 @@ describe('Individual Freeze Test', () => {
     it('should freeze Alice trust line via TrustSet + tfSetFreeze', async () => {
       console.log('\n==================== PHASE 2: FREEZE ALICE TRUST LINE ====================');
 
-      const freezeTx: TrustSet = await client.autofill({
-        TransactionType: 'TrustSet',
-        Account: issuerWallet.address,
-        LimitAmount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: aliceWallet.address,
-          value: '0',
-        },
-        Flags: TrustSetFlags.tfSetFreeze,
-      });
-      await submitTransaction(client, freezeTx, issuerWallet);
+      await freezeTrustLine(issuerWallet, aliceWallet);
 
       const aliceLine = await findTrustLine(aliceWallet, issuerWallet);
       expect(aliceLine).toBeDefined();
@@ -109,17 +90,7 @@ describe('Individual Freeze Test', () => {
 
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, payTx, aliceWallet, 'tecPATH_DRY');
+      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet, 'tecPATH_DRY');
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(bobBalanceAfter).toBe(bobBalanceBefore);
@@ -132,17 +103,7 @@ describe('Individual Freeze Test', () => {
 
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: bobWallet.address,
-        Destination: aliceWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, payTx, bobWallet);
+      await transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet);
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
       expect(Number(aliceBalanceAfter) - Number(aliceBalanceBefore)).toBe(Number(TRANSFER_AMOUNT));
@@ -156,17 +117,7 @@ describe('Individual Freeze Test', () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
       const redeemAmount = '100';
 
-      const redeemTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: bobWallet.address,
-        Destination: issuerWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: redeemAmount,
-        },
-      });
-      await submitTransaction(client, redeemTx, bobWallet);
+      await transferTokens(bobWallet, issuerWallet, redeemAmount, issuerWallet);
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(Number(bobBalanceBefore) - Number(bobBalanceAfter)).toBe(Number(redeemAmount));
@@ -193,17 +144,7 @@ describe('Individual Freeze Test', () => {
     it('should unfreeze Alice trust line via tfClearFreeze', async () => {
       console.log('\n==================== PHASE 4: UNFREEZE ALICE ====================');
 
-      const unfreezeTx: TrustSet = await client.autofill({
-        TransactionType: 'TrustSet',
-        Account: issuerWallet.address,
-        LimitAmount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: aliceWallet.address,
-          value: '0',
-        },
-        Flags: TrustSetFlags.tfClearFreeze,
-      });
-      await submitTransaction(client, unfreezeTx, issuerWallet);
+      await unfreezeTrustLine(issuerWallet, aliceWallet);
 
       const aliceLine = await findTrustLine(aliceWallet, issuerWallet);
       expect(aliceLine).toBeDefined();
@@ -217,17 +158,7 @@ describe('Individual Freeze Test', () => {
 
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, payTx, aliceWallet);
+      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(Number(bobBalanceAfter) - Number(bobBalanceBefore)).toBe(Number(TRANSFER_AMOUNT));
@@ -240,15 +171,8 @@ describe('Individual Freeze Test', () => {
     it('should set asfNoFreeze flag', async () => {
       console.log('\n==================== PHASE 5: asfNoFreeze (PERMANENT) ====================');
 
-      const noFreezeTx: AccountSet = await client.autofill({
-        TransactionType: 'AccountSet',
-        Account: issuerWallet.address,
-        SetFlag: AccountSetAsfFlags.asfNoFreeze,
-      });
-      await submitTransaction(client, noFreezeTx, issuerWallet);
-
-      const flags = await getAccountFlags(client, issuerWallet.address);
-      expect(hasFlag(flags, AccountRootFlags.lsfNoFreeze)).toBe(true);
+      await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfNoFreeze);
+      await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfNoFreeze, true);
 
       console.log('✅ asfNoFreeze flag set (permanent)');
     }, 20000);
@@ -256,8 +180,9 @@ describe('Individual Freeze Test', () => {
     it('should fail to freeze any trust line after asfNoFreeze', async () => {
       console.log('🙅 Attempting to freeze Bob trust line after asfNoFreeze...');
 
-      const freezeAttemptTx: TrustSet = await client.autofill({
-        TransactionType: 'TrustSet',
+      // freezeTrustLine expects tesSUCCESS; must construct inline for expected failure
+      const freezeAttemptTx = await client.autofill({
+        TransactionType: 'TrustSet' as const,
         Account: issuerWallet.address,
         LimitAmount: {
           currency: currencyToHex(CURRENCY),
@@ -274,8 +199,8 @@ describe('Individual Freeze Test', () => {
     it('should not be able to clear asfNoFreeze (permanent)', async () => {
       console.log('🔒 Verifying asfNoFreeze cannot be cleared...');
 
-      const clearNoFreezeTx: AccountSet = await client.autofill({
-        TransactionType: 'AccountSet',
+      const clearNoFreezeTx = await client.autofill({
+        TransactionType: 'AccountSet' as const,
         Account: issuerWallet.address,
         ClearFlag: AccountSetAsfFlags.asfNoFreeze,
       });
@@ -286,8 +211,7 @@ describe('Individual Freeze Test', () => {
       // Flag stays set either way
       expect(['tesSUCCESS', 'tecNO_PERMISSION']).toContain(txResult);
 
-      const flags = await getAccountFlags(client, issuerWallet.address);
-      expect(hasFlag(flags, AccountRootFlags.lsfNoFreeze)).toBe(true);
+      await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfNoFreeze, true);
 
       console.log('✅ asfNoFreeze flag remains set (permanent, cannot be cleared)');
     }, 20000);

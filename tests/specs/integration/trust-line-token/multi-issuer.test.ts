@@ -1,7 +1,4 @@
-import type { AccountLinesTrustline, Client, Payment, Wallet } from 'xrpl';
-
-import { getXRPLClient, initializeXRPLClient } from '../../../src/config/xrpl.config';
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '../../utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
 import {
   createTrustLine,
   currencyToHex,
@@ -9,10 +6,12 @@ import {
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-  submitTransaction,
-} from '../../utils/test.helper';
+} from '@tests/utils/test.helper';
+import { transferTokens } from '@tests/utils/trust-line-token.helper';
+import type { AccountLinesTrustline, Client, Wallet } from 'xrpl';
+import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
 
-describe('Multi-Issuer Test', () => {
+describe('Trust Line Token Multi-Issuer', () => {
   let client: Client;
   let issuerAWallet: Wallet;
   let issuerBWallet: Wallet;
@@ -21,11 +20,7 @@ describe('Multi-Issuer Test', () => {
 
   beforeAll(async () => {
     console.log('🚀 Starting Multi-Issuer Test');
-    console.log('Test Flow:');
-    console.log('  Phase 1: Setup - Create IssuerA, IssuerB, Alice, Bob (both issuers issue USD)');
-    console.log('  Phase 2: Alice creates trust lines to both issuers, receives USD from each');
-    console.log('  Phase 3: Verify two issuers USD are distinct assets, cannot be mixed');
-    console.log('  Phase 4: Rippling behavior — DefaultRipple effect on multi-issuer same currency');
+
     await initializeXRPLClient();
     client = getXRPLClient();
   }, 30000);
@@ -105,17 +100,7 @@ describe('Multi-Issuer Test', () => {
       const aliceBalanceBBefore = await getTokenBalance(aliceWallet, issuerBWallet);
       const bobBalanceABefore = await getTokenBalance(bobWallet, issuerAWallet);
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerAWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, payTx, aliceWallet);
+      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerAWallet);
 
       const aliceBalanceAAfter = await getTokenBalance(aliceWallet, issuerAWallet);
       const aliceBalanceBAfter = await getTokenBalance(aliceWallet, issuerBWallet);
@@ -135,17 +120,7 @@ describe('Multi-Issuer Test', () => {
       const aliceBalanceA = await getTokenBalance(aliceWallet, issuerAWallet);
       const overAmount = String(Number(aliceBalanceA) + 1000);
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerAWallet.address,
-          value: overAmount,
-        },
-      });
-      await submitTransaction(client, payTx, aliceWallet, 'tecPATH_PARTIAL');
+      await transferTokens(aliceWallet, bobWallet, overAmount, issuerAWallet, 'tecPATH_PARTIAL');
 
       console.log('✅ Cross-issuer payment correctly rejected: tecPATH_PARTIAL');
     }, 30000);
@@ -159,17 +134,7 @@ describe('Multi-Issuer Test', () => {
 
       const bobBalanceBBefore = await getTokenBalance(bobWallet, issuerBWallet);
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: bobWallet.address,
-        Destination: aliceWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerBWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, payTx, bobWallet);
+      await transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerBWallet);
 
       const bobBalanceBAfter = await getTokenBalance(bobWallet, issuerBWallet);
       const aliceBalanceB = await getTokenBalance(aliceWallet, issuerBWallet);

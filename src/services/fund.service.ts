@@ -1,6 +1,3 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
-import * as bip39 from 'bip39';
 import 'dotenv/config';
 import {
   type Client,
@@ -21,30 +18,12 @@ interface ActNotFoundError extends XrplError {
   };
 }
 
-function ensureFundMnemonic(): string {
-  const envMnemonic = process.env.FUND_MNEMONIC;
-  if (envMnemonic && bip39.validateMnemonic(envMnemonic)) {
-    return envMnemonic;
+function getFundWallet(): Wallet {
+  const secret = process.env.FUND_SECRET;
+  if (!secret) {
+    throw new Error('FUND_SECRET is not set in .env');
   }
-  const newMnemonic = bip39.generateMnemonic();
-  const wallet = Wallet.fromMnemonic(newMnemonic);
-  console.log('🔑 Generated new FUND_MNEMONIC for wallet:', wallet.address);
-  const envPath = join(process.cwd(), '.env');
-  let envContent = '';
-  if (existsSync(envPath)) {
-    envContent = readFileSync(envPath, 'utf8')
-      .replace(/^FUND_MNEMONIC=.*$/m, '')
-      .replace(/\n\n+/g, '\n')
-      .trim();
-  }
-  if (envContent && !envContent.endsWith('\n')) {
-    envContent += '\n';
-  }
-  envContent += `FUND_MNEMONIC=${newMnemonic}\n`;
-  writeFileSync(envPath, envContent);
-  console.log('✅ Updated .env file with new FUND_MNEMONIC');
-  process.env.FUND_MNEMONIC = newMnemonic;
-  return newMnemonic;
+  return Wallet.fromSecret(secret);
 }
 
 export async function fundWallet(wallet: Wallet, { amount }: { amount: string }): Promise<void> {
@@ -54,7 +33,7 @@ export async function fundWallet(wallet: Wallet, { amount }: { amount: string })
   if (amountDrops < minDrops || amountDrops > maxDrops) {
     throw new Error('Amount must be between 1 and 100 XRP');
   }
-  const fundMnemonic = ensureFundMnemonic();
+  const sourceWallet = getFundWallet();
   const client: Client = getXRPLClient();
   const targetAddress = wallet.address;
   let targetBalanceDrops = 0n;
@@ -81,9 +60,7 @@ export async function fundWallet(wallet: Wallet, { amount }: { amount: string })
     );
     return;
   }
-  const sourceWallet = Wallet.fromMnemonic(fundMnemonic);
   let currentBalanceDrops = 0n;
-  let sourceWalletExists = true;
   try {
     const fundAccountInfo = await client.request({
       command: 'account_info',
@@ -94,30 +71,27 @@ export async function fundWallet(wallet: Wallet, { amount }: { amount: string })
     console.log(`💰 Fund wallet (${sourceWallet.address}) balance: ${dropsToXrp(currentBalanceDrops)} XRP`);
   } catch (error: unknown) {
     if ((error as ActNotFoundError)?.data?.error === 'actNotFound') {
-      console.log(`💰 Fund wallet (${sourceWallet.address}) does not exist yet - will be created by faucet funding`);
-      sourceWalletExists = false;
-    } else {
-      throw error;
+      throw new Error(`Fund wallet (${sourceWallet.address}) does not exist on the network. Please fund it first.`);
     }
+    throw error;
   }
   console.log(`📤 Requested transfer: ${dropsToXrp(amountDrops)} XRP to ${targetAddress}`);
-  if (!sourceWalletExists || currentBalanceDrops < amountDrops + XRP_MINIMUM_DROPS) {
+  if (currentBalanceDrops < amountDrops + XRP_MINIMUM_DROPS) {
     console.log(
       `⚠️  Insufficient balance. Need: ${dropsToXrp(amountDrops + XRP_MINIMUM_DROPS)} XRP, Have: ${dropsToXrp(currentBalanceDrops)} XRP`
     );
-    console.log('🔄 Auto-funding wallet with 100 XRP from faucet...');
+    console.log('🔄 Auto-funding from faucet...');
     await client.fundWallet(sourceWallet, { amount: '100' });
-    console.log('✅ Successfully funded wallet with 100 XRP');
     const updatedAccountInfo = await client.request({
       command: 'account_info',
       account: sourceWallet.address,
       ledger_index: 'validated',
     });
-    const updatedBalanceDrops = BigInt(updatedAccountInfo.result.account_data.Balance);
-    console.log(`💰 Updated fund wallet balance: ${dropsToXrp(updatedBalanceDrops)} XRP`);
-    if (updatedBalanceDrops < amountDrops + XRP_MINIMUM_DROPS) {
+    currentBalanceDrops = BigInt(updatedAccountInfo.result.account_data.Balance);
+    console.log(`💰 Updated fund wallet balance: ${dropsToXrp(currentBalanceDrops)} XRP`);
+    if (currentBalanceDrops < amountDrops + XRP_MINIMUM_DROPS) {
       throw new Error(
-        `Still insufficient balance after auto-funding. Need: ${dropsToXrp(amountDrops + XRP_MINIMUM_DROPS)} XRP, Have: ${dropsToXrp(updatedBalanceDrops)} XRP`
+        `Still insufficient after faucet. Need: ${dropsToXrp(amountDrops + XRP_MINIMUM_DROPS)} XRP, Have: ${dropsToXrp(currentBalanceDrops)} XRP`
       );
     }
   }

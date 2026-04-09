@@ -1,21 +1,23 @@
-import { type AccountSet, AccountSetAsfFlags, type Client, type Payment, type Wallet } from 'xrpl';
-import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
-
-import { getXRPLClient, initializeXRPLClient } from '../../../src/config/xrpl.config';
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '../../utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
 import {
   createTrustLine,
-  currencyToHex,
-  getAccountFlags,
   getTokenBalance,
-  hasFlag,
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-  submitTransaction,
-} from '../../utils/test.helper';
+} from '@tests/utils/test.helper';
+import {
+  clearAccountFlag,
+  setAccountFlag,
+  transferTokens,
+  verifyAccountFlag,
+} from '@tests/utils/trust-line-token.helper';
+import type { Client, Wallet } from 'xrpl';
+import { AccountSetAsfFlags } from 'xrpl';
+import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
+import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
 
-describe('GlobalFreeze Flag Test', () => {
+describe('Trust Line Token GlobalFreeze', () => {
   let client: Client;
 
   let aliceWallet: Wallet;
@@ -24,11 +26,6 @@ describe('GlobalFreeze Flag Test', () => {
 
   beforeAll(async () => {
     console.log('🚀 Starting GlobalFreeze Flag Test');
-    console.log('Test Flow:');
-    console.log('  Phase 1: Setup - Create Issuer, Alice, Bob with DefaultRipple');
-    console.log('  Phase 2: Normal Operations — issue tokens to Alice and Bob');
-    console.log('  Phase 3: Enable GlobalFreeze — user transfers fail, issuer mint/burn still works');
-    console.log('  Phase 4: Disable GlobalFreeze — transfers restored');
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -52,8 +49,7 @@ describe('GlobalFreeze Flag Test', () => {
 
       await setupIssuerWithFlags(issuerWallet);
 
-      const flags = await getAccountFlags(client, issuerWallet.address);
-      expect(hasFlag(flags, AccountRootFlags.lsfGlobalFreeze)).toBe(false);
+      await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfGlobalFreeze, false);
 
       console.log(`✅ Issuer: ${issuerWallet.address}`);
       console.log(`✅ Alice: ${aliceWallet.address}`);
@@ -84,15 +80,8 @@ describe('GlobalFreeze Flag Test', () => {
     it('should enable GlobalFreeze flag', async () => {
       console.log('\n==================== PHASE 3: ENABLE GLOBALFREEZE ====================');
 
-      const freezeTx: AccountSet = await client.autofill({
-        TransactionType: 'AccountSet',
-        Account: issuerWallet.address,
-        SetFlag: AccountSetAsfFlags.asfGlobalFreeze,
-      });
-      await submitTransaction(client, freezeTx, issuerWallet);
-
-      const flags = await getAccountFlags(client, issuerWallet.address);
-      expect(hasFlag(flags, AccountRootFlags.lsfGlobalFreeze)).toBe(true);
+      await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfGlobalFreeze);
+      await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfGlobalFreeze, true);
 
       console.log('✅ GlobalFreeze flag enabled successfully');
     }, 20000);
@@ -102,17 +91,7 @@ describe('GlobalFreeze Flag Test', () => {
 
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      const failedPaymentTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, failedPaymentTx, aliceWallet, 'tecPATH_DRY');
+      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet, 'tecPATH_DRY');
 
       expect(await getTokenBalance(bobWallet, issuerWallet)).toBe(bobBalanceBefore);
 
@@ -124,17 +103,7 @@ describe('GlobalFreeze Flag Test', () => {
 
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
 
-      const failedPaymentTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: bobWallet.address,
-        Destination: aliceWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, failedPaymentTx, bobWallet, 'tecPATH_DRY');
+      await transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet, 'tecPATH_DRY');
 
       expect(await getTokenBalance(aliceWallet, issuerWallet)).toBe(aliceBalanceBefore);
 
@@ -174,17 +143,7 @@ describe('GlobalFreeze Flag Test', () => {
 
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
 
-      const burnTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: issuerWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, burnTx, aliceWallet);
+      await transferTokens(aliceWallet, issuerWallet, TRANSFER_AMOUNT, issuerWallet);
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
       expect(BigInt(aliceBalanceAfter)).toEqual(BigInt(aliceBalanceBefore) - BigInt(TRANSFER_AMOUNT));
@@ -198,17 +157,7 @@ describe('GlobalFreeze Flag Test', () => {
 
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      const burnFromBobTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: bobWallet.address,
-        Destination: issuerWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, burnFromBobTx, bobWallet);
+      await transferTokens(bobWallet, issuerWallet, TRANSFER_AMOUNT, issuerWallet);
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(BigInt(bobBalanceAfter)).toEqual(BigInt(bobBalanceBefore) - BigInt(TRANSFER_AMOUNT));
@@ -222,15 +171,8 @@ describe('GlobalFreeze Flag Test', () => {
     it('should disable GlobalFreeze flag', async () => {
       console.log('\n==================== PHASE 4: DISABLE GLOBALFREEZE ====================');
 
-      const unfreezeTx: AccountSet = await client.autofill({
-        TransactionType: 'AccountSet',
-        Account: issuerWallet.address,
-        ClearFlag: AccountSetAsfFlags.asfGlobalFreeze,
-      });
-      await submitTransaction(client, unfreezeTx, issuerWallet);
-
-      const flags = await getAccountFlags(client, issuerWallet.address);
-      expect(hasFlag(flags, AccountRootFlags.lsfGlobalFreeze)).toBe(false);
+      await clearAccountFlag(issuerWallet, AccountSetAsfFlags.asfGlobalFreeze);
+      await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfGlobalFreeze, false);
 
       console.log('✅ GlobalFreeze flag disabled successfully');
     }, 20000);
@@ -240,17 +182,7 @@ describe('GlobalFreeze Flag Test', () => {
 
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      const paymentTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-      });
-      await submitTransaction(client, paymentTx, aliceWallet);
+      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(BigInt(bobBalanceAfter)).toEqual(BigInt(bobBalanceBefore) + BigInt(TRANSFER_AMOUNT));

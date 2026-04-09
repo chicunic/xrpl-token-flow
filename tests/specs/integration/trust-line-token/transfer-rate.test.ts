@@ -1,18 +1,26 @@
-import type { AccountSet, Client, Payment, Wallet } from 'xrpl';
-
-import { getXRPLClient, initializeXRPLClient } from '../../../src/config/xrpl.config';
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT, TRANSFER_RATE } from '../../utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT, TRANSFER_RATE } from '@tests/utils/data';
 import {
   createTrustLine,
-  currencyToHex,
   getTokenBalance,
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-  submitTransaction,
-} from '../../utils/test.helper';
+} from '@tests/utils/test.helper';
+import { setTransferRate, transferTokens, transferTokensWithSendMax } from '@tests/utils/trust-line-token.helper';
+import type { Client, Wallet } from 'xrpl';
+import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
 
-describe('TransferRate Test', () => {
+/**
+ * TransferRate Test
+ *
+ * Tests transfer rate (fee) behavior on token transfers:
+ *   Phase 1: Setup - Create Issuer, Alice, Bob with DefaultRipple
+ *   Phase 2: Set TransferRate=0.5%, verify account_info returns correct value
+ *   Phase 3: Mint to Alice (no fee), Alice->Bob transfer verifies 0.5% deduction
+ *   Phase 4: Issuer->user no fee, user->Issuer (redeem) no fee
+ *   Phase 5: Clear rate (set to 0), verify no fee restored
+ */
+describe('Trust Line Token TransferRate', () => {
   let client: Client;
   let issuerWallet: Wallet;
   let aliceWallet: Wallet;
@@ -20,12 +28,7 @@ describe('TransferRate Test', () => {
 
   beforeAll(async () => {
     console.log('🚀 Starting TransferRate Test');
-    console.log('Test Flow:');
-    console.log('  Phase 1: Setup - Create Issuer, Alice, Bob with DefaultRipple');
-    console.log('  Phase 2: Set TransferRate=0.5%, verify account_info returns correct value');
-    console.log('  Phase 3: Mint to Alice (no fee), Alice→Bob transfer verifies 0.5% deduction');
-    console.log('  Phase 4: Issuer→user no fee, user→Issuer (redeem) no fee');
-    console.log('  Phase 5: Clear rate (set to 0), verify no fee restored');
+
     await initializeXRPLClient();
     client = getXRPLClient();
   }, 30000);
@@ -58,12 +61,7 @@ describe('TransferRate Test', () => {
     it('should set TransferRate=0.5% and verify in account_info', async () => {
       console.log('\n==================== PHASE 2: SET TRANSFER RATE ====================');
 
-      const setRateTx: AccountSet = await client.autofill({
-        TransactionType: 'AccountSet',
-        Account: issuerWallet.address,
-        TransferRate: TRANSFER_RATE,
-      });
-      await submitTransaction(client, setRateTx, issuerWallet);
+      await setTransferRate(issuerWallet, TRANSFER_RATE);
 
       const accountInfo = await client.request({
         command: 'account_info',
@@ -86,33 +84,16 @@ describe('TransferRate Test', () => {
 
       const aliceBalance = await getTokenBalance(aliceWallet, issuerWallet);
       expect(aliceBalance).toBe(MINT_AMOUNT);
-      console.log(`✅ Alice minted ${MINT_AMOUNT} ${CURRENCY} (no fee on issuer→user)`);
+      console.log(`✅ Alice minted ${MINT_AMOUNT} ${CURRENCY} (no fee on issuer->user)`);
     }, 60000);
 
-    it('should deduct 0.5% fee on Alice→Bob transfer', async () => {
-      console.log('💸 Testing Alice→Bob transfer with 0.5% fee...');
-
+    it('should deduct 0.5% fee on Alice->Bob transfer', async () => {
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
       // SendMax covers the transfer fee (0.5%)
       const sendMaxValue = String(Number(TRANSFER_AMOUNT) * 1.01);
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: TRANSFER_AMOUNT,
-        },
-        SendMax: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: sendMaxValue,
-        },
-      });
-      await submitTransaction(client, payTx, aliceWallet);
+      await transferTokensWithSendMax(aliceWallet, bobWallet, TRANSFER_AMOUNT, sendMaxValue, issuerWallet);
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
@@ -130,7 +111,7 @@ describe('TransferRate Test', () => {
   });
 
   describe('Phase 4: Issuer operations have no fee', () => {
-    it('should not charge fee on Issuer→user mint', async () => {
+    it('should not charge fee on Issuer->user mint', async () => {
       console.log('\n==================== PHASE 4: ISSUER OPERATIONS NO FEE ====================');
 
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
@@ -142,32 +123,20 @@ describe('TransferRate Test', () => {
       const received = Number(aliceBalanceAfter) - Number(aliceBalanceBefore);
       expect(received).toBe(Number(additionalMint));
 
-      console.log(`✅ Issuer→Alice mint: no fee charged (received exactly ${additionalMint})`);
+      console.log(`✅ Issuer->Alice mint: no fee charged (received exactly ${additionalMint})`);
     }, 30000);
 
-    it('should not charge fee on user→Issuer redemption', async () => {
-      console.log('🔥 Testing user→Issuer redemption (no fee)...');
-
+    it('should not charge fee on user->Issuer redemption', async () => {
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
       const redeemAmount = '100';
 
-      const redeemTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: issuerWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: redeemAmount,
-        },
-      });
-      await submitTransaction(client, redeemTx, aliceWallet);
+      await transferTokens(aliceWallet, issuerWallet, redeemAmount, issuerWallet);
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
       const spent = Number(aliceBalanceBefore) - Number(aliceBalanceAfter);
       expect(spent).toBe(Number(redeemAmount));
 
-      console.log(`✅ User→Issuer redeem: no fee charged (Alice spent exactly ${redeemAmount})`);
+      console.log(`✅ User->Issuer redeem: no fee charged (Alice spent exactly ${redeemAmount})`);
     }, 30000);
   });
 
@@ -175,12 +144,7 @@ describe('TransferRate Test', () => {
     it('should clear TransferRate by setting to 0', async () => {
       console.log('\n==================== PHASE 5: CLEAR TRANSFER RATE ====================');
 
-      const clearRateTx: AccountSet = await client.autofill({
-        TransactionType: 'AccountSet',
-        Account: issuerWallet.address,
-        TransferRate: 0,
-      });
-      await submitTransaction(client, clearRateTx, issuerWallet);
+      await setTransferRate(issuerWallet, 0);
 
       const accountInfo = await client.request({
         command: 'account_info',
@@ -193,23 +157,11 @@ describe('TransferRate Test', () => {
     }, 20000);
 
     it('should transfer without fee after clearing rate', async () => {
-      console.log('💸 Testing transfer without fee...');
-
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
       const amount = '100';
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: aliceWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: amount,
-        },
-      });
-      await submitTransaction(client, payTx, aliceWallet);
+      await transferTokens(aliceWallet, bobWallet, amount, issuerWallet);
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);

@@ -1,7 +1,4 @@
-import { type Client, convertStringToHex, type Payment, type TransactionMetadata, type Wallet } from 'xrpl';
-
-import { getXRPLClient, initializeXRPLClient } from '../../../src/config/xrpl.config';
-import { CURRENCY, MEMO_DATA, MEMO_TYPE, MINT_AMOUNT, TRANSFER_AMOUNT, TRUST_AMOUNT } from '../../utils/data';
+import { CURRENCY, MEMO_DATA, MEMO_TYPE, MINT_AMOUNT, TRANSFER_AMOUNT, TRUST_AMOUNT } from '@tests/utils/data';
 import {
   createTrustLine,
   currencyToHex,
@@ -11,9 +8,13 @@ import {
   setupIssuerWithFlags,
   setupWallets,
   submitTransaction,
-} from '../../utils/test.helper';
+} from '@tests/utils/test.helper';
+import { transferTokens } from '@tests/utils/trust-line-token.helper';
+import type { Client, TransactionMetadata, Wallet } from 'xrpl';
+import { convertStringToHex } from 'xrpl';
+import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
 
-describe('Edge Cases Test', () => {
+describe('Trust Line Token Edge Cases', () => {
   let client: Client;
   let issuerWallet: Wallet;
   let aliceWallet: Wallet;
@@ -21,13 +22,7 @@ describe('Edge Cases Test', () => {
 
   beforeAll(async () => {
     console.log('🚀 Starting Edge Cases Test');
-    console.log('Test Flow:');
-    console.log('  Phase 1: Setup - Create wallets, trust lines, mint tokens');
-    console.log('  Phase 2: Self-payment → temREDUNDANT');
-    console.log('  Phase 3: Zero amount → temBAD_AMOUNT');
-    console.log('  Phase 4: Over-limit → tecPATH_PARTIAL');
-    console.log('  Phase 5: Memo (MemoType + MemoData)');
-    console.log('  Phase 6: Trust line deletion (limit=0, balance=0)');
+
     await initializeXRPLClient();
     client = getXRPLClient();
   }, 30000);
@@ -68,8 +63,10 @@ describe('Edge Cases Test', () => {
 
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
 
-      const selfPayTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
+      // tem* errors are preflight failures that throw before reaching the ledger
+      // Must construct inline since transferTokens cannot send to self
+      const selfPayTx = await client.autofill({
+        TransactionType: 'Payment' as const,
         Account: aliceWallet.address,
         Destination: aliceWallet.address,
         Amount: {
@@ -80,8 +77,6 @@ describe('Edge Cases Test', () => {
       });
 
       const signed = aliceWallet.sign(selfPayTx);
-
-      // tem* errors are preflight failures that throw before reaching the ledger
       await expect(client.submitAndWait(signed.tx_blob)).rejects.toThrow('temREDUNDANT');
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
@@ -98,8 +93,10 @@ describe('Edge Cases Test', () => {
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      const zeroPayTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
+      // tem* errors are preflight failures that throw before reaching the ledger
+      // Must construct inline since transferTokens expects a valid amount
+      const zeroPayTx = await client.autofill({
+        TransactionType: 'Payment' as const,
         Account: aliceWallet.address,
         Destination: bobWallet.address,
         Amount: {
@@ -110,7 +107,6 @@ describe('Edge Cases Test', () => {
       });
 
       const signed = aliceWallet.sign(zeroPayTx);
-
       await expect(client.submitAndWait(signed.tx_blob)).rejects.toThrow('temBAD_AMOUNT');
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
@@ -127,27 +123,15 @@ describe('Edge Cases Test', () => {
       console.log('\n==================== PHASE 4: OVER-LIMIT PAYMENT ====================');
 
       const overLimitAmount = String(Number(TRUST_AMOUNT) + 1);
-
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
       // Issuer tries to mint over-limit to Bob
-      const overLimitTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: issuerWallet.address,
-        Destination: bobWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: overLimitAmount,
-        },
-      });
-
-      const txResult = await submitTransaction(client, overLimitTx, issuerWallet, 'tecPATH_PARTIAL');
+      await transferTokens(issuerWallet, bobWallet, overLimitAmount, issuerWallet, 'tecPATH_PARTIAL');
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(bobBalanceAfter).toBe(bobBalanceBefore);
 
-      console.log(`✅ Over-limit payment correctly rejected: ${txResult}`);
+      console.log('✅ Over-limit payment correctly rejected: tecPATH_PARTIAL');
     }, 30000);
   });
 
@@ -155,8 +139,9 @@ describe('Edge Cases Test', () => {
     it('should submit and read a transaction with MemoType + MemoData', async () => {
       console.log('\n==================== PHASE 5: MEMO ====================');
 
-      const payTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
+      // Memo transactions require custom construction (no helper exists)
+      const payTx = await client.autofill({
+        TransactionType: 'Payment' as const,
         Account: aliceWallet.address,
         Destination: bobWallet.address,
         Amount: {
@@ -206,21 +191,13 @@ describe('Edge Cases Test', () => {
       const smallAmount = '100';
       await mintTokens(issuerWallet, carolWallet, smallAmount);
 
-      const redeemTx: Payment = await client.autofill({
-        TransactionType: 'Payment',
-        Account: carolWallet.address,
-        Destination: issuerWallet.address,
-        Amount: {
-          currency: currencyToHex(CURRENCY),
-          issuer: issuerWallet.address,
-          value: smallAmount,
-        },
-      });
-      await submitTransaction(client, redeemTx, carolWallet);
+      // Redeem tokens back to issuer
+      await transferTokens(carolWallet, issuerWallet, smallAmount, issuerWallet);
 
       const balanceAfterRedeem = await getTokenBalance(carolWallet, issuerWallet);
       expect(balanceAfterRedeem).toBe('0');
 
+      // Delete trust line by setting limit to 0
       const deleteTrustTx = await client.autofill({
         TransactionType: 'TrustSet' as const,
         Account: carolWallet.address,

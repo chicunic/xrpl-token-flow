@@ -1,5 +1,6 @@
 import { expect } from 'vitest';
 import {
+  type AccountDelete,
   type AccountLinesTrustline,
   type AccountSet,
   AccountSetAsfFlags,
@@ -158,4 +159,66 @@ export async function mintTokens(issuer: Wallet, dest: Wallet, amount: string, c
 export async function getTokenBalance(wallet: Wallet, issuer: Wallet, currency = CURRENCY): Promise<string> {
   const line = await findTrustLine(wallet, issuer, currency);
   return line?.balance ?? '0';
+}
+
+// ─── Account Cleanup (AccountDelete) ───────────────────────────────────────
+
+// Delete all trust lines for a wallet, returning tokens to issuer if needed
+export async function deleteTrustLines(client: Client, wallet: Wallet): Promise<void> {
+  const accountLines = await client.request({
+    command: 'account_lines',
+    account: wallet.address,
+  });
+  for (const line of accountLines.result.lines) {
+    const balance = Number(line.balance);
+    // If positive balance, send tokens back to issuer
+    if (balance > 0) {
+      const payTx: Payment = await client.autofill({
+        TransactionType: 'Payment',
+        Account: wallet.address,
+        Destination: line.account,
+        Amount: {
+          currency: line.currency,
+          issuer: line.account,
+          value: line.balance,
+        },
+      });
+      const signed = wallet.sign(payTx);
+      await client.submitAndWait(signed.tx_blob);
+    }
+    // Set trust line limit to 0 to delete it
+    const trustTx: TrustSet = await client.autofill({
+      TransactionType: 'TrustSet',
+      Account: wallet.address,
+      LimitAmount: {
+        currency: line.currency,
+        issuer: line.account,
+        value: '0',
+      },
+    });
+    const signed = wallet.sign(trustTx);
+    await client.submitAndWait(signed.tx_blob);
+  }
+}
+
+// Delete account and send remaining XRP to fund wallet (requires 256 ledgers since creation)
+export async function deleteAccount(client: Client, wallet: Wallet): Promise<void> {
+  const fundSecret = process.env.FUND_SECRET;
+  if (!fundSecret) return;
+  const fundAddress = Wallet.fromSecret(fundSecret).address;
+
+  try {
+    await deleteTrustLines(client, wallet);
+
+    const tx: AccountDelete = await client.autofill({
+      TransactionType: 'AccountDelete',
+      Account: wallet.address,
+      Destination: fundAddress,
+    });
+    const signed = wallet.sign(tx);
+    await client.submitAndWait(signed.tx_blob);
+    console.log(`♻️ Deleted account ${wallet.address} and reclaimed XRP to fund`);
+  } catch (error) {
+    console.log(`⚠️ Failed to delete account ${wallet.address}: ${error}`);
+  }
 }
