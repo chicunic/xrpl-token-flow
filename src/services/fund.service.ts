@@ -2,6 +2,7 @@ import 'dotenv/config';
 import {
   type Client,
   dropsToXrp,
+  ECDSA,
   type Payment,
   type TransactionMetadata,
   Wallet,
@@ -12,13 +13,23 @@ import { getXRPLClient } from '../config/xrpl.config';
 
 const XRP_MINIMUM_DROPS = BigInt(xrpToDrops(2));
 
+// Genesis account on standalone rippled (local mode)
+const GENESIS_SEED = 'snoPBrXtMeMyMHUVTgbuqAfg1SUTb';
+
 interface ActNotFoundError extends XrplError {
   data?: {
     error?: string;
   };
 }
 
+function isLocalNetwork(): boolean {
+  return process.env.XRPL_NETWORK === 'local';
+}
+
 function getFundWallet(): Wallet {
+  if (isLocalNetwork()) {
+    return Wallet.fromSeed(GENESIS_SEED, { algorithm: ECDSA.secp256k1 });
+  }
   const secret = process.env.FUND_SECRET;
   if (!secret) {
     throw new Error('FUND_SECRET is not set in .env');
@@ -77,6 +88,11 @@ export async function fundWallet(wallet: Wallet, { amount }: { amount: string })
   }
   console.log(`📤 Requested transfer: ${dropsToXrp(amountDrops)} XRP to ${targetAddress}`);
   if (currentBalanceDrops < amountDrops + XRP_MINIMUM_DROPS) {
+    if (isLocalNetwork()) {
+      throw new Error(
+        `Insufficient genesis balance. Need: ${dropsToXrp(amountDrops + XRP_MINIMUM_DROPS)} XRP, Have: ${dropsToXrp(currentBalanceDrops)} XRP`
+      );
+    }
     console.log(
       `⚠️  Insufficient balance. Need: ${dropsToXrp(amountDrops + XRP_MINIMUM_DROPS)} XRP, Have: ${dropsToXrp(currentBalanceDrops)} XRP`
     );

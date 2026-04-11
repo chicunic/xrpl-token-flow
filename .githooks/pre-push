@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pre-push hook for XRPL Stablecoin Flow
+# Pre-push hook for XRPL Token Flow
 # This hook runs before pushing to remote repository
 
 set -e

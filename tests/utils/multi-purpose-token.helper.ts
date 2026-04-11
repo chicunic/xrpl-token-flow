@@ -16,10 +16,11 @@ import { submitTransaction } from './test.helper';
 
 export const MPT_METADATA = {
   ticker: 'TUSD',
-  name: 'Test USD Stablecoin',
-  desc: 'A test stablecoin for integration testing',
+  name: 'Test USD Token',
+  desc: 'A test token for integration testing',
   icon: 'https://example.com/tusd-icon.png',
   asset_class: 'rwa',
+  asset_subclass: 'stablecoin',
   issuer_name: 'Test Issuer',
 };
 

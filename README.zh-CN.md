@@ -1,4 +1,4 @@
-# XRPL 稳定币流
+# XRPL Token Flow
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
@@ -8,26 +8,26 @@
 [![Biome](https://img.shields.io/badge/Biome-2.x-60a5fa.svg)](https://biomejs.dev/)
 [![pnpm](https://img.shields.io/badge/pnpm-11.x-f69220.svg)](https://pnpm.io/)
 
-一个全面的 TypeScript 测试框架，用于 XRPL (XRP 账本) 稳定币操作，具有针对各种 XRPL 账户标志和功能的广泛集成测试。
+一个全面的 TypeScript 测试框架，用于 XRPL (XRP 账本) 代币操作，具有针对各种 XRPL 账户标志和功能的广泛集成测试。
 
 ## 概述
 
-本项目为 XRPL 稳定币流提供强大的测试环境，专注于账户配置、信任线管理、代币发行和支付操作。包含针对关键 XRPL 功能 (如 RequireAuth、DepositAuth、GlobalFreeze 和其他账户标志) 的自动化测试。
+本项目为 XRPL 代币流提供强大的测试环境，专注于账户配置、信任线管理、代币发行和支付操作。包含针对关键 XRPL 功能 (如 RequireAuth、DepositAuth、GlobalFreeze 和其他账户标志) 的自动化测试。
 
 ## 特性
 
-- **全面的 XRPL 集成测试**: 覆盖所有主要 XRPL 稳定币操作的测试套件
+- **全面的 XRPL 集成测试**: 覆盖所有主要 XRPL 代币操作的测试套件
 - **账户标志测试**: RequireAuth、DepositAuth、GlobalFreeze、DisallowXRP 等
 - **信任线管理**: 创建、授权和追回功能
 - **支付流程测试**: 代币转账、XRP 支付和支票操作
 - **自动钱包资助**: 智能钱包资助，具有余额检查和水龙头集成
 - **并行操作优化**: 使用 Promise.all 优化异步操作
-- **网络灵活性**: 支持 devnet、testnet 和自定义 XRPL 端点
+- **网络灵活性**: 支持 devnet、testnet、本地 Docker 和自定义 XRPL 端点
 
 ## 项目结构
 
 ```txt
-xrpl-stablecoin-flow/
+xrpl-token-flow/
 ├── src/
 │   ├── config/
 │   │   └── xrpl.config.ts              # XRPL 客户端配置
@@ -50,6 +50,7 @@ xrpl-stablecoin-flow/
 
 - **Node.js**: >=25
 - **pnpm**: 包管理器
+- **Docker**: 本地网络测试需要
 
 ## 快速开始
 
@@ -69,23 +70,40 @@ cp .env.example .env
 
 ```env
 # XRPL 配置
-XRPL_NETWORK=devnet                                  # mainnet | testnet | devnet
+XRPL_NETWORK=devnet                                  # mainnet | testnet | devnet | local
 # XRPL_ENDPOINT=wss://s.devnet.rippletest.net:51233  # 自定义端点 (可选)
 
-FUND_SECRET=<your-secret>                              # 钱包资助密钥
+FUND_SECRET=<your-secret>                              # 钱包资助密钥 (local 网络不需要)
+```
+
+## 本地网络测试
+
+使用本地 Docker standalone rippled 运行测试 — 无需水龙头或密钥。本地节点使用 genesis 账户进行钱包资助，并通过 `docker/rippled.cfg` 中的 `[voting]` 配置与主网一致的 reserve (1 XRP base / 0.2 XRP owner) ([rippled 1.11.0+](https://github.com/XRPLF/rippled/pull/4319))。
+
+```bash
+# 启动 rippled 容器
+pnpm docker:up
+
+# 使用本地网络运行测试
+pnpm test:local
+
+# 停止 rippled 容器
+pnpm docker:down
 ```
 
 ## 脚本
 
 | 命令 | 描述 |
 | - | - |
-| `pnpm test` | 运行所有测试 |
+| `pnpm test` | 运行所有测试 (devnet) |
+| `pnpm test:local` | 使用本地 Docker rippled 运行测试 |
 | `pnpm test <name>` | 运行指定测试套件 |
 | `pnpm test:watch` | 以监听模式运行测试 |
 | `pnpm test:coverage` | 运行测试并生成覆盖率报告 |
-| `pnpm typecheck` | TypeScript 类型检查 |
 | `pnpm check` | 运行类型检查 + Biome 代码检查 |
 | `pnpm fix` | 自动修复代码检查和格式化问题 |
+| `pnpm docker:up` | 启动本地 rippled 容器 |
+| `pnpm docker:down` | 停止本地 rippled 容器 |
 
 ## 测试套件
 

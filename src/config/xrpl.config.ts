@@ -9,6 +9,7 @@ const defaultEndpoints: Record<string, string> = {
   mainnet: 'wss://xrplcluster.com',
   testnet: 'wss://s.altnet.rippletest.net:51233',
   devnet: DEFAULT_DEVNET_ENDPOINT,
+  local: 'ws://localhost:6006',
 };
 
 export async function initializeXRPLClient(): Promise<void> {

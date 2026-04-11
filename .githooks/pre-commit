@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pre-commit hook for XRPL Stablecoin Flow
+# Pre-commit hook for XRPL Token Flow
 # This hook runs before every commit to ensure code quality
 
 set -e

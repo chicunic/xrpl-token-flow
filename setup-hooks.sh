@@ -16,7 +16,7 @@ if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
     exit 0
 fi
 
-echo -e "${BLUE}🔧 Setting up Git hooks for XRPL Stablecoin Flow...${NC}"
+echo -e "${BLUE}🔧 Setting up Git hooks for XRPL Token Flow...${NC}"
 
 # Check if we're in a git repository
 if [ ! -d .git ]; then

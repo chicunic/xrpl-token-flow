@@ -1,0 +1,19 @@
+# Standalone rippled for local testing
+# Usage: docker compose up -d
+
+services:
+  rippled:
+    image: xrpllabsofficial/xrpld:latest
+    platform: linux/amd64
+    command: ["-a", "--start"]
+    ports:
+      - "6006:6006"
+    volumes:
+      - ./docker/rippled.cfg:/config/rippled.cfg:ro
+      - ./docker/validators.txt:/config/validators.txt:ro
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/6006"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
