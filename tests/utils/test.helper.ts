@@ -15,8 +15,8 @@ import {
 } from 'xrpl';
 import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
 
-import { getXRPLClient } from '../../src/config/xrpl.config';
-import { fundWallet } from '../../src/services/fund.service';
+import { getXRPLClient } from '@/config/xrpl.config';
+import { fundWallet } from '@/services/fund.service';
 import { CURRENCY, DOMAIN, TRUST_AMOUNT } from './data';
 
 export function currencyToHex(currency: string): string {
@@ -28,12 +28,12 @@ export async function submitTransaction(
   tx: SubmittableTransaction,
   signer: Wallet,
   expectedResult = 'tesSUCCESS'
-): Promise<string> {
+): Promise<TransactionMetadata> {
   const signed = signer.sign(tx);
   const result = await client.submitAndWait(signed.tx_blob);
-  const txResult = (result.result.meta as TransactionMetadata)?.TransactionResult;
-  expect(txResult).toBe(expectedResult);
-  return txResult!;
+  const meta = result.result.meta as TransactionMetadata;
+  expect(meta.TransactionResult).toBe(expectedResult);
+  return meta;
 }
 
 export async function getAccountFlags(client: Client, address: string): Promise<bigint> {
@@ -183,8 +183,7 @@ export async function deleteTrustLines(client: Client, wallet: Wallet): Promise<
           value: line.balance,
         },
       });
-      const signed = wallet.sign(payTx);
-      await client.submitAndWait(signed.tx_blob);
+      await submitTransaction(client, payTx, wallet);
     }
     // Set trust line limit to 0 to delete it
     const trustTx: TrustSet = await client.autofill({
@@ -196,8 +195,7 @@ export async function deleteTrustLines(client: Client, wallet: Wallet): Promise<
         value: '0',
       },
     });
-    const signed = wallet.sign(trustTx);
-    await client.submitAndWait(signed.tx_blob);
+    await submitTransaction(client, trustTx, wallet);
   }
 }
 

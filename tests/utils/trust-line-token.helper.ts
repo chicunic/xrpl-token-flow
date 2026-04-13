@@ -7,7 +7,6 @@ import type {
   CreatedNode,
   DepositPreauth,
   Payment,
-  TransactionMetadata,
   TrustSet,
   Wallet,
 } from 'xrpl';
@@ -260,10 +259,7 @@ export async function createCheck(
       value: amount,
     },
   });
-  const signed = sender.sign(tx);
-  const result = await client.submitAndWait(signed.tx_blob);
-  const meta = result.result.meta as TransactionMetadata;
-  expect(meta.TransactionResult).toBe('tesSUCCESS');
+  const meta = await submitTransaction(client, tx, sender);
 
   const createdNode = meta.AffectedNodes?.find(node => (node as CreatedNode).CreatedNode?.LedgerEntryType === 'Check');
   const checkId = (createdNode as CreatedNode)?.CreatedNode?.LedgerIndex;
