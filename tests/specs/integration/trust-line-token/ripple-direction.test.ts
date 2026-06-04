@@ -1,8 +1,8 @@
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
-import { createTrustLine, findTrustLine, getTokenBalance, mintTokens, setupWallets } from '@tests/utils/test.helper';
-import { clearNoRippleOnTrustLine, setupIssuerWithDomain, transferTokens } from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from "@tests/utils/data";
+import { createTrustLine, findTrustLine, getTokenBalance, mintTokens, setupWallets } from "@tests/utils/test.helper";
+import { clearNoRippleOnTrustLine, setupIssuerWithDomain, transferTokens } from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * Ripple Direction Test (without DefaultRipple)
@@ -20,7 +20,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   userB (no_ripple_peer=false) -> userA (no_ripple_peer=true)  : OK    (source allows rippling)
  *   userB (no_ripple_peer=false) -> userB (no_ripple_peer=false) : OK    (both sides allow rippling)
  */
-describe('Trust Line Token Ripple Direction', () => {
+describe("Trust Line Token Ripple Direction", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
@@ -32,7 +32,7 @@ describe('Trust Line Token Ripple Direction', () => {
   let userB2: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting Ripple Direction Test (without DefaultRipple)');
+    console.log("🚀 Starting Ripple Direction Test (without DefaultRipple)");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -41,13 +41,13 @@ describe('Trust Line Token Ripple Direction', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup Issuer WITHOUT DefaultRipple', () => {
-    it('should create and fund all wallets', async () => {
-      console.log('\n==================== PHASE 1: SETUP ====================');
+  describe("Phase 1: Setup Issuer WITHOUT DefaultRipple", () => {
+    it("should create and fund all wallets", async () => {
+      console.log("\n==================== PHASE 1: SETUP ====================");
 
       const wallets = await setupWallets(5);
       issuerWallet = wallets[0]!;
@@ -63,16 +63,16 @@ describe('Trust Line Token Ripple Direction', () => {
       console.log(`✅ userB2 (no_ripple_peer=false): ${userB2.address}`);
     }, 80000);
 
-    it('should configure issuer WITHOUT DefaultRipple', async () => {
+    it("should configure issuer WITHOUT DefaultRipple", async () => {
       await setupIssuerWithDomain(issuerWallet);
 
-      console.log('✅ Issuer configured WITHOUT DefaultRipple');
+      console.log("✅ Issuer configured WITHOUT DefaultRipple");
     }, 20000);
   });
 
-  describe('Phase 2: Create Trust Lines', () => {
-    it('should create userA1 trust line (no_ripple_peer=true)', async () => {
-      console.log('\n==================== PHASE 2: TRUST LINES ====================');
+  describe("Phase 2: Create Trust Lines", () => {
+    it("should create userA1 trust line (no_ripple_peer=true)", async () => {
+      console.log("\n==================== PHASE 2: TRUST LINES ====================");
 
       await createTrustLine(userA1, issuerWallet);
 
@@ -81,10 +81,10 @@ describe('Trust Line Token Ripple Direction', () => {
       expect(line?.no_ripple).toBeFalsy();
       expect(line?.no_ripple_peer).toBeTruthy();
 
-      console.log('✅ userA1 trust line created (no_ripple_peer=true)');
+      console.log("✅ userA1 trust line created (no_ripple_peer=true)");
     }, 20000);
 
-    it('should create userA2 trust line (no_ripple_peer=true)', async () => {
+    it("should create userA2 trust line (no_ripple_peer=true)", async () => {
       await createTrustLine(userA2, issuerWallet);
 
       const line = await findTrustLine(userA2, issuerWallet);
@@ -92,10 +92,10 @@ describe('Trust Line Token Ripple Direction', () => {
       expect(line?.no_ripple).toBeFalsy();
       expect(line?.no_ripple_peer).toBeTruthy();
 
-      console.log('✅ userA2 trust line created (no_ripple_peer=true)');
+      console.log("✅ userA2 trust line created (no_ripple_peer=true)");
     }, 20000);
 
-    it('should create userB1 trust line and clear NoRipple (no_ripple_peer=false)', async () => {
+    it("should create userB1 trust line and clear NoRipple (no_ripple_peer=false)", async () => {
       await createTrustLine(userB1, issuerWallet);
       await clearNoRippleOnTrustLine(issuerWallet, userB1);
 
@@ -104,10 +104,10 @@ describe('Trust Line Token Ripple Direction', () => {
       expect(line?.no_ripple).toBeFalsy();
       expect(line?.no_ripple_peer).toBeFalsy();
 
-      console.log('✅ userB1 trust line created + issuer ClearNoRipple (no_ripple_peer=false)');
+      console.log("✅ userB1 trust line created + issuer ClearNoRipple (no_ripple_peer=false)");
     }, 30000);
 
-    it('should create userB2 trust line and clear NoRipple (no_ripple_peer=false)', async () => {
+    it("should create userB2 trust line and clear NoRipple (no_ripple_peer=false)", async () => {
       await createTrustLine(userB2, issuerWallet);
       await clearNoRippleOnTrustLine(issuerWallet, userB2);
 
@@ -116,13 +116,13 @@ describe('Trust Line Token Ripple Direction', () => {
       expect(line?.no_ripple).toBeFalsy();
       expect(line?.no_ripple_peer).toBeFalsy();
 
-      console.log('✅ userB2 trust line created + issuer ClearNoRipple (no_ripple_peer=false)');
+      console.log("✅ userB2 trust line created + issuer ClearNoRipple (no_ripple_peer=false)");
     }, 30000);
   });
 
-  describe('Phase 3: Mint Tokens', () => {
-    it('should mint tokens to all users', async () => {
-      console.log('\n==================== PHASE 3: MINT TOKENS ====================');
+  describe("Phase 3: Mint Tokens", () => {
+    it("should mint tokens to all users", async () => {
+      console.log("\n==================== PHASE 3: MINT TOKENS ====================");
 
       await mintTokens(issuerWallet, userA1, MINT_AMOUNT);
       await mintTokens(issuerWallet, userA2, MINT_AMOUNT);
@@ -138,22 +138,22 @@ describe('Trust Line Token Ripple Direction', () => {
     }, 60000);
   });
 
-  describe('Phase 4: Transfer Direction Combinations', () => {
-    it('should FAIL: userA1 (no_ripple_peer=true) -> userA2 (no_ripple_peer=true)', async () => {
-      console.log('\n==================== PHASE 4: TRANSFER COMBINATIONS ====================');
+  describe("Phase 4: Transfer Direction Combinations", () => {
+    it("should FAIL: userA1 (no_ripple_peer=true) -> userA2 (no_ripple_peer=true)", async () => {
+      console.log("\n==================== PHASE 4: TRANSFER COMBINATIONS ====================");
 
       const a1Before = await getTokenBalance(userA1, issuerWallet);
       const a2Before = await getTokenBalance(userA2, issuerWallet);
 
-      await transferTokens(userA1, userA2, TRANSFER_AMOUNT, issuerWallet, 'tecPATH_DRY');
+      await transferTokens(userA1, userA2, TRANSFER_AMOUNT, issuerWallet, "tecPATH_DRY");
 
       expect(await getTokenBalance(userA1, issuerWallet)).toBe(a1Before);
       expect(await getTokenBalance(userA2, issuerWallet)).toBe(a2Before);
 
-      console.log('✅ Transfer correctly failed: tecPATH_DRY (both sides block rippling)');
+      console.log("✅ Transfer correctly failed: tecPATH_DRY (both sides block rippling)");
     }, 30000);
 
-    it('should OK: userA1 (no_ripple_peer=true) -> userB1 (no_ripple_peer=false)', async () => {
+    it("should OK: userA1 (no_ripple_peer=true) -> userB1 (no_ripple_peer=false)", async () => {
       const a1Before = BigInt(await getTokenBalance(userA1, issuerWallet));
       const b1Before = BigInt(await getTokenBalance(userB1, issuerWallet));
 
@@ -165,7 +165,7 @@ describe('Trust Line Token Ripple Direction', () => {
       console.log(`✅ Transfer succeeded: userA1 -> userB1 (${TRANSFER_AMOUNT} ${CURRENCY})`);
     }, 30000);
 
-    it('should OK: userB1 (no_ripple_peer=false) -> userA2 (no_ripple_peer=true)', async () => {
+    it("should OK: userB1 (no_ripple_peer=false) -> userA2 (no_ripple_peer=true)", async () => {
       const b1Before = BigInt(await getTokenBalance(userB1, issuerWallet));
       const a2Before = BigInt(await getTokenBalance(userA2, issuerWallet));
 
@@ -177,7 +177,7 @@ describe('Trust Line Token Ripple Direction', () => {
       console.log(`✅ Transfer succeeded: userB1 -> userA2 (${TRANSFER_AMOUNT} ${CURRENCY})`);
     }, 30000);
 
-    it('should OK: userB1 (no_ripple_peer=false) -> userB2 (no_ripple_peer=false)', async () => {
+    it("should OK: userB1 (no_ripple_peer=false) -> userB2 (no_ripple_peer=false)", async () => {
       const b1Before = BigInt(await getTokenBalance(userB1, issuerWallet));
       const b2Before = BigInt(await getTokenBalance(userB2, issuerWallet));
 

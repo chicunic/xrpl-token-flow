@@ -1,4 +1,4 @@
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from "@tests/utils/data";
 import {
   createTrustLine,
   currencyToHex,
@@ -6,12 +6,12 @@ import {
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-} from '@tests/utils/test.helper';
-import { transferTokens } from '@tests/utils/trust-line-token.helper';
-import type { AccountLinesTrustline, Client, Wallet } from 'xrpl';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/test.helper";
+import { transferTokens } from "@tests/utils/trust-line-token.helper";
+import type { AccountLinesTrustline, Client, Wallet } from "xrpl";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
-describe('Trust Line Token Multi-Issuer', () => {
+describe("Trust Line Token Multi-Issuer", () => {
   let client: Client;
   let issuerAWallet: Wallet;
   let issuerBWallet: Wallet;
@@ -19,7 +19,7 @@ describe('Trust Line Token Multi-Issuer', () => {
   let bobWallet: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting Multi-Issuer Test');
+    console.log("🚀 Starting Multi-Issuer Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -28,13 +28,13 @@ describe('Trust Line Token Multi-Issuer', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup - Two issuers, both issuing USD', () => {
-    it('should create and configure all wallets', async () => {
-      console.log('\n==================== PHASE 1: SETUP ====================');
+  describe("Phase 1: Setup - Two issuers, both issuing USD", () => {
+    it("should create and configure all wallets", async () => {
+      console.log("\n==================== PHASE 1: SETUP ====================");
 
       const wallets = await setupWallets(4);
       issuerAWallet = wallets[0]!;
@@ -52,9 +52,9 @@ describe('Trust Line Token Multi-Issuer', () => {
     }, 120000);
   });
 
-  describe('Phase 2: Trust lines to both issuers and receive tokens', () => {
-    it('should create trust lines from Alice to both issuers', async () => {
-      console.log('\n==================== PHASE 2: TRUST LINES TO BOTH ISSUERS ====================');
+  describe("Phase 2: Trust lines to both issuers and receive tokens", () => {
+    it("should create trust lines from Alice to both issuers", async () => {
+      console.log("\n==================== PHASE 2: TRUST LINES TO BOTH ISSUERS ====================");
 
       await createTrustLine(aliceWallet, issuerAWallet);
       await createTrustLine(aliceWallet, issuerBWallet);
@@ -63,20 +63,20 @@ describe('Trust Line Token Multi-Issuer', () => {
       await createTrustLine(bobWallet, issuerBWallet);
 
       const aliceAccountLines = await client.request({
-        command: 'account_lines',
+        command: "account_lines",
         account: aliceWallet.address,
       });
 
       const aliceUsdLines = aliceAccountLines.result.lines.filter(
-        (l: AccountLinesTrustline) => l.currency === currencyToHex(CURRENCY)
+        (l: AccountLinesTrustline) => l.currency === currencyToHex(CURRENCY),
       );
       expect(aliceUsdLines.length).toBe(2);
 
-      console.log('✅ Alice has trust lines to both IssuerA and IssuerB for USD');
+      console.log("✅ Alice has trust lines to both IssuerA and IssuerB for USD");
     }, 60000);
 
-    it('should receive USD from both issuers', async () => {
-      console.log('💰 Minting USD from both issuers...');
+    it("should receive USD from both issuers", async () => {
+      console.log("💰 Minting USD from both issuers...");
 
       await mintTokens(issuerAWallet, aliceWallet, MINT_AMOUNT);
       await mintTokens(issuerBWallet, aliceWallet, MINT_AMOUNT);
@@ -92,9 +92,9 @@ describe('Trust Line Token Multi-Issuer', () => {
     }, 30000);
   });
 
-  describe('Phase 3: Two issuers USD are distinct assets', () => {
-    it('should transfer IssuerA USD without affecting IssuerB USD', async () => {
-      console.log('\n==================== PHASE 3: DISTINCT ASSETS ====================');
+  describe("Phase 3: Two issuers USD are distinct assets", () => {
+    it("should transfer IssuerA USD without affecting IssuerB USD", async () => {
+      console.log("\n==================== PHASE 3: DISTINCT ASSETS ====================");
 
       const aliceBalanceABefore = await getTokenBalance(aliceWallet, issuerAWallet);
       const aliceBalanceBBefore = await getTokenBalance(aliceWallet, issuerBWallet);
@@ -111,24 +111,24 @@ describe('Trust Line Token Multi-Issuer', () => {
       // IssuerB USD unchanged
       expect(aliceBalanceBAfter).toBe(aliceBalanceBBefore);
 
-      console.log('✅ IssuerA USD transferred without affecting IssuerB USD');
+      console.log("✅ IssuerA USD transferred without affecting IssuerB USD");
     }, 30000);
 
-    it('should not be able to pay IssuerA USD using IssuerB USD balance', async () => {
-      console.log('🙅 Testing cross-issuer payment rejection...');
+    it("should not be able to pay IssuerA USD using IssuerB USD balance", async () => {
+      console.log("🙅 Testing cross-issuer payment rejection...");
 
       const aliceBalanceA = await getTokenBalance(aliceWallet, issuerAWallet);
       const overAmount = String(Number(aliceBalanceA) + 1000);
 
-      await transferTokens(aliceWallet, bobWallet, overAmount, issuerAWallet, 'tecPATH_PARTIAL');
+      await transferTokens(aliceWallet, bobWallet, overAmount, issuerAWallet, "tecPATH_PARTIAL");
 
-      console.log('✅ Cross-issuer payment correctly rejected: tecPATH_PARTIAL');
+      console.log("✅ Cross-issuer payment correctly rejected: tecPATH_PARTIAL");
     }, 30000);
   });
 
-  describe('Phase 4: Rippling behavior with multi-issuer', () => {
-    it('should demonstrate rippling through Alice between two issuers', async () => {
-      console.log('\n==================== PHASE 4: RIPPLING BEHAVIOR ====================');
+  describe("Phase 4: Rippling behavior with multi-issuer", () => {
+    it("should demonstrate rippling through Alice between two issuers", async () => {
+      console.log("\n==================== PHASE 4: RIPPLING BEHAVIOR ====================");
 
       await mintTokens(issuerBWallet, bobWallet, MINT_AMOUNT);
 
@@ -145,18 +145,18 @@ describe('Trust Line Token Multi-Issuer', () => {
       console.log(`✅ Alice IssuerB balance: ${aliceBalanceB}`);
 
       const aliceLines = await client.request({
-        command: 'account_lines',
+        command: "account_lines",
         account: aliceWallet.address,
       });
 
       const usdLines = aliceLines.result.lines.filter(
-        (l: AccountLinesTrustline) => l.currency === currencyToHex(CURRENCY)
+        (l: AccountLinesTrustline) => l.currency === currencyToHex(CURRENCY),
       );
 
       expect(usdLines.length).toBe(2);
 
-      const issuerALine = usdLines.find(l => l.account === issuerAWallet.address);
-      const issuerBLine = usdLines.find(l => l.account === issuerBWallet.address);
+      const issuerALine = usdLines.find((l) => l.account === issuerAWallet.address);
+      const issuerBLine = usdLines.find((l) => l.account === issuerBWallet.address);
 
       expect(issuerALine).toBeDefined();
       expect(issuerBLine).toBeDefined();
@@ -164,7 +164,7 @@ describe('Trust Line Token Multi-Issuer', () => {
 
       console.log(`✅ Alice IssuerA USD: ${issuerALine?.balance}`);
       console.log(`✅ Alice IssuerB USD: ${issuerBLine?.balance}`);
-      console.log('✅ Multi-issuer same currency: balances tracked independently');
+      console.log("✅ Multi-issuer same currency: balances tracked independently");
     }, 60000);
   });
 });

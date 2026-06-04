@@ -1,25 +1,25 @@
-import { XRP_TRANSFER_AMOUNT } from '@tests/utils/data';
-import { setupWallets } from '@tests/utils/test.helper';
+import { XRP_TRANSFER_AMOUNT } from "@tests/utils/data";
+import { setupWallets } from "@tests/utils/test.helper";
 import {
   clearAccountFlag,
   getXRPBalance,
   setAccountFlag,
   transferXRP,
   verifyAccountFlag,
-} from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { AccountSetAsfFlags } from 'xrpl';
-import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { AccountSetAsfFlags } from "xrpl";
+import { AccountRootFlags } from "xrpl/dist/npm/models/ledger";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
-describe('Trust Line Token DisallowXRP', () => {
+describe("Trust Line Token DisallowXRP", () => {
   let client: Client;
 
   let aliceWallet: Wallet;
   let bobWallet: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting DisallowXRP Flag Test');
+    console.log("🚀 Starting DisallowXRP Flag Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -28,13 +28,13 @@ describe('Trust Line Token DisallowXRP', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup - Create Test Accounts', () => {
-    it('should create and fund all wallets', async () => {
-      console.log('\n==================== PHASE 1: SETUP - CREATE TEST ACCOUNTS ====================');
+  describe("Phase 1: Setup - Create Test Accounts", () => {
+    it("should create and fund all wallets", async () => {
+      console.log("\n==================== PHASE 1: SETUP - CREATE TEST ACCOUNTS ====================");
 
       const wallets = await setupWallets(2);
       aliceWallet = wallets[0]!;
@@ -45,18 +45,18 @@ describe('Trust Line Token DisallowXRP', () => {
     }, 40000);
   });
 
-  describe('Phase 2: Enable DisallowXRP on Bob', () => {
-    it('should enable DisallowXRP flag on Bob', async () => {
-      console.log('\n==================== PHASE 2: ENABLE DISALLOWXRP ON BOB ====================');
+  describe("Phase 2: Enable DisallowXRP on Bob", () => {
+    it("should enable DisallowXRP flag on Bob", async () => {
+      console.log("\n==================== PHASE 2: ENABLE DISALLOWXRP ON BOB ====================");
 
       await setAccountFlag(bobWallet, AccountSetAsfFlags.asfDisallowXRP);
       await verifyAccountFlag(bobWallet.address, AccountRootFlags.lsfDisallowXRP, true);
 
-      console.log('✅ DisallowXRP flag enabled on Bob successfully');
+      console.log("✅ DisallowXRP flag enabled on Bob successfully");
     }, 20000);
 
-    it('should succeed Alice -> Bob XRP transfer with DisallowXRP enabled (advisory only)', async () => {
-      console.log('ℹ️ Testing Alice -> Bob XRP transfer with DisallowXRP enabled (advisory flag)...');
+    it("should succeed Alice -> Bob XRP transfer with DisallowXRP enabled (advisory only)", async () => {
+      console.log("ℹ️ Testing Alice -> Bob XRP transfer with DisallowXRP enabled (advisory flag)...");
 
       const bobBalanceBefore = await getXRPBalance(bobWallet);
 
@@ -67,13 +67,13 @@ describe('Trust Line Token DisallowXRP', () => {
       expect(bobBalanceAfter).toBeGreaterThan(bobBalanceBefore);
 
       console.log(
-        `ℹ️ DisallowXRP flag is advisory only - XRPL protocol allows XRP transfers to prevent accounts becoming unusable`
+        `ℹ️ DisallowXRP flag is advisory only - XRPL protocol allows XRP transfers to prevent accounts becoming unusable`,
       );
       console.log(`✅ XRP transfer succeeded: Alice -> Bob (${XRP_TRANSFER_AMOUNT} XRP)`);
     }, 30000);
 
-    it('should allow Bob to send XRP to others with DisallowXRP enabled', async () => {
-      console.log('💸 Testing Bob -> Alice XRP transfer with Bob having DisallowXRP...');
+    it("should allow Bob to send XRP to others with DisallowXRP enabled", async () => {
+      console.log("💸 Testing Bob -> Alice XRP transfer with Bob having DisallowXRP...");
 
       const aliceBalanceBefore = await getXRPBalance(aliceWallet);
 
@@ -82,22 +82,22 @@ describe('Trust Line Token DisallowXRP', () => {
       const aliceBalanceAfter = await getXRPBalance(aliceWallet);
       expect(aliceBalanceAfter).toBeGreaterThan(aliceBalanceBefore);
 
-      console.log('✅ Bob can still send XRP to others with DisallowXRP enabled');
+      console.log("✅ Bob can still send XRP to others with DisallowXRP enabled");
     }, 30000);
   });
 
-  describe('Phase 3: Disable DisallowXRP', () => {
-    it('should disable DisallowXRP flag on Bob', async () => {
-      console.log('\n==================== PHASE 3: DISABLE DISALLOWXRP ====================');
+  describe("Phase 3: Disable DisallowXRP", () => {
+    it("should disable DisallowXRP flag on Bob", async () => {
+      console.log("\n==================== PHASE 3: DISABLE DISALLOWXRP ====================");
 
       await clearAccountFlag(bobWallet, AccountSetAsfFlags.asfDisallowXRP);
       await verifyAccountFlag(bobWallet.address, AccountRootFlags.lsfDisallowXRP, false);
 
-      console.log('✅ DisallowXRP flag disabled on Bob successfully');
+      console.log("✅ DisallowXRP flag disabled on Bob successfully");
     }, 20000);
 
-    it('should succeed Alice -> Bob XRP transfer after disabling DisallowXRP', async () => {
-      console.log('✅ Testing Alice -> Bob XRP transfer after disabling DisallowXRP...');
+    it("should succeed Alice -> Bob XRP transfer after disabling DisallowXRP", async () => {
+      console.log("✅ Testing Alice -> Bob XRP transfer after disabling DisallowXRP...");
 
       const bobBalanceBefore = await getXRPBalance(bobWallet);
 

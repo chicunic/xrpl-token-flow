@@ -1,4 +1,4 @@
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from "@tests/utils/data";
 import {
   createTrustLine,
   findTrustLine,
@@ -6,11 +6,11 @@ import {
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-} from '@tests/utils/test.helper';
-import { setupIssuerWithDomain, transferTokens, verifyAccountFlag } from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/test.helper";
+import { setupIssuerWithDomain, transferTokens, verifyAccountFlag } from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { AccountRootFlags } from "xrpl/dist/npm/models/ledger";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * DefaultRipple Flag Test
@@ -20,7 +20,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   Phase 2: Test Issuer WITH DefaultRipple — Alice->Bob transfer succeeds
  *   Phase 3: Test Issuer WITHOUT DefaultRipple — Alice->Bob transfer fails (tecPATH_DRY)
  */
-describe('Trust Line Token DefaultRipple', () => {
+describe("Trust Line Token DefaultRipple", () => {
   let client: Client;
 
   let aliceWallet: Wallet;
@@ -29,7 +29,7 @@ describe('Trust Line Token DefaultRipple', () => {
   let issuerWithoutDefaultRipple: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting DefaultRipple Flag Test');
+    console.log("🚀 Starting DefaultRipple Flag Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -38,13 +38,13 @@ describe('Trust Line Token DefaultRipple', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup - Create Issuers and User Accounts', () => {
-    it('should create and fund all wallets', async () => {
-      console.log('\n==================== PHASE 1: SETUP - CREATE ISSUERS AND USER ACCOUNTS ====================');
+  describe("Phase 1: Setup - Create Issuers and User Accounts", () => {
+    it("should create and fund all wallets", async () => {
+      console.log("\n==================== PHASE 1: SETUP - CREATE ISSUERS AND USER ACCOUNTS ====================");
 
       const wallets = await setupWallets(4);
       issuerWithDefaultRipple = wallets[0]!;
@@ -58,26 +58,26 @@ describe('Trust Line Token DefaultRipple', () => {
       console.log(`✅ Bob: ${bobWallet.address}`);
     }, 80000);
 
-    it('should configure issuer WITH DefaultRipple flag', async () => {
+    it("should configure issuer WITH DefaultRipple flag", async () => {
       await setupIssuerWithFlags(issuerWithDefaultRipple);
 
       await verifyAccountFlag(issuerWithDefaultRipple.address, AccountRootFlags.lsfDefaultRipple, true);
 
-      console.log('✅ Issuer setup complete WITH DefaultRipple flag');
+      console.log("✅ Issuer setup complete WITH DefaultRipple flag");
     }, 20000);
 
-    it('should configure issuer WITHOUT DefaultRipple flag', async () => {
+    it("should configure issuer WITHOUT DefaultRipple flag", async () => {
       await setupIssuerWithDomain(issuerWithoutDefaultRipple);
 
       await verifyAccountFlag(issuerWithoutDefaultRipple.address, AccountRootFlags.lsfDefaultRipple, false);
 
-      console.log('✅ Issuer setup complete WITHOUT DefaultRipple flag');
+      console.log("✅ Issuer setup complete WITHOUT DefaultRipple flag");
     }, 20000);
   });
 
-  describe('Phase 2: Test Issuer WITH DefaultRipple', () => {
-    it('should create trust lines to issuer with DefaultRipple', async () => {
-      console.log('\n==================== PHASE 2: TEST ISSUER WITH DEFAULTRIPPLE ====================');
+  describe("Phase 2: Test Issuer WITH DefaultRipple", () => {
+    it("should create trust lines to issuer with DefaultRipple", async () => {
+      console.log("\n==================== PHASE 2: TEST ISSUER WITH DEFAULTRIPPLE ====================");
 
       await createTrustLine(aliceWallet, issuerWithDefaultRipple);
       await createTrustLine(bobWallet, issuerWithDefaultRipple);
@@ -91,10 +91,10 @@ describe('Trust Line Token DefaultRipple', () => {
       expect(bobLine?.no_ripple).toBeFalsy();
       expect(bobLine?.no_ripple_peer).toBeFalsy();
 
-      console.log('✅ Trust lines created to issuer WITH DefaultRipple');
+      console.log("✅ Trust lines created to issuer WITH DefaultRipple");
     }, 40000);
 
-    it('should issue USD tokens to Alice and succeed Alice -> Bob transfer', async () => {
+    it("should issue USD tokens to Alice and succeed Alice -> Bob transfer", async () => {
       await mintTokens(issuerWithDefaultRipple, aliceWallet, MINT_AMOUNT);
 
       const aliceBalance = await getTokenBalance(aliceWallet, issuerWithDefaultRipple);
@@ -109,9 +109,9 @@ describe('Trust Line Token DefaultRipple', () => {
     }, 40000);
   });
 
-  describe('Phase 3: Test Issuer WITHOUT DefaultRipple', () => {
-    it('should create trust lines to issuer without DefaultRipple', async () => {
-      console.log('\n==================== PHASE 3: TEST ISSUER WITHOUT DEFAULTRIPPLE ====================');
+  describe("Phase 3: Test Issuer WITHOUT DefaultRipple", () => {
+    it("should create trust lines to issuer without DefaultRipple", async () => {
+      console.log("\n==================== PHASE 3: TEST ISSUER WITHOUT DEFAULTRIPPLE ====================");
 
       await createTrustLine(aliceWallet, issuerWithoutDefaultRipple);
       await createTrustLine(bobWallet, issuerWithoutDefaultRipple);
@@ -125,21 +125,21 @@ describe('Trust Line Token DefaultRipple', () => {
       expect(bobLine?.no_ripple).toBeFalsy();
       expect(bobLine?.no_ripple_peer).toBeTruthy();
 
-      console.log('✅ Trust lines created to issuer WITHOUT DefaultRipple');
+      console.log("✅ Trust lines created to issuer WITHOUT DefaultRipple");
     }, 40000);
 
-    it('should fail Alice -> Bob transfer with non-DefaultRipple issuer', async () => {
+    it("should fail Alice -> Bob transfer with non-DefaultRipple issuer", async () => {
       await mintTokens(issuerWithoutDefaultRipple, aliceWallet, MINT_AMOUNT);
 
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWithoutDefaultRipple);
       expect(BigInt(bobBalanceBefore)).toEqual(0n);
 
-      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWithoutDefaultRipple, 'tecPATH_DRY');
+      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWithoutDefaultRipple, "tecPATH_DRY");
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWithoutDefaultRipple);
       expect(bobBalanceAfter).toBe(bobBalanceBefore);
 
-      console.log('✅ Transfer correctly failed without DefaultRipple: tecPATH_DRY');
+      console.log("✅ Transfer correctly failed without DefaultRipple: tecPATH_DRY");
     }, 50000);
   });
 });

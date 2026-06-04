@@ -1,22 +1,22 @@
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from "@tests/utils/data";
 import {
   createTrustLine,
   getTokenBalance,
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-} from '@tests/utils/test.helper';
+} from "@tests/utils/test.helper";
 import {
   cashCheck,
   createCheck,
   setAccountFlag,
   transferTokens,
   verifyAccountFlag,
-} from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { AccountSetAsfFlags } from 'xrpl';
-import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { AccountSetAsfFlags } from "xrpl";
+import { AccountRootFlags } from "xrpl/dist/npm/models/ledger";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * Check Burn via Issuer Test
@@ -28,14 +28,14 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   Phase 3: Enable DepositAuth on Issuer — direct burn blocked
  *   Phase 4: Check-to-Issuer Burn — user creates check, issuer cashes to burn
  */
-describe('Trust Line Token Check Burn via Issuer', () => {
+describe("Trust Line Token Check Burn via Issuer", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
   let userWallet: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting Check Burn via Issuer Test');
+    console.log("🚀 Starting Check Burn via Issuer Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -44,13 +44,13 @@ describe('Trust Line Token Check Burn via Issuer', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup - Create Issuer and User Accounts', () => {
-    it('should create and fund all wallets with issuer configured', async () => {
-      console.log('\n==================== PHASE 1: SETUP - CREATE ISSUER AND USER ACCOUNTS ====================');
+  describe("Phase 1: Setup - Create Issuer and User Accounts", () => {
+    it("should create and fund all wallets with issuer configured", async () => {
+      console.log("\n==================== PHASE 1: SETUP - CREATE ISSUER AND USER ACCOUNTS ====================");
 
       const wallets = await setupWallets(2);
       issuerWallet = wallets[0]!;
@@ -63,9 +63,9 @@ describe('Trust Line Token Check Burn via Issuer', () => {
     }, 60000);
   });
 
-  describe('Phase 2: Trust Lines and Token Setup', () => {
-    it('should create trust line and issue tokens to user', async () => {
-      console.log('\n==================== PHASE 2: TRUST LINES AND TOKEN SETUP ====================');
+  describe("Phase 2: Trust Lines and Token Setup", () => {
+    it("should create trust line and issue tokens to user", async () => {
+      console.log("\n==================== PHASE 2: TRUST LINES AND TOKEN SETUP ====================");
 
       await createTrustLine(userWallet, issuerWallet);
       await mintTokens(issuerWallet, userWallet, MINT_AMOUNT);
@@ -76,40 +76,40 @@ describe('Trust Line Token Check Burn via Issuer', () => {
     }, 60000);
   });
 
-  describe('Phase 3: Enable DepositAuth on Issuer — Direct Burn Blocked', () => {
-    it('should enable DepositAuth flag on issuer', async () => {
-      console.log('\n==================== PHASE 3: ENABLE DEPOSITAUTH ON ISSUER ====================');
+  describe("Phase 3: Enable DepositAuth on Issuer — Direct Burn Blocked", () => {
+    it("should enable DepositAuth flag on issuer", async () => {
+      console.log("\n==================== PHASE 3: ENABLE DEPOSITAUTH ON ISSUER ====================");
 
       await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfDepositAuth);
 
       await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfDepositAuth, true);
 
-      console.log('✅ DepositAuth flag enabled on issuer successfully');
+      console.log("✅ DepositAuth flag enabled on issuer successfully");
     }, 20000);
 
-    it('should fail direct user -> issuer burn with DepositAuth', async () => {
+    it("should fail direct user -> issuer burn with DepositAuth", async () => {
       const userBalanceBefore = await getTokenBalance(userWallet, issuerWallet);
 
-      await transferTokens(userWallet, issuerWallet, TRANSFER_AMOUNT, issuerWallet, 'tecNO_PERMISSION');
+      await transferTokens(userWallet, issuerWallet, TRANSFER_AMOUNT, issuerWallet, "tecNO_PERMISSION");
 
       expect(await getTokenBalance(userWallet, issuerWallet)).toBe(userBalanceBefore);
 
-      console.log('✅ Direct burn correctly blocked by DepositAuth on issuer');
+      console.log("✅ Direct burn correctly blocked by DepositAuth on issuer");
     }, 30000);
   });
 
-  describe('Phase 4: Check-to-Issuer Burn (Bypass DepositAuth)', () => {
+  describe("Phase 4: Check-to-Issuer Burn (Bypass DepositAuth)", () => {
     let checkId: string;
 
-    it('should allow user to create a check payable to issuer', async () => {
-      console.log('\n==================== PHASE 4: CHECK-TO-ISSUER BURN ====================');
+    it("should allow user to create a check payable to issuer", async () => {
+      console.log("\n==================== PHASE 4: CHECK-TO-ISSUER BURN ====================");
 
       checkId = await createCheck(userWallet, issuerWallet, TRANSFER_AMOUNT, issuerWallet);
 
       console.log(`✅ Check created successfully with ID: ${checkId}`);
     }, 10000);
 
-    it('should allow issuer to cash the check (burn) despite DepositAuth', async () => {
+    it("should allow issuer to cash the check (burn) despite DepositAuth", async () => {
       const userBalanceBefore = await getTokenBalance(userWallet, issuerWallet);
 
       await cashCheck(issuerWallet, checkId, TRANSFER_AMOUNT, issuerWallet);
@@ -118,7 +118,7 @@ describe('Trust Line Token Check Burn via Issuer', () => {
       expect(BigInt(userBalanceAfter)).toEqual(BigInt(userBalanceBefore) - BigInt(TRANSFER_AMOUNT));
 
       console.log(
-        `✅ Check-to-issuer burn successful despite DepositAuth: User ${userBalanceBefore} -> ${userBalanceAfter} ${CURRENCY}`
+        `✅ Check-to-issuer burn successful despite DepositAuth: User ${userBalanceBefore} -> ${userBalanceAfter} ${CURRENCY}`,
       );
     }, 50000);
   });

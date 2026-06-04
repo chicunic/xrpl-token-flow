@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "XRPL token flow management service",
   "scripts": {
-    "check": "tsc -p tests/tsconfig.json --noEmit && biome check --enforce-assist=true",
-    "fix": "biome check --write --unsafe",
+    "check": "tsc -b --noEmit && eslint . && prettier --check .",
+    "fix": "eslint . --fix && prettier --write .",
     "test": "vitest run",
     "test:local": "vitest run --config vitest.config.local.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "postinstall": "chmod +x setup-hooks.sh && ./setup-hooks.sh"
+    "prepare": "husky"
   },
   "keywords": [
     "xrp",
@@ -28,20 +28,22 @@
     "xrpl": "^4.6.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.11",
-    "@types/node": "^25.6.0",
-    "@vitest/coverage-v8": "^4.1.4",
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.4"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.1",
+    "@vitest/coverage-v8": "^4.1.8",
+    "@vitest/eslint-plugin": "^1.6.19",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "jiti": "^2.7.0",
+    "prettier": "^3.8.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.1",
+    "vitest": "^4.1.8"
   },
   "engines": {
     "node": ">=24"
   },
-  "pnpm": {
-    "overrides": {
-      "vite": "^8.0.7"
-    }
-  },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+  "packageManager": "pnpm@11.5.1+sha512.93f7b57422ea7068257235b4c16eb60762eb68e1dc23723199cc739043ea9be2c4143274a399d8c6defa2b1176226d9ca1c4b63482d6200c1a8fbaa78c1d1485"
 }

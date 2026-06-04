@@ -1,14 +1,14 @@
-import { CURRENCY, TRANSFER_AMOUNT } from '@tests/utils/data';
-import { createTrustLine, findTrustLine, getTokenBalance, mintTokens, setupWallets } from '@tests/utils/test.helper';
+import { CURRENCY, TRANSFER_AMOUNT } from "@tests/utils/data";
+import { createTrustLine, findTrustLine, getTokenBalance, mintTokens, setupWallets } from "@tests/utils/test.helper";
 import {
   clearNoRippleOnTrustLine,
   setAccountFlag,
   setupIssuerWithDomain,
   transferTokens,
-} from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { AccountSetAsfFlags } from 'xrpl';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { AccountSetAsfFlags } from "xrpl";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * XRPL No Ripple Flow Test
@@ -18,7 +18,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   Phase 2: Setup Trust Lines (NoRipple set by default), clear NoRipple on Bob
  *   Phase 3: Token Minting and Transfer Flow
  */
-describe('Trust Line Token NoRipple Flow', () => {
+describe("Trust Line Token NoRipple Flow", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
@@ -26,7 +26,7 @@ describe('Trust Line Token NoRipple Flow', () => {
   let bobWallet: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting XRPL No Ripple Flow Test');
+    console.log("🚀 Starting XRPL No Ripple Flow Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -35,13 +35,13 @@ describe('Trust Line Token NoRipple Flow', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Create and Fund Accounts', () => {
-    it('should create and fund all wallets', async () => {
-      console.log('\n==================== PHASE 1: CREATE AND FUND ACCOUNTS ====================');
+  describe("Phase 1: Create and Fund Accounts", () => {
+    it("should create and fund all wallets", async () => {
+      console.log("\n==================== PHASE 1: CREATE AND FUND ACCOUNTS ====================");
 
       const wallets = await setupWallets(3);
       issuerWallet = wallets[0]!;
@@ -53,48 +53,48 @@ describe('Trust Line Token NoRipple Flow', () => {
       console.log(`✅ Bob: ${bobWallet.address}`);
     }, 60000);
 
-    it('should configure issuer WITHOUT DefaultRipple', async () => {
+    it("should configure issuer WITHOUT DefaultRipple", async () => {
       await setupIssuerWithDomain(issuerWallet);
-      console.log('✅ Flag Domain set');
+      console.log("✅ Flag Domain set");
 
       await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfAllowTrustLineClawback);
-      console.log('✅ Flag AllowTrustLineClawback set');
+      console.log("✅ Flag AllowTrustLineClawback set");
 
       await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfDisallowXRP);
-      console.log('✅ Flag DisallowXRP set');
+      console.log("✅ Flag DisallowXRP set");
 
-      console.log('✅ Issuer configured WITHOUT DefaultRipple flag');
+      console.log("✅ Issuer configured WITHOUT DefaultRipple flag");
     }, 20000);
   });
 
-  describe('Phase 2: Setup Trust Lines', () => {
-    it('should create Alice trust line to Issuer', async () => {
-      console.log('\n==================== PHASE 2: SETUP TRUST LINES ====================');
+  describe("Phase 2: Setup Trust Lines", () => {
+    it("should create Alice trust line to Issuer", async () => {
+      console.log("\n==================== PHASE 2: SETUP TRUST LINES ====================");
 
       await createTrustLine(aliceWallet, issuerWallet);
 
       const aliceLine = await findTrustLine(aliceWallet, issuerWallet);
       expect(aliceLine).toBeDefined();
-      expect(aliceLine?.balance).toBe('0');
+      expect(aliceLine?.balance).toBe("0");
       expect(aliceLine?.no_ripple).toBeFalsy();
       expect(aliceLine?.no_ripple_peer).toBeTruthy(); // Without DefaultRipple, NoRipple is set by default
 
       console.log(`✅ Alice trusts Issuer for ${CURRENCY}`);
     }, 20000);
 
-    it('should create Bob trust line to Issuer', async () => {
+    it("should create Bob trust line to Issuer", async () => {
       await createTrustLine(bobWallet, issuerWallet);
 
       const bobLine = await findTrustLine(bobWallet, issuerWallet);
       expect(bobLine).toBeDefined();
-      expect(bobLine?.balance).toBe('0');
+      expect(bobLine?.balance).toBe("0");
       expect(bobLine?.no_ripple).toBeFalsy();
       expect(bobLine?.no_ripple_peer).toBeTruthy(); // Without DefaultRipple, NoRipple is set by default
 
       console.log(`✅ Bob trusts Issuer for ${CURRENCY}`);
     }, 20000);
 
-    it('should clear NoRipple flag on Bob trust line from Issuer side', async () => {
+    it("should clear NoRipple flag on Bob trust line from Issuer side", async () => {
       await clearNoRippleOnTrustLine(issuerWallet, bobWallet);
 
       // Verify from Bob's perspective
@@ -103,13 +103,13 @@ describe('Trust Line Token NoRipple Flow', () => {
       expect(bobLine?.no_ripple).toBeFalsy();
       expect(bobLine?.no_ripple_peer).toBeFalsy();
 
-      console.log('✅ NoRipple flag cleared on Issuer -> Bob trust line');
+      console.log("✅ NoRipple flag cleared on Issuer -> Bob trust line");
     }, 20000);
   });
 
-  describe('Phase 3: Token Minting and Transfer', () => {
-    it('should mint USD tokens from Issuer to Alice', async () => {
-      console.log('\n==================== PHASE 3: TOKEN MINTING AND TRANSFER ====================');
+  describe("Phase 3: Token Minting and Transfer", () => {
+    it("should mint USD tokens from Issuer to Alice", async () => {
+      console.log("\n==================== PHASE 3: TOKEN MINTING AND TRANSFER ====================");
 
       await mintTokens(issuerWallet, aliceWallet, TRANSFER_AMOUNT);
 
@@ -119,7 +119,7 @@ describe('Trust Line Token NoRipple Flow', () => {
       console.log(`✅ Alice now has ${TRANSFER_AMOUNT} ${CURRENCY}`);
     }, 20000);
 
-    it('should transfer USD from Alice to Bob', async () => {
+    it("should transfer USD from Alice to Bob", async () => {
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
@@ -133,7 +133,7 @@ describe('Trust Line Token NoRipple Flow', () => {
       console.log(`✅ Alice transferred ${TRANSFER_AMOUNT} ${CURRENCY} to Bob`);
     }, 50000);
 
-    it('should burn tokens by transferring from Bob back to Issuer', async () => {
+    it("should burn tokens by transferring from Bob back to Issuer", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
       await transferTokens(bobWallet, issuerWallet, TRANSFER_AMOUNT, issuerWallet);

@@ -1,14 +1,14 @@
-import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
+import { CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from "@tests/utils/data";
 import {
   createTrustLine,
   getTokenBalance,
   mintTokens,
   setupIssuerWithFlags,
   setupWallets,
-} from '@tests/utils/test.helper';
-import { cancelCheck, cashCheck, cashCheckExpectFailure, createCheck } from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/test.helper";
+import { cancelCheck, cashCheck, cashCheckExpectFailure, createCheck } from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * Check Test
@@ -19,7 +19,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   Phase 3: Check Creation and Cash (Alice creates check, Bob cashes it)
  *   Phase 4: Check Cancellation Testing (sender and receiver cancel checks)
  */
-describe('Trust Line Token Check', () => {
+describe("Trust Line Token Check", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
@@ -27,7 +27,7 @@ describe('Trust Line Token Check', () => {
   let bobWallet: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting Check Test');
+    console.log("🚀 Starting Check Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -36,13 +36,13 @@ describe('Trust Line Token Check', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup - Create Issuer and User Accounts', () => {
-    it('should create and fund all wallets with issuer configured', async () => {
-      console.log('\n==================== PHASE 1: SETUP - CREATE ISSUER AND USER ACCOUNTS ====================');
+  describe("Phase 1: Setup - Create Issuer and User Accounts", () => {
+    it("should create and fund all wallets with issuer configured", async () => {
+      console.log("\n==================== PHASE 1: SETUP - CREATE ISSUER AND USER ACCOUNTS ====================");
 
       const wallets = await setupWallets(3);
       issuerWallet = wallets[0]!;
@@ -57,9 +57,9 @@ describe('Trust Line Token Check', () => {
     }, 60000);
   });
 
-  describe('Phase 2: Trust Lines and Token Setup', () => {
-    it('should create trust lines and issue tokens to Alice', async () => {
-      console.log('\n==================== PHASE 2: TRUST LINES AND TOKEN SETUP ====================');
+  describe("Phase 2: Trust Lines and Token Setup", () => {
+    it("should create trust lines and issue tokens to Alice", async () => {
+      console.log("\n==================== PHASE 2: TRUST LINES AND TOKEN SETUP ====================");
 
       await createTrustLine(aliceWallet, issuerWallet);
       await createTrustLine(bobWallet, issuerWallet);
@@ -69,23 +69,23 @@ describe('Trust Line Token Check', () => {
       const aliceBalance = await getTokenBalance(aliceWallet, issuerWallet);
       expect(aliceBalance).toBe(MINT_AMOUNT);
 
-      console.log('✅ Trust lines created and tokens issued successfully');
+      console.log("✅ Trust lines created and tokens issued successfully");
       console.log(`✅ Alice now has ${MINT_AMOUNT} ${CURRENCY}`);
     }, 60000);
   });
 
-  describe('Phase 3: Check Creation and Cash', () => {
+  describe("Phase 3: Check Creation and Cash", () => {
     let checkId: string;
 
-    it('should allow Alice to create a check payable to Bob', async () => {
-      console.log('\n==================== PHASE 3: CHECK CREATION AND CASH ====================');
+    it("should allow Alice to create a check payable to Bob", async () => {
+      console.log("\n==================== PHASE 3: CHECK CREATION AND CASH ====================");
 
       checkId = await createCheck(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
 
       console.log(`✅ Check created successfully with ID: ${checkId}`);
     }, 10000);
 
-    it('should allow Bob to cash the check and receive tokens', async () => {
+    it("should allow Bob to cash the check and receive tokens", async () => {
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
@@ -97,17 +97,17 @@ describe('Trust Line Token Check', () => {
       expect(BigInt(bobBalanceAfter)).toEqual(BigInt(bobBalanceBefore) + BigInt(TRANSFER_AMOUNT));
 
       console.log(
-        `✅ Check cashed successfully: Alice ${aliceBalanceBefore} -> ${aliceBalanceAfter} ${CURRENCY}, Bob ${bobBalanceBefore} -> ${bobBalanceAfter} ${CURRENCY}`
+        `✅ Check cashed successfully: Alice ${aliceBalanceBefore} -> ${aliceBalanceAfter} ${CURRENCY}, Bob ${bobBalanceBefore} -> ${bobBalanceAfter} ${CURRENCY}`,
       );
     }, 50000);
   });
 
-  describe('Phase 4: Check Cancellation Testing', () => {
+  describe("Phase 4: Check Cancellation Testing", () => {
     let firstCheckId: string;
     let secondCheckId: string;
 
-    it('should create two checks for cancellation testing', async () => {
-      console.log('\n==================== PHASE 4: CHECK CANCELLATION TESTING ====================');
+    it("should create two checks for cancellation testing", async () => {
+      console.log("\n==================== PHASE 4: CHECK CANCELLATION TESTING ====================");
 
       firstCheckId = await createCheck(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
       secondCheckId = await createCheck(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
@@ -115,28 +115,28 @@ describe('Trust Line Token Check', () => {
       console.log(`✅ Two checks created successfully with IDs: ${firstCheckId}, ${secondCheckId}`);
     }, 20000);
 
-    it('should allow Alice to cancel first check', async () => {
+    it("should allow Alice to cancel first check", async () => {
       await cancelCheck(aliceWallet, firstCheckId);
 
-      console.log('✅ First check canceled by Alice successfully');
+      console.log("✅ First check canceled by Alice successfully");
     }, 10000);
 
-    it('should fail when Bob tries to cash the first canceled check', async () => {
-      await cashCheckExpectFailure(bobWallet, firstCheckId, TRANSFER_AMOUNT, issuerWallet, 'tecNO_ENTRY');
+    it("should fail when Bob tries to cash the first canceled check", async () => {
+      await cashCheckExpectFailure(bobWallet, firstCheckId, TRANSFER_AMOUNT, issuerWallet, "tecNO_ENTRY");
 
-      console.log('✅ Bob correctly failed to cash canceled check');
+      console.log("✅ Bob correctly failed to cash canceled check");
     }, 10000);
 
-    it('should allow Bob to cancel second check', async () => {
+    it("should allow Bob to cancel second check", async () => {
       await cancelCheck(bobWallet, secondCheckId);
 
-      console.log('✅ Second check canceled by Bob successfully');
+      console.log("✅ Second check canceled by Bob successfully");
     }, 10000);
 
-    it('should fail when Bob tries to cash the second canceled check', async () => {
-      await cashCheckExpectFailure(bobWallet, secondCheckId, TRANSFER_AMOUNT, issuerWallet, 'tecNO_ENTRY');
+    it("should fail when Bob tries to cash the second canceled check", async () => {
+      await cashCheckExpectFailure(bobWallet, secondCheckId, TRANSFER_AMOUNT, issuerWallet, "tecNO_ENTRY");
 
-      console.log('✅ Bob correctly failed to cash canceled check');
+      console.log("✅ Bob correctly failed to cash canceled check");
     }, 10000);
   });
 });

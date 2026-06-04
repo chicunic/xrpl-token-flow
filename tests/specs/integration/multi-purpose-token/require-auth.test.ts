@@ -5,11 +5,11 @@ import {
   issuerAuthorizeMPToken,
   mintMPToken,
   transferMPToken,
-} from '@tests/utils/multi-purpose-token.helper';
-import { setupWallets } from '@tests/utils/test.helper';
-import type { Client, Wallet } from 'xrpl';
-import { MPTokenIssuanceCreateFlags } from 'xrpl';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/multi-purpose-token.helper";
+import { setupWallets } from "@tests/utils/test.helper";
+import type { Client, Wallet } from "xrpl";
+import { MPTokenIssuanceCreateFlags } from "xrpl";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * MPToken RequireAuth Test
@@ -20,7 +20,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   Phase 3: Issuer approves holder — mint succeeds
  *   Phase 4: Unapproved holder cannot receive P2P transfer
  */
-describe('Multi-Purpose Token RequireAuth', () => {
+describe("Multi-Purpose Token RequireAuth", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
@@ -31,7 +31,7 @@ describe('Multi-Purpose Token RequireAuth', () => {
   let mptIssuanceId: string;
 
   beforeAll(async () => {
-    console.log('🚀 Starting MPToken RequireAuth Test');
+    console.log("🚀 Starting MPToken RequireAuth Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -40,13 +40,13 @@ describe('Multi-Purpose Token RequireAuth', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup', () => {
-    it('should create wallets and issuance with RequireAuth', async () => {
-      console.log('\n==================== PHASE 1: SETUP ====================');
+  describe("Phase 1: Setup", () => {
+    it("should create wallets and issuance with RequireAuth", async () => {
+      console.log("\n==================== PHASE 1: SETUP ====================");
 
       const wallets = await setupWallets(4);
       issuerWallet = wallets[0]!;
@@ -56,66 +56,66 @@ describe('Multi-Purpose Token RequireAuth', () => {
 
       mptIssuanceId = await createMPTokenIssuance(
         issuerWallet,
-        MPTokenIssuanceCreateFlags.tfMPTCanTransfer | MPTokenIssuanceCreateFlags.tfMPTRequireAuth
+        MPTokenIssuanceCreateFlags.tfMPTCanTransfer | MPTokenIssuanceCreateFlags.tfMPTRequireAuth,
       );
 
       console.log(`✅ Issuance with RequireAuth: ${mptIssuanceId}`);
     }, 80000);
   });
 
-  describe('Phase 2: Holder Opt-in Without Issuer Approval', () => {
-    it('should allow holder to opt-in (create MPToken entry)', async () => {
-      console.log('\n==================== PHASE 2: OPT-IN WITHOUT APPROVAL ====================');
+  describe("Phase 2: Holder Opt-in Without Issuer Approval", () => {
+    it("should allow holder to opt-in (create MPToken entry)", async () => {
+      console.log("\n==================== PHASE 2: OPT-IN WITHOUT APPROVAL ====================");
 
       await authorizeMPToken(aliceWallet, mptIssuanceId);
 
-      console.log('✅ Alice opted-in (not yet approved by issuer)');
+      console.log("✅ Alice opted-in (not yet approved by issuer)");
     }, 20000);
 
-    it('should fail mint to unapproved holder', async () => {
-      await transferMPToken(issuerWallet, aliceWallet, mptIssuanceId, '1000', 'tecNO_AUTH');
+    it("should fail mint to unapproved holder", async () => {
+      await transferMPToken(issuerWallet, aliceWallet, mptIssuanceId, "1000", "tecNO_AUTH");
 
-      console.log('✅ Mint to unapproved Alice failed: tecNO_AUTH');
+      console.log("✅ Mint to unapproved Alice failed: tecNO_AUTH");
     }, 20000);
   });
 
-  describe('Phase 3: Issuer Approves Holder', () => {
-    it('should approve Alice and succeed mint', async () => {
-      console.log('\n==================== PHASE 3: ISSUER APPROVES ====================');
+  describe("Phase 3: Issuer Approves Holder", () => {
+    it("should approve Alice and succeed mint", async () => {
+      console.log("\n==================== PHASE 3: ISSUER APPROVES ====================");
 
       await issuerAuthorizeMPToken(issuerWallet, aliceWallet, mptIssuanceId);
-      await mintMPToken(issuerWallet, aliceWallet, mptIssuanceId, '5000');
+      await mintMPToken(issuerWallet, aliceWallet, mptIssuanceId, "5000");
 
-      expect(await getMPTokenBalance(aliceWallet, mptIssuanceId)).toBe('5000');
+      expect(await getMPTokenBalance(aliceWallet, mptIssuanceId)).toBe("5000");
 
-      console.log('✅ Alice approved and minted 5000');
+      console.log("✅ Alice approved and minted 5000");
     }, 30000);
 
-    it('should approve Bob, mint, and transfer Alice → Bob', async () => {
+    it("should approve Bob, mint, and transfer Alice → Bob", async () => {
       await authorizeMPToken(bobWallet, mptIssuanceId);
       await issuerAuthorizeMPToken(issuerWallet, bobWallet, mptIssuanceId);
 
-      await transferMPToken(aliceWallet, bobWallet, mptIssuanceId, '1000');
+      await transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "1000");
 
       expect(BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId))).toBe(4000n);
       expect(BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId))).toBe(1000n);
 
-      console.log('✅ Bob approved, Alice → Bob transfer succeeded');
+      console.log("✅ Bob approved, Alice → Bob transfer succeeded");
     }, 40000);
   });
 
-  describe('Phase 4: Unapproved Holder Cannot Receive P2P', () => {
-    it('should fail transfer to unapproved Charlie', async () => {
-      console.log('\n==================== PHASE 4: UNAPPROVED P2P ====================');
+  describe("Phase 4: Unapproved Holder Cannot Receive P2P", () => {
+    it("should fail transfer to unapproved Charlie", async () => {
+      console.log("\n==================== PHASE 4: UNAPPROVED P2P ====================");
 
       // Charlie opts-in but issuer does not approve
       await authorizeMPToken(charlieWallet, mptIssuanceId);
 
-      await transferMPToken(aliceWallet, charlieWallet, mptIssuanceId, '100', 'tecNO_AUTH');
+      await transferMPToken(aliceWallet, charlieWallet, mptIssuanceId, "100", "tecNO_AUTH");
 
-      expect(await getMPTokenBalance(charlieWallet, mptIssuanceId)).toBe('0');
+      expect(await getMPTokenBalance(charlieWallet, mptIssuanceId)).toBe("0");
 
-      console.log('✅ Transfer to unapproved Charlie failed: tecNO_AUTH');
+      console.log("✅ Transfer to unapproved Charlie failed: tecNO_AUTH");
     }, 30000);
   });
 });

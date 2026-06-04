@@ -9,19 +9,19 @@ import type {
   Payment,
   TrustSet,
   Wallet,
-} from 'xrpl';
-import { type AccountSetAsfFlags, TrustSetFlags, xrpToDrops } from 'xrpl';
+} from "xrpl";
+import { type AccountSetAsfFlags, TrustSetFlags, xrpToDrops } from "xrpl";
 
-import { getXRPLClient } from '@/config/xrpl.config';
-import { CURRENCY, DOMAIN } from './data';
-import { currencyToHex, getAccountFlags, hasFlag, submitTransaction } from './test.helper';
+import { getXRPLClient } from "@/config/xrpl.config";
+import { CURRENCY, DOMAIN } from "./data";
+import { currencyToHex, getAccountFlags, hasFlag, submitTransaction } from "./test.helper";
 
 // ─── Account Flag Operations ────────────────────────────────────────────────
 
 export async function setAccountFlag(wallet: Wallet, flag: AccountSetAsfFlags): Promise<void> {
   const client = getXRPLClient();
   const tx: AccountSet = await client.autofill({
-    TransactionType: 'AccountSet',
+    TransactionType: "AccountSet",
     Account: wallet.address,
     SetFlag: flag,
   });
@@ -31,7 +31,7 @@ export async function setAccountFlag(wallet: Wallet, flag: AccountSetAsfFlags): 
 export async function clearAccountFlag(wallet: Wallet, flag: AccountSetAsfFlags): Promise<void> {
   const client = getXRPLClient();
   const tx: AccountSet = await client.autofill({
-    TransactionType: 'AccountSet',
+    TransactionType: "AccountSet",
     Account: wallet.address,
     ClearFlag: flag,
   });
@@ -40,9 +40,9 @@ export async function clearAccountFlag(wallet: Wallet, flag: AccountSetAsfFlags)
 
 export async function setupIssuerWithDomain(wallet: Wallet): Promise<void> {
   const client = getXRPLClient();
-  const { convertStringToHex } = await import('xrpl');
+  const { convertStringToHex } = await import("xrpl");
   const tx: AccountSet = await client.autofill({
-    TransactionType: 'AccountSet',
+    TransactionType: "AccountSet",
     Account: wallet.address,
     Domain: convertStringToHex(DOMAIN),
   });
@@ -60,7 +60,7 @@ export async function verifyAccountFlag(address: string, rootFlag: number, expec
 export async function setTransferRate(issuer: Wallet, transferRate: number): Promise<void> {
   const client = getXRPLClient();
   const tx: AccountSet = await client.autofill({
-    TransactionType: 'AccountSet',
+    TransactionType: "AccountSet",
     Account: issuer.address,
     TransferRate: transferRate,
   });
@@ -72,12 +72,12 @@ export async function setTransferRate(issuer: Wallet, transferRate: number): Pro
 export async function freezeTrustLine(issuer: Wallet, user: Wallet, currency = CURRENCY): Promise<void> {
   const client = getXRPLClient();
   const tx: TrustSet = await client.autofill({
-    TransactionType: 'TrustSet',
+    TransactionType: "TrustSet",
     Account: issuer.address,
     LimitAmount: {
       currency: currencyToHex(currency),
       issuer: user.address,
-      value: '0',
+      value: "0",
     },
     Flags: TrustSetFlags.tfSetFreeze,
   });
@@ -87,12 +87,12 @@ export async function freezeTrustLine(issuer: Wallet, user: Wallet, currency = C
 export async function unfreezeTrustLine(issuer: Wallet, user: Wallet, currency = CURRENCY): Promise<void> {
   const client = getXRPLClient();
   const tx: TrustSet = await client.autofill({
-    TransactionType: 'TrustSet',
+    TransactionType: "TrustSet",
     Account: issuer.address,
     LimitAmount: {
       currency: currencyToHex(currency),
       issuer: user.address,
-      value: '0',
+      value: "0",
     },
     Flags: TrustSetFlags.tfClearFreeze,
   });
@@ -102,12 +102,12 @@ export async function unfreezeTrustLine(issuer: Wallet, user: Wallet, currency =
 export async function clearNoRippleOnTrustLine(issuer: Wallet, user: Wallet, currency = CURRENCY): Promise<void> {
   const client = getXRPLClient();
   const tx: TrustSet = await client.autofill({
-    TransactionType: 'TrustSet',
+    TransactionType: "TrustSet",
     Account: issuer.address,
     LimitAmount: {
       currency: currencyToHex(currency),
       issuer: user.address,
-      value: '0',
+      value: "0",
     },
     Flags: TrustSetFlags.tfClearNoRipple,
   });
@@ -117,12 +117,12 @@ export async function clearNoRippleOnTrustLine(issuer: Wallet, user: Wallet, cur
 export async function authorizeTrustLine(issuer: Wallet, user: Wallet, currency = CURRENCY): Promise<void> {
   const client = getXRPLClient();
   const tx: TrustSet = await client.autofill({
-    TransactionType: 'TrustSet',
+    TransactionType: "TrustSet",
     Account: issuer.address,
     LimitAmount: {
       currency: currencyToHex(currency),
       issuer: user.address,
-      value: '0',
+      value: "0",
     },
     Flags: TrustSetFlags.tfSetfAuth,
   });
@@ -136,12 +136,12 @@ export async function transferTokens(
   dest: Wallet,
   amount: string,
   issuer: Wallet,
-  expectedResult = 'tesSUCCESS',
-  currency = CURRENCY
+  expectedResult = "tesSUCCESS",
+  currency = CURRENCY,
 ): Promise<void> {
   const client = getXRPLClient();
   const tx: Payment = await client.autofill({
-    TransactionType: 'Payment',
+    TransactionType: "Payment",
     Account: sender.address,
     Destination: dest.address,
     Amount: {
@@ -159,11 +159,11 @@ export async function transferTokensWithSendMax(
   amount: string,
   sendMax: string,
   issuer: Wallet,
-  currency = CURRENCY
+  currency = CURRENCY,
 ): Promise<void> {
   const client = getXRPLClient();
   const tx: Payment = await client.autofill({
-    TransactionType: 'Payment',
+    TransactionType: "Payment",
     Account: sender.address,
     Destination: dest.address,
     Amount: {
@@ -184,11 +184,11 @@ export async function transferXRP(
   sender: Wallet,
   dest: Wallet,
   xrpAmount: string,
-  expectedResult = 'tesSUCCESS'
+  expectedResult = "tesSUCCESS",
 ): Promise<void> {
   const client = getXRPLClient();
   const tx: Payment = await client.autofill({
-    TransactionType: 'Payment',
+    TransactionType: "Payment",
     Account: sender.address,
     Destination: dest.address,
     Amount: xrpToDrops(xrpAmount),
@@ -202,11 +202,11 @@ export async function clawbackTokens(
   issuer: Wallet,
   holder: Wallet,
   amount: string,
-  currency = CURRENCY
+  currency = CURRENCY,
 ): Promise<void> {
   const client = getXRPLClient();
   const tx: Clawback = await client.autofill({
-    TransactionType: 'Clawback',
+    TransactionType: "Clawback",
     Account: issuer.address,
     Amount: {
       currency: currencyToHex(currency),
@@ -222,7 +222,7 @@ export async function clawbackTokens(
 export async function preauthorizeSender(receiver: Wallet, sender: Wallet): Promise<void> {
   const client = getXRPLClient();
   const tx: DepositPreauth = await client.autofill({
-    TransactionType: 'DepositPreauth',
+    TransactionType: "DepositPreauth",
     Account: receiver.address,
     Authorize: sender.address,
   });
@@ -232,7 +232,7 @@ export async function preauthorizeSender(receiver: Wallet, sender: Wallet): Prom
 export async function revokeSenderPreauth(receiver: Wallet, sender: Wallet): Promise<void> {
   const client = getXRPLClient();
   const tx: DepositPreauth = await client.autofill({
-    TransactionType: 'DepositPreauth',
+    TransactionType: "DepositPreauth",
     Account: receiver.address,
     Unauthorize: sender.address,
   });
@@ -246,11 +246,11 @@ export async function createCheck(
   receiver: Wallet,
   amount: string,
   issuer: Wallet,
-  currency = CURRENCY
+  currency = CURRENCY,
 ): Promise<string> {
   const client = getXRPLClient();
   const tx: CheckCreate = await client.autofill({
-    TransactionType: 'CheckCreate',
+    TransactionType: "CheckCreate",
     Account: sender.address,
     Destination: receiver.address,
     SendMax: {
@@ -261,11 +261,13 @@ export async function createCheck(
   });
   const meta = await submitTransaction(client, tx, sender);
 
-  const createdNode = meta.AffectedNodes?.find(node => (node as CreatedNode).CreatedNode?.LedgerEntryType === 'Check');
+  const createdNode = meta.AffectedNodes?.find(
+    (node) => (node as CreatedNode).CreatedNode?.LedgerEntryType === "Check",
+  );
   const checkId = (createdNode as CreatedNode)?.CreatedNode?.LedgerIndex;
   expect(checkId).toBeDefined();
 
-  return checkId!;
+  return checkId;
 }
 
 export async function cashCheck(
@@ -273,11 +275,11 @@ export async function cashCheck(
   checkId: string,
   amount: string,
   issuer: Wallet,
-  currency = CURRENCY
+  currency = CURRENCY,
 ): Promise<void> {
   const client = getXRPLClient();
   const tx: CheckCash = await client.autofill({
-    TransactionType: 'CheckCash',
+    TransactionType: "CheckCash",
     Account: receiver.address,
     CheckID: checkId,
     Amount: {
@@ -292,7 +294,7 @@ export async function cashCheck(
 export async function cancelCheck(wallet: Wallet, checkId: string): Promise<void> {
   const client = getXRPLClient();
   const tx: CheckCancel = await client.autofill({
-    TransactionType: 'CheckCancel',
+    TransactionType: "CheckCancel",
     Account: wallet.address,
     CheckID: checkId,
   });
@@ -305,11 +307,11 @@ export async function cashCheckExpectFailure(
   amount: string,
   issuer: Wallet,
   expectedResult: string,
-  currency = CURRENCY
+  currency = CURRENCY,
 ): Promise<void> {
   const client = getXRPLClient();
   const tx: CheckCash = await client.autofill({
-    TransactionType: 'CheckCash',
+    TransactionType: "CheckCash",
     Account: receiver.address,
     CheckID: checkId,
     Amount: {
@@ -326,9 +328,9 @@ export async function cashCheckExpectFailure(
 export async function getXRPBalance(wallet: Wallet): Promise<bigint> {
   const client = getXRPLClient();
   const accountInfo = await client.request({
-    command: 'account_info',
+    command: "account_info",
     account: wallet.address,
-    ledger_index: 'validated',
+    ledger_index: "validated",
   });
   return BigInt(accountInfo.result.account_data.Balance);
 }

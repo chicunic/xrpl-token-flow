@@ -1,5 +1,5 @@
-import { CLAWBACK_AMOUNT, CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from '@tests/utils/data';
-import { createTrustLine, getTokenBalance, mintTokens, setupWallets } from '@tests/utils/test.helper';
+import { CLAWBACK_AMOUNT, CURRENCY, MINT_AMOUNT, TRANSFER_AMOUNT } from "@tests/utils/data";
+import { createTrustLine, getTokenBalance, mintTokens, setupWallets } from "@tests/utils/test.helper";
 import {
   clawbackTokens,
   clearAccountFlag,
@@ -7,11 +7,11 @@ import {
   setupIssuerWithDomain,
   transferTokens,
   verifyAccountFlag,
-} from '@tests/utils/trust-line-token.helper';
-import type { Client, Wallet } from 'xrpl';
-import { AccountSetAsfFlags } from 'xrpl';
-import { AccountRootFlags } from 'xrpl/dist/npm/models/ledger';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/trust-line-token.helper";
+import type { Client, Wallet } from "xrpl";
+import { AccountSetAsfFlags } from "xrpl";
+import { AccountRootFlags } from "xrpl/dist/npm/models/ledger";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * AllowTrustLineClawback Flag Test
@@ -22,7 +22,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  *   Phase 3: Test Clawback Operations (clawback from Bob, excessive clawback)
  *   Phase 4: Test Clawback Permanence (cannot clear AllowTrustLineClawback)
  */
-describe('Trust Line Token Clawback', () => {
+describe("Trust Line Token Clawback", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
@@ -30,7 +30,7 @@ describe('Trust Line Token Clawback', () => {
   let bobWallet: Wallet;
 
   beforeAll(async () => {
-    console.log('🚀 Starting AllowTrustLineClawback Flag Test');
+    console.log("🚀 Starting AllowTrustLineClawback Flag Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -39,13 +39,13 @@ describe('Trust Line Token Clawback', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup - Create Issuer and User Accounts', () => {
-    it('should create and fund all wallets', async () => {
-      console.log('\n==================== PHASE 1: SETUP - CREATE ISSUER AND USER ACCOUNTS ====================');
+  describe("Phase 1: Setup - Create Issuer and User Accounts", () => {
+    it("should create and fund all wallets", async () => {
+      console.log("\n==================== PHASE 1: SETUP - CREATE ISSUER AND USER ACCOUNTS ====================");
 
       const wallets = await setupWallets(3);
       issuerWallet = wallets[0]!;
@@ -57,7 +57,7 @@ describe('Trust Line Token Clawback', () => {
       console.log(`✅ Bob: ${bobWallet.address}`);
     }, 60000);
 
-    it('should configure issuer account with AllowTrustLineClawback', async () => {
+    it("should configure issuer account with AllowTrustLineClawback", async () => {
       await setupIssuerWithDomain(issuerWallet);
       await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfAllowTrustLineClawback);
       await setAccountFlag(issuerWallet, AccountSetAsfFlags.asfDefaultRipple);
@@ -65,13 +65,13 @@ describe('Trust Line Token Clawback', () => {
       await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfAllowTrustLineClawback, true);
       await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfDefaultRipple, true);
 
-      console.log('✅ AllowTrustLineClawback and DefaultRipple flags enabled on issuer successfully');
+      console.log("✅ AllowTrustLineClawback and DefaultRipple flags enabled on issuer successfully");
     }, 30000);
   });
 
-  describe('Phase 2: Trust Lines and Token Setup', () => {
-    it('should create trust lines and issue tokens to Alice', async () => {
-      console.log('\n==================== PHASE 2: TRUST LINES AND TOKEN SETUP ====================');
+  describe("Phase 2: Trust Lines and Token Setup", () => {
+    it("should create trust lines and issue tokens to Alice", async () => {
+      console.log("\n==================== PHASE 2: TRUST LINES AND TOKEN SETUP ====================");
 
       await createTrustLine(aliceWallet, issuerWallet);
       await createTrustLine(bobWallet, issuerWallet);
@@ -81,14 +81,14 @@ describe('Trust Line Token Clawback', () => {
       const aliceBalance = await getTokenBalance(aliceWallet, issuerWallet);
       expect(aliceBalance).toBe(MINT_AMOUNT);
 
-      console.log('✅ Trust lines created and tokens issued successfully');
+      console.log("✅ Trust lines created and tokens issued successfully");
       console.log(`✅ Alice now has ${MINT_AMOUNT} ${CURRENCY}`);
     }, 60000);
   });
 
-  describe('Phase 3: Test Clawback Operations', () => {
-    it('should allow Alice to transfer tokens to Bob', async () => {
-      console.log('\n==================== PHASE 3: TEST CLAWBACK OPERATIONS ====================');
+  describe("Phase 3: Test Clawback Operations", () => {
+    it("should allow Alice to transfer tokens to Bob", async () => {
+      console.log("\n==================== PHASE 3: TEST CLAWBACK OPERATIONS ====================");
 
       await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
 
@@ -100,7 +100,7 @@ describe('Trust Line Token Clawback', () => {
       console.log(`✅ Transfer successful: Alice has ${aliceBalance} ${CURRENCY}, Bob has ${bobBalance} ${CURRENCY}`);
     }, 30000);
 
-    it('should succeed issuer clawback from Bob', async () => {
+    it("should succeed issuer clawback from Bob", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
       await clawbackTokens(issuerWallet, bobWallet, CLAWBACK_AMOUNT);
@@ -111,7 +111,7 @@ describe('Trust Line Token Clawback', () => {
       console.log(`✅ Clawback successful: Bob balance ${bobBalanceBefore} -> ${bobBalanceAfter} ${CURRENCY}`);
     }, 30000);
 
-    it('should clawback entire balance when amount exceeds current balance', async () => {
+    it("should clawback entire balance when amount exceeds current balance", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
       // More than Bob should have — transaction succeeds but claws back entire balance
@@ -124,9 +124,9 @@ describe('Trust Line Token Clawback', () => {
     }, 30000);
   });
 
-  describe('Phase 4: Test Clawback Permanence', () => {
-    it('should succeed clear AllowTrustLineClawback transaction but flag remains set (permanent)', async () => {
-      console.log('\n==================== PHASE 4: TEST CLAWBACK PERMANENCE ====================');
+  describe("Phase 4: Test Clawback Permanence", () => {
+    it("should succeed clear AllowTrustLineClawback transaction but flag remains set (permanent)", async () => {
+      console.log("\n==================== PHASE 4: TEST CLAWBACK PERMANENCE ====================");
 
       // Transaction succeeds but does nothing - AllowTrustLineClawback cannot be cleared once set
       await clearAccountFlag(issuerWallet, AccountSetAsfFlags.asfAllowTrustLineClawback);
@@ -134,7 +134,7 @@ describe('Trust Line Token Clawback', () => {
       await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfAllowTrustLineClawback, true);
 
       console.log(
-        '✅ Clear transaction succeeded but did nothing - AllowTrustLineClawback flag remains enabled (permanent)'
+        "✅ Clear transaction succeeded but did nothing - AllowTrustLineClawback flag remains enabled (permanent)",
       );
     }, 20000);
   });

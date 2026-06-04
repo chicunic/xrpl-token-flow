@@ -4,11 +4,11 @@ import {
   getMPTokenBalance,
   mintMPToken,
   transferMPToken,
-} from '@tests/utils/multi-purpose-token.helper';
-import { setupWallets } from '@tests/utils/test.helper';
-import type { Client, Wallet } from 'xrpl';
-import { MPTokenIssuanceCreateFlags } from 'xrpl';
-import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
+} from "@tests/utils/multi-purpose-token.helper";
+import { setupWallets } from "@tests/utils/test.helper";
+import type { Client, Wallet } from "xrpl";
+import { MPTokenIssuanceCreateFlags } from "xrpl";
+import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 
 /**
  * MPToken TransferFee Test
@@ -22,7 +22,7 @@ import { getXRPLClient, initializeXRPLClient } from '@/config/xrpl.config';
  * TransferFee range: 0–50000 representing 0.000%–50.000%
  * Fee is charged on peer-to-peer transfers only (not issuer operations)
  */
-describe('Multi-Purpose Token TransferFee', () => {
+describe("Multi-Purpose Token TransferFee", () => {
   let client: Client;
 
   let issuerWallet: Wallet;
@@ -35,7 +35,7 @@ describe('Multi-Purpose Token TransferFee', () => {
   const TRANSFER_FEE = 1000;
 
   beforeAll(async () => {
-    console.log('🚀 Starting MPToken TransferFee Test');
+    console.log("🚀 Starting MPToken TransferFee Test");
 
     await initializeXRPLClient();
     client = getXRPLClient();
@@ -44,13 +44,13 @@ describe('Multi-Purpose Token TransferFee', () => {
   afterAll(async () => {
     if (client.isConnected()) {
       await client.disconnect();
-      console.log('✅ Disconnected from XRPL');
+      console.log("✅ Disconnected from XRPL");
     }
   });
 
-  describe('Phase 1: Setup', () => {
-    it('should create issuance with 1% TransferFee', async () => {
-      console.log('\n==================== PHASE 1: SETUP ====================');
+  describe("Phase 1: Setup", () => {
+    it("should create issuance with 1% TransferFee", async () => {
+      console.log("\n==================== PHASE 1: SETUP ====================");
 
       const wallets = await setupWallets(3);
       issuerWallet = wallets[0]!;
@@ -62,7 +62,7 @@ describe('Multi-Purpose Token TransferFee', () => {
         MPTokenIssuanceCreateFlags.tfMPTCanTransfer |
           MPTokenIssuanceCreateFlags.tfMPTCanLock |
           MPTokenIssuanceCreateFlags.tfMPTCanClawback,
-        { transferFee: TRANSFER_FEE }
+        { transferFee: TRANSFER_FEE },
       );
 
       await authorizeMPToken(aliceWallet, mptIssuanceId);
@@ -72,28 +72,28 @@ describe('Multi-Purpose Token TransferFee', () => {
     }, 80000);
   });
 
-  describe('Phase 2: Issuer Mint Has No Fee', () => {
-    it('should mint without fee deduction', async () => {
-      console.log('\n==================== PHASE 2: MINT NO FEE ====================');
+  describe("Phase 2: Issuer Mint Has No Fee", () => {
+    it("should mint without fee deduction", async () => {
+      console.log("\n==================== PHASE 2: MINT NO FEE ====================");
 
-      await mintMPToken(issuerWallet, aliceWallet, mptIssuanceId, '10000');
+      await mintMPToken(issuerWallet, aliceWallet, mptIssuanceId, "10000");
 
-      expect(await getMPTokenBalance(aliceWallet, mptIssuanceId)).toBe('10000');
+      expect(await getMPTokenBalance(aliceWallet, mptIssuanceId)).toBe("10000");
 
-      console.log('✅ Minted 10000 to Alice (no fee)');
+      console.log("✅ Minted 10000 to Alice (no fee)");
     }, 30000);
   });
 
-  describe('Phase 3: P2P Transfer With Fee', () => {
-    it('should deduct 1% fee on Alice → Bob transfer', async () => {
-      console.log('\n==================== PHASE 3: P2P TRANSFER WITH FEE ====================');
+  describe("Phase 3: P2P Transfer With Fee", () => {
+    it("should deduct 1% fee on Alice → Bob transfer", async () => {
+      console.log("\n==================== PHASE 3: P2P TRANSFER WITH FEE ====================");
 
       const aliceBefore = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
       const bobBefore = BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId));
 
       // Transfer 1000 to Bob, Alice pays 1% fee = 10 extra
       // Alice sends 1000 + 10 = 1010, Bob receives 1000
-      await transferMPToken(aliceWallet, bobWallet, mptIssuanceId, '1000', 'tesSUCCESS', '1010');
+      await transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "1000", "tesSUCCESS", "1010");
 
       const aliceAfter = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
       const bobAfter = BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId));
@@ -108,12 +108,12 @@ describe('Multi-Purpose Token TransferFee', () => {
     }, 30000);
   });
 
-  describe('Phase 4: Burn Has No Fee', () => {
-    it('should burn to issuer without fee', async () => {
-      console.log('\n==================== PHASE 4: BURN NO FEE ====================');
+  describe("Phase 4: Burn Has No Fee", () => {
+    it("should burn to issuer without fee", async () => {
+      console.log("\n==================== PHASE 4: BURN NO FEE ====================");
 
       const bobBefore = BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId));
-      const burnAmount = '500';
+      const burnAmount = "500";
 
       await transferMPToken(bobWallet, issuerWallet, mptIssuanceId, burnAmount);
 
