@@ -85,7 +85,7 @@ FUND_SECRET=<your-secret>                              # Secret key for wallet f
 
 ## Local Network Testing
 
-Run tests against a local standalone rippled in Docker — no faucet or secret key needed. The local node uses the genesis account for wallet funding and is configured with mainnet-matching reserves (1 XRP base / 0.2 XRP owner) via the `[voting]` stanza in `docker/rippled.cfg` ([rippled 1.11.0+](https://github.com/XRPLF/rippled/pull/4319)).
+Run tests against a local standalone rippled in Docker — no faucet or secret key needed. The local node uses the genesis account for wallet funding and is configured with mainnet-matching reserves (1 XRP base / 0.2 XRP owner) via the `[voting]` stanza in `docker/rippled.cfg` ([rippled 1.11.0+](https://github.com/XRPLF/rippled/pull/4319)). The config also sets `[network_id]` to 2 (devnet) — xrpl.js v5 refuses to connect when `server_info` lacks a network ID, and values ≤ 1024 keep transactions free of the `NetworkID` field.
 
 ```bash
 # Start rippled container

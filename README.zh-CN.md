@@ -85,7 +85,7 @@ FUND_SECRET=<your-secret>                              # 钱包资助密钥 (loc
 
 ## 本地网络测试
 
-使用本地 Docker standalone rippled 运行测试 — 无需水龙头或密钥。本地节点使用 genesis 账户进行钱包资助，并通过 `docker/rippled.cfg` 中的 `[voting]` 配置与主网一致的 reserve (1 XRP base / 0.2 XRP owner) ([rippled 1.11.0+](https://github.com/XRPLF/rippled/pull/4319))。
+使用本地 Docker standalone rippled 运行测试 — 无需水龙头或密钥。本地节点使用 genesis 账户进行钱包资助，并通过 `docker/rippled.cfg` 中的 `[voting]` 配置与主网一致的 reserve (1 XRP base / 0.2 XRP owner) ([rippled 1.11.0+](https://github.com/XRPLF/rippled/pull/4319))。配置中还设置了 `[network_id]` 为 2 (devnet) — xrpl.js v5 在 `server_info` 缺少 network ID 时会拒绝连接，且 ≤ 1024 的值不会在交易中添加 `NetworkID` 字段。
 
 ```bash
 # 启动 rippled 容器
