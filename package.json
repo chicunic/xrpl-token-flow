@@ -6,7 +6,8 @@
     "check": "tsc -b --noEmit && eslint . && prettier --check .",
     "fix": "eslint . --fix && prettier --write .",
     "test": "vitest run",
-    "test:local": "vitest run --config vitest.config.local.ts",
+    "test:local": "vitest run --config vitest.config.ts",
+    "test:devnet": "vitest run --config vitest.config.devnet.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "docker:up": "docker compose up -d",
@@ -32,7 +33,7 @@
     "@types/node": "^25.9.3",
     "@vitest/coverage-v8": "^4.1.8",
     "@vitest/eslint-plugin": "^1.6.20",
-    "eslint": "^10.4.1",
+    "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "jiti": "^2.7.0",
@@ -43,7 +44,7 @@
     "vitest": "^4.1.8"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "packageManager": "pnpm@11.6.0+sha512.9a36518224080c6fe5165afdcfe79bfa118c29be703f3f462b1e32efe1e98e47e8750b148e08286250aad4113cc7993ca413c4e2cd447752708c2ee5751bc95f"
 }

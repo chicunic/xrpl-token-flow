@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D24-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D26-green.svg)](https://nodejs.org/)
 [![XRPL](https://img.shields.io/badge/XRPL-4.x-brightgreen.svg)](https://xrpl.org/)
 [![Vitest](https://img.shields.io/badge/Vitest-4.x-6E9F18.svg)](https://vitest.dev/)
 [![Prettier](https://img.shields.io/badge/Prettier-3.x-F7B93E.svg)](https://prettier.io/)
@@ -47,15 +47,15 @@ xrpl-token-flow/
 ├── .prettierrc                         # Prettier 格式化配置
 ├── eslint.config.ts                    # ESLint 配置
 ├── docker-compose.yaml                 # 本地 rippled 容器
-├── vitest.config.ts                    # Vitest 配置 (devnet)
-├── vitest.config.local.ts              # Vitest 配置 (本地 Docker)
+├── vitest.config.ts                    # Vitest 配置 (本地 Docker)
+├── vitest.config.devnet.ts             # Vitest 配置 (devnet)
 ├── tsconfig.json                       # TypeScript 配置
 └── package.json                        # 包依赖和脚本
 ```
 
 ## 先决条件
 
-- **Node.js**: >=24
+- **Node.js**: >=26
 - **pnpm**: 包管理器
 - **Docker**: 本地网络测试需要
 

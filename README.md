@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D24-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D26-green.svg)](https://nodejs.org/)
 [![XRPL](https://img.shields.io/badge/XRPL-4.x-brightgreen.svg)](https://xrpl.org/)
 [![Vitest](https://img.shields.io/badge/Vitest-4.x-6E9F18.svg)](https://vitest.dev/)
 [![Prettier](https://img.shields.io/badge/Prettier-3.x-F7B93E.svg)](https://prettier.io/)
@@ -47,15 +47,15 @@ xrpl-token-flow/
 ├── .prettierrc                         # Prettier formatter
 ├── eslint.config.ts                    # ESLint configuration
 ├── docker-compose.yaml                 # Local rippled container
-├── vitest.config.ts                    # Vitest configuration (devnet)
-├── vitest.config.local.ts              # Vitest configuration (local Docker)
+├── vitest.config.ts                    # Vitest configuration (local Docker)
+├── vitest.config.devnet.ts             # Vitest configuration (devnet)
 ├── tsconfig.json                       # TypeScript configuration
 └── package.json                        # Package dependencies and scripts
 ```
 
 ## Prerequisites
 
-- **Node.js**: >=24
+- **Node.js**: >=26
 - **pnpm**: Package manager
 - **Docker**: Required for local network testing
 

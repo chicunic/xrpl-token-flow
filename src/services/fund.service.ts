@@ -16,6 +16,19 @@ const XRP_MINIMUM_DROPS = BigInt(xrpToDrops(2));
 // Genesis account on standalone rippled (local mode)
 const GENESIS_SEED = "snoPBrXtMeMyMHUVTgbuqAfg1SUTb";
 
+// Parallel test files pay from one source account, so concurrent autofill() can collide on Sequence; retry on conflict.
+const SEQUENCE_RETRY_RESULTS = ["tefPAST_SEQ", "terPRE_SEQ", "tefALREADY"];
+const MAX_FUND_ATTEMPTS = 6;
+
+function isSequenceConflict(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return SEQUENCE_RETRY_RESULTS.some((code) => message.includes(code));
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 interface ActNotFoundError extends XrplError {
   data?: {
     error?: string;
@@ -38,6 +51,21 @@ function getFundWallet(): Wallet {
 }
 
 export async function fundWallet(wallet: Wallet, { amount }: { amount: string }): Promise<void> {
+  for (let attempt = 1; attempt <= MAX_FUND_ATTEMPTS; attempt++) {
+    try {
+      await fundWalletImpl(wallet, { amount });
+      return;
+    } catch (error: unknown) {
+      if (!isSequenceConflict(error) || attempt === MAX_FUND_ATTEMPTS) {
+        throw error;
+      }
+      // Another concurrent funder won the sequence; back off briefly and re-autofill.
+      await delay(200 * attempt);
+    }
+  }
+}
+
+async function fundWalletImpl(wallet: Wallet, { amount }: { amount: string }): Promise<void> {
   const amountDrops = BigInt(xrpToDrops(amount));
   const minDrops = BigInt(xrpToDrops("1"));
   const maxDrops = BigInt(xrpToDrops("100"));

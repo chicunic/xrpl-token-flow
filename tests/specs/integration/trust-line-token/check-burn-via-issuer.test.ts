@@ -21,8 +21,7 @@ import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config";
 /**
  * Check Burn via Issuer Test
  *
- * Tests using Check (CheckCreate/CheckCash) to burn tokens back to issuer,
- * bypassing DepositAuth:
+ * Tests using Check (CheckCreate/CheckCash) to burn tokens back to issuer, bypassing DepositAuth:
  *   Phase 1: Setup - Create Issuer and User with DefaultRipple
  *   Phase 2: Trust Lines and Token Setup
  *   Phase 3: Enable DepositAuth on Issuer — direct burn blocked
