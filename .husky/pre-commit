@@ -1,0 +1,19 @@
+# Check for unstaged changes
+if ! git diff --quiet; then
+  echo "❌ Error: You have unstaged changes. Please 'git add' all changes before committing."
+  echo ""
+  echo "Unstaged files:"
+  git diff --name-only
+  exit 1
+fi
+
+# Run check (eslint + prettier)
+echo "🔍 Running check..."
+pnpm run check
+
+if [ $? -ne 0 ]; then
+  echo "❌ Check failed. Commit aborted."
+  exit 1
+fi
+
+echo "✅ All checks passed!"
