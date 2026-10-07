@@ -1,0 +1,1506 @@
+{
+  "schemaVersion": 1,
+  "environment": {
+    "rippledVersion": "3.1.3",
+    "networkId": 2,
+    "amendments": [
+      "00C1FC4A53E60AB02C864641002B3172F38677E29C26C5406685179B37E1EDAC",
+      "03BDC0099C4E14163ADA272C1B6F6FABB448CC3E51F522F978041E4B57D9158C",
+      "12523DF04B553A0B1AD74F42DDB741DE8DC06A03FC089A0EF197E2A87F1D8107",
+      "138B968F25822EFBF54C00F97031221C47B1EAB8321D93C7C2AEAF85F04EC5DF",
+      "157D2D480E006395B76F948E3E07A45A05FE10230D88A7993C71F97AE4B1F2D1",
+      "15D61F0C6DB6A2F86BCF96F1E2444FEC54E705923339EC175BD3E517C8B3FF91",
+      "1CB67D082CF7D9102412D34258CEDB400E659352D3B207348889297A6D90F5EF",
+      "1E7ED950F2F13C4F8E2A54103B74D57D5D298FFDBD005936164EE9E6484C438C",
+      "1F4AFA8FA1BC8827AD4C0F682C03A8B671DCDF6B5C4DE36D44243A684103EF88",
+      "25BA44241B3BD880770BFA4DA21C7180576831855368CBEC6A3154FDE4A7676E",
+      "27CD95EE8E1E5A537FF2F89B6CEB7C622E78E9374EBD7DCBEDFAE21CD6F16E0A",
+      "2CD5286D8D687E98B41102BDD797198E81EA41DF7BD104E6561FEB104EFF2561",
+      "2E2FB9CF8A44EB80F4694D38AADAE9B8B7ADAFD2F092E10068E61C98C4F092B0",
+      "303ACB16CF8DBD3B5C34F131A9D19A7DE01AE05F480A8A682B869D1B4AAC8CFC",
+      "30CD365592B8EE40489BA01AE2F7555CAC9C983145871DC82A42A31CF5BAE7D9",
+      "31E0DA76FB8FB527CADCDF0E61CB9C94120966328EFA9DCA202135BAF319C0BA",
+      "32A122F1352A4C7B3A6D790362CC34749C5E57FCE896377BFDC6CCD14F6CD627",
+      "32B8614321F7E070419115ABEAB1742EA20F3E3AF34432B5E2F474F8083260DC",
+      "3318EA0CF0755AF15DAC19F2B5C5BCBFF4B78BDD57609ACCAABE2C41309B051A",
+      "35291ADD2D79EB6991343BDA0912269C817D0F094B02226C1C14AD2858962ED4",
+      "3CBC5C4E630A1B82380295CDA84B32B49DD066602E74E39B85EF64137FA65194",
+      "41765F664A8D67FF03DDB1C1A893DE6273690BA340A6C2B07C8D29D0DD013D3A",
+      "452F5906C46D46F407883344BFDD90E672B672C5E9943DB4891E3A34FEEEB9DB",
+      "47C3002ABA31628447E8E9A8B315FAA935CE30183F9A9B86845E469CA2CDC3DF",
+      "4F46DF03559967AC60F2EB272FEFE3928A7594A45FF774B87A7E540DB0F8F068",
+      "56B241D7A43D40354D02A9DC4C8DF5C7A1F930D92A9035C4E12291B3CA3E1C2B",
+      "586480873651E106F1D6339B0C4A8945BA705A777F3F4524626FF1FC07EFE41D",
+      "58BE9B5968C4DA7C59BA900961828B113E5490699B21877DEF9A31E9D0FE5D5F",
+      "5D08145F0A4983F23AFFFF514E83FAD355C5ABFBB6CAB76FB5BC8519FF5F33BE",
+      "5E9586DB3D765B4C5794658FB6BB385071E9838DF4016027E6E26820C8526724",
+      "6143A27B71F7DAF9330ECA7C5EC3D54C8083A4FDEF7016737EEC06AB61E82EE0",
+      "621A0B264970359869E3C0363A899909AAB7A887C8B73519E4ECF952D33258A8",
+      "677E401A423E3708363A36BA8B3A7D019D21AC5ABD00387BDBEA6BDE4C91247E",
+      "67A34F2CF55BFC0F93AACD5B281413176FEE195269FA6D95219A2DF738671172",
+      "7117E2EC2DBF119CA55181D69819F1999ECEE1A0225A7FD2B9ED47940968479C",
+      "726F944886BCDF7433203787E93DD9AA87FAB74DFE3AF4785BA03BEFC97ADA1F",
+      "73761231F7F3D94EC3D8C63D91BDD0D89045C6F71B917D1925C01253515A6669",
+      "740352F2412A9909880C23A559FCECEDA3BE2126FED62FC7660D628A06927F11",
+      "755C971C29971C9F20C6F080F2ED96F87884E40AD19554A5EBECDCEC8A1F77FE",
+      "75A7E01C505DD5A179DFE3E000A9B6F1EDDEB55A12F95579A23E15B15DC8BE5A",
+      "763C37B352BE8C7A04E810F8E462644C45AFEAD624BF3894A08E5C917CF9FF39",
+      "7BB62DC13EC72B775091E9C71BF8CF97E122647693B50C5E87A80DFD6FCFAC50",
+      "7CA70A7674A26FA517412858659EBC7EDEEF7D2D608824464E6FDEFD06854E14",
+      "83FD6594FF83C1D105BD2B41D7E242D86ECB4A8220BD9AF4DA35CB0F69E39B2A",
+      "89308AF3B8B10B7192C4E613E1D2E4D9BA64B2EE2D5232402AE82A6A7220D953",
+      "8CC0774A3BF66D1D22E76BBDA8E8A232E6B6313834301B3B23E8601196AE6455",
+      "8EC4304A06AF03BE953EA6EDA494864F6F3F30AA002BABA35869FBB8C6AE5D52",
+      "8F81B066ED20DAECA20DF57187767685EEF3980B228E0667A650BAF24426D3B4",
+      "9196110C23EA879B4229E51C286180C7D02166DA712559F634372F5264D0EC59",
+      "93E516234E35E08CA689FA33A6D38E103881F8DCB53023F728C307AA89D515A7",
+      "950AE2EA4654E47F04AA8739C0B214E242097E802FD372D24047A89AB1F5EC38",
+      "955DF3FA5891195A9DAEFA1DDC6BB244B545DDE1BAA84CBB25D5F12A8DA68A0C",
+      "96FD2F293A519AE1DB6F8BED23E4AD9119342DA7CB6BAFD00953D16C54205D8B",
+      "98DECF327BF79997AEC178323AD51A830E457BFC6D454DAF3E46E5EC42DC619F",
+      "A730EB18A9D4BB52502C898589558B4CCEB4BE10044500EE5581137A2E80E849",
+      "AB8D932A5F338903FE5BCBD80B611FFED70839ABA3170E9CE01D947C0EDEDCF2",
+      "AE35ABDEFBDE520372B31C957020B34A7A4A9DC3115A69803A44016477C84D6E",
+      "AF8DF7465C338AE64B1E937D6C8DA138C0D63AD5134A68792BBBE1F63356C422",
+      "B2A4DB846F0891BF2C76AB2F2ACC8F5B4EC64437135C6E56F3F859DE5FFD5856",
+      "B32752F7DCC41FB86534118FC4EEC8F56E7BD0A7DB60FD73F93F257233C08E3A",
+      "B4E4F5D2D6FB84DF7399960A732309C9FD530EAE5941838160042833625A6076",
+      "B6B3EEDC0267AB50491FDC450A398AF30DBCD977CECED8BEF2499CAB5DAC19E2",
+      "C1CE18F2A268E6A849C27B3DE485006771B4C01B2FCEC4F18356FE92ECD6BB74",
+      "C393B3AEEBF575E475F0C60D5E4241B2070CC4D0EB6C4846B1A07508FAEFC485",
+      "C4483A1896170C66C098DEA5B0E024309C60DC960DE5F01CD7AF986AA3D9AD37",
+      "C7981B764EC4439123A86CC7CCBA436E9B3FF73B3F10A0AE51882E404522FC41",
+      "CA7C02118BA27599528543DFE77BA6838D1B0F43B447D4D7F53523CE6A0E9AC2",
+      "D3456A862DC07E382827981CA02E21946E641877F19B8889031CC57FDCAC83E2",
+      "DAF3A6EB04FA5DC51E8E4F23E9B7022B693EFA636F23F22664746C77B5786B23",
+      "DB432C3A09D9D5DFC7859F39AE5FF767ABC59AED0A9FB441E83B814D8946C109",
+      "DF8B4536989BDACE3F934F29423848B9F1D76D09BE6A1FCFE7E7F06AA26ABEAD",
+      "EE3CF852F0506782D05E65D49E5DCC3D16D50898CD1B646BAE274863401CC3CE",
+      "F1ED6B4A411D8B872E65B9DCB4C8B100375B0DD3D62D07192E011D6D7F339013",
+      "F64E1EABBE79D55B3BB82020516CEC2C582A98A6BFE20FBE9BB6A0D233418064",
+      "FBD513F1B893AC765B78F250E6FFA6A11B573209D1842ADC787C850696741288",
+      "FF2D1E13CF6D22427111B967BD504917F63A900CECD320D6FD3AC9FA90344631"
+    ],
+    "gitCommit": "356cdde37953289f7cf717176556f7c9b4e65751",
+    "capturedAt": "2026-07-27T05:23:07.569Z"
+  },
+  "stats": {
+    "total": 230,
+    "captured": 30,
+    "coverage": 0.1304
+  },
+  "facts": [
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#1",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 2: Individual Lock"
+      ],
+      "test": "should fail transfer FROM locked Alice",
+      "when": {
+        "en": "Alice → Bob transfer",
+        "zh": "Alice → Bob 转账"
+      },
+      "given": [
+        {
+          "en": "Alice individually locked",
+          "zh": "Alice 被单独锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecLOCKED"
+      },
+      "evidence": {
+        "txHash": "588C8573CF474FA42EF37C08D9B9F89B4B3696A4A9C3441033EEB7E2F6EB24D5",
+        "txType": "Payment",
+        "ledgerIndex": 25,
+        "capturedAt": "2026-07-27T05:11:01.010Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#2",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 2: Individual Lock"
+      ],
+      "test": "should fail transfer TO locked Alice",
+      "when": {
+        "en": "Bob → Alice transfer",
+        "zh": "Bob → Alice 转账"
+      },
+      "given": [
+        {
+          "en": "Alice individually locked",
+          "zh": "Alice 被单独锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecLOCKED"
+      },
+      "evidence": {
+        "txHash": "2FF9BF15EA29A842B420E35E6F0875A5B04ED9E1652B53BF7FE415A191101635",
+        "txType": "Payment",
+        "ledgerIndex": 27,
+        "capturedAt": "2026-07-27T05:11:02.038Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#3",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 2: Individual Lock"
+      ],
+      "test": "should allow issuer to mint to locked Alice",
+      "when": {
+        "en": "Issuer → Alice mint",
+        "zh": "Issuer → Alice mint"
+      },
+      "given": [
+        {
+          "en": "Alice individually locked",
+          "zh": "Alice 被单独锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success",
+        "note": {
+          "en": "Issuer unrestricted",
+          "zh": "Issuer 不受限"
+        }
+      },
+      "evidence": {
+        "txHash": "0ADE49AB66592B63B80243EC92A0A78F20138295129A55FDBFF24D64B01C08CE",
+        "txType": "Payment",
+        "ledgerIndex": 29,
+        "capturedAt": "2026-07-27T05:11:03.081Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#4",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 3: Individual Unlock"
+      ],
+      "test": "should unlock Alice and resume transfers",
+      "when": {
+        "en": "Alice → Bob transfer",
+        "zh": "Alice → Bob 转账"
+      },
+      "given": [
+        {
+          "en": "Alice unlocked",
+          "zh": "Alice 已解锁",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "B3B3F90A237318C9987F7FB56BC7D6FE73AC36D9140A49F8832D335B3CCFAFAB",
+        "txType": "Payment",
+        "ledgerIndex": 33,
+        "capturedAt": "2026-07-27T05:11:05.181Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#5",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 4: Global Lock"
+      ],
+      "test": "should fail Alice → Bob transfer during global lock",
+      "when": {
+        "en": "Alice → Bob transfer",
+        "zh": "Alice → Bob 转账"
+      },
+      "given": [
+        {
+          "en": "Global lock",
+          "zh": "全局锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecLOCKED"
+      },
+      "evidence": {
+        "txHash": "570EA280021A379E71B3BC690E2B0BF2F5AE90EB18D37F12E7C749FE5F557AA9",
+        "txType": "Payment",
+        "ledgerIndex": 38,
+        "capturedAt": "2026-07-27T05:11:07.291Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#6",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 4: Global Lock"
+      ],
+      "test": "should fail Bob → Alice transfer during global lock",
+      "when": {
+        "en": "Bob → Alice transfer",
+        "zh": "Bob → Alice 转账"
+      },
+      "given": [
+        {
+          "en": "Global lock",
+          "zh": "全局锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecLOCKED"
+      },
+      "evidence": {
+        "txHash": "98EB200A71B287AFA80E37B14A0ADCBDA07E75D3D7F6912F6A06BE7660C27482",
+        "txType": "Payment",
+        "ledgerIndex": 40,
+        "capturedAt": "2026-07-27T05:11:08.338Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#7",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 5: Issuer Operations During Global Lock"
+      ],
+      "test": "should allow issuer to mint during global lock",
+      "when": {
+        "en": "Issuer → Alice mint",
+        "zh": "Issuer → Alice mint"
+      },
+      "given": [
+        {
+          "en": "Global lock",
+          "zh": "全局锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success",
+        "note": {
+          "en": "Issuer unrestricted",
+          "zh": "Issuer 不受限"
+        }
+      },
+      "evidence": {
+        "txHash": "FD9581CCC41CA518D9D68C585628A15A636CDFD8D09422E94FA14065717AB8CD",
+        "txType": "Payment",
+        "ledgerIndex": 42,
+        "capturedAt": "2026-07-27T05:11:09.380Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#8",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 6: Global Unlock"
+      ],
+      "test": "should global unlock and resume all transfers",
+      "when": {
+        "en": "Alice → Bob transfer",
+        "zh": "Alice → Bob 转账"
+      },
+      "given": [
+        {
+          "en": "Global unlock",
+          "zh": "全局解锁",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "E6530A6595787FB94B60CD8DF629ECEC0819C7B9EBD72A2AE8622EBB350EADD7",
+        "txType": "Payment",
+        "ledgerIndex": 46,
+        "capturedAt": "2026-07-27T05:11:11.464Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#1",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token Credential Deposit Auth",
+        "Phase 1: Enable DepositAuth"
+      ],
+      "test": "should block token payments to the protected receiver",
+      "when": {
+        "en": "Alice → Bob transfer",
+        "zh": "Alice → Bob 转账"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "Bob DepositAuth on, no credential",
+          "zh": "Bob 启用 DepositAuth、无凭证",
+          "source": "manual",
+          "axis": "credential"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "E019C1AB7395708492478FED2765880B44311B47C119B85F4E5935D23206EF1E",
+        "txType": "Payment",
+        "ledgerIndex": 90,
+        "capturedAt": "2026-07-27T05:11:33.650Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#2",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token Credential Deposit Auth",
+        "Phase 3: Unaccepted Credential"
+      ],
+      "test": "should reject payments referencing a credential the subject has not accepted",
+      "when": {
+        "en": "Payment with unaccepted credential",
+        "zh": "携带未接受凭证的付款"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "Credential issued, not accepted",
+          "zh": "凭证已签发但未接受",
+          "source": "manual",
+          "axis": "credential"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecBAD_CREDENTIALS"
+      },
+      "evidence": {
+        "txHash": "8B147CD0E0E4330560017568C1600820460373CB4BB657C6100C237D8A15322D",
+        "txType": "Payment",
+        "ledgerIndex": 96,
+        "capturedAt": "2026-07-27T05:11:36.767Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#3",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token Credential Deposit Auth",
+        "Phase 4: Accepted Credential"
+      ],
+      "test": "should allow payments once the credential is accepted",
+      "when": {
+        "en": "Payment with accepted credential",
+        "zh": "携带已接受凭证的付款"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "CredentialIDs referenced",
+          "zh": "引用 CredentialIDs",
+          "source": "manual",
+          "axis": "credential"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "2833BBF37699572013F858C30755598ADE14C61F9457F38DE2CA40C94238F1AB",
+        "txType": "Payment",
+        "ledgerIndex": 100,
+        "capturedAt": "2026-07-27T05:11:38.856Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#4",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token Credential Deposit Auth",
+        "Phase 5: Missing CredentialIDs"
+      ],
+      "test": "should still block payments that do not reference the credential",
+      "when": {
+        "en": "Payment without CredentialIDs",
+        "zh": "未携带 CredentialIDs"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "Credential accepted but not sent",
+          "zh": "凭证已接受但未在交易中引用",
+          "source": "manual",
+          "axis": "credential"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "F4A9D82FA47A3954072DBEFC02153AF3CCC8D07AEE307A1825EBC68B83AC174A",
+        "txType": "Payment",
+        "ledgerIndex": 103,
+        "capturedAt": "2026-07-27T05:11:39.909Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#1",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 1: Deep Freeze Preconditions"
+      ],
+      "test": "should fail to deep freeze a trust line that is not frozen",
+      "when": {
+        "en": "Deep freeze without regular freeze",
+        "zh": "未普通冻结时直接深度冻结"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Trust line not frozen",
+          "zh": "信任线未冻结",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "0778FDAB114CD11EBCECAD5F9B15C963095853D297C2A94E01273DE08E193B6C",
+        "txType": "TrustSet",
+        "ledgerIndex": 23,
+        "capturedAt": "2026-07-27T05:22:57.032Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#2",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 3: Deep-Frozen Transfers"
+      ],
+      "test": "should block the deep-frozen holder from sending",
+      "when": {
+        "en": "Deep-frozen holder sends",
+        "zh": "深度冻结的持有者发送"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Freeze + deep freeze",
+          "zh": "冻结 + 深度冻结",
+          "source": "ledger",
+          "predicate": {
+            "kind": "trustLine",
+            "account": "alice",
+            "peer": "issuer",
+            "currency": "USD",
+            "freeze": true,
+            "deepFreeze": true,
+            "authorized": false,
+            "noRipple": false
+          },
+          "axis": "alice.trustLine"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecPATH_DRY"
+      },
+      "evidence": {
+        "txHash": "1F2AD4D7DFACA2648CEC3C496EBF535C2E212919B7CA6DFDA1648C1BBEC5E281",
+        "txType": "Payment",
+        "ledgerIndex": 29,
+        "capturedAt": "2026-07-27T05:23:00.205Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#3",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 3: Deep-Frozen Transfers"
+      ],
+      "test": "should block the deep-frozen holder from receiving",
+      "when": {
+        "en": "Deep-frozen holder receives",
+        "zh": "深度冻结的持有者接收"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Freeze + deep freeze",
+          "zh": "冻结 + 深度冻结",
+          "source": "ledger",
+          "predicate": {
+            "kind": "trustLine",
+            "account": "alice",
+            "peer": "issuer",
+            "currency": "USD",
+            "freeze": true,
+            "deepFreeze": true,
+            "authorized": false,
+            "noRipple": false
+          },
+          "axis": "alice.trustLine"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecPATH_DRY"
+      },
+      "evidence": {
+        "txHash": "C6C5D6D17195A58F6EA8C359EA33255D349BCF2FED19CFA171EFC24841DD5DEF",
+        "txType": "Payment",
+        "ledgerIndex": 32,
+        "capturedAt": "2026-07-27T05:23:01.263Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#4",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 4: Clear Order Enforcement"
+      ],
+      "test": "should fail to clear the regular freeze while deep-frozen",
+      "when": {
+        "en": "Clear regular freeze while deep-frozen",
+        "zh": "深度冻结未清除时清除冻结"
+      },
+      "given": [
+        {
+          "en": "Deep freeze still set",
+          "zh": "深度冻结仍生效",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "EF3988FD0D464A588E06CEDDA96EBDE6E55D42D5BBF7F69C2F9408DCE30B9DEE",
+        "txType": "TrustSet",
+        "ledgerIndex": 34,
+        "capturedAt": "2026-07-27T05:23:02.283Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#5",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 5: Clear Deep Freeze Only"
+      ],
+      "test": "should allow receiving after deep freeze is cleared, sending still frozen",
+      "when": {
+        "en": "Receive after deep freeze cleared",
+        "zh": "清除深度冻结后接收"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Regular freeze remains",
+          "zh": "普通冻结仍生效",
+          "source": "ledger",
+          "predicate": {
+            "kind": "trustLine",
+            "account": "alice",
+            "peer": "issuer",
+            "currency": "USD",
+            "freeze": true,
+            "deepFreeze": false,
+            "authorized": false,
+            "noRipple": false
+          },
+          "axis": "alice.trustLine"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "A7B5AB3283AB649F8C1A4CA1EC4BAF308CA5616E41C4371DE965034FFB172E20",
+        "txType": "Payment",
+        "ledgerIndex": 38,
+        "capturedAt": "2026-07-27T05:23:04.387Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#6",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 5: Clear Deep Freeze Only"
+      ],
+      "test": "should allow receiving after deep freeze is cleared, sending still frozen",
+      "when": {
+        "en": "Send after deep freeze cleared",
+        "zh": "清除深度冻结后发送"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Regular freeze remains",
+          "zh": "普通冻结仍生效",
+          "source": "ledger",
+          "predicate": {
+            "kind": "trustLine",
+            "account": "alice",
+            "peer": "issuer",
+            "currency": "USD",
+            "freeze": true,
+            "deepFreeze": false,
+            "authorized": false,
+            "noRipple": false
+          },
+          "axis": "alice.trustLine"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecPATH_DRY"
+      },
+      "evidence": {
+        "txHash": "57A19CFEF037145BDC8C4391FBCFC07CE6196C33A471F6EF5AD5BAD73D03E231",
+        "txType": "Payment",
+        "ledgerIndex": 40,
+        "capturedAt": "2026-07-27T05:23:05.419Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#7",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deep-freeze.test.ts",
+      "suite": [
+        "Trust Line Token Deep Freeze",
+        "Phase 6: Clear Freeze"
+      ],
+      "test": "should restore both directions after the freeze is cleared",
+      "when": {
+        "en": "Send after freeze cleared",
+        "zh": "解除冻结后发送"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "All freezes cleared",
+          "zh": "所有冻结已清除",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "9F0E25C32CA5812ABC01ADE32C6B2BF30857097EB04F5CF41DB8443869D9A3F3",
+        "txType": "Payment",
+        "ledgerIndex": 44,
+        "capturedAt": "2026-07-27T05:23:07.524Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#1",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 3: Enable DepositAuth on Bob"
+      ],
+      "test": "should fail Alice -> Bob USD transfer with DepositAuth enabled",
+      "when": {
+        "en": "Alice → Bob USD",
+        "zh": "Alice → Bob USD"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "D53C5B95B7F083F6D55F67661A3A7DC0F5D955948ECCD045C673394172F404F7",
+        "txType": "Payment",
+        "ledgerIndex": 69,
+        "capturedAt": "2026-07-27T05:11:22.936Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#2",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 3: Enable DepositAuth on Bob"
+      ],
+      "test": "should fail Alice -> Bob XRP transfer with DepositAuth enabled",
+      "when": {
+        "en": "Alice → Bob XRP",
+        "zh": "Alice → Bob XRP"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "7FF234C6C2E8E09812EE502FE5ED7377A8C31DF9FFADA3E4DBC673426878E6BA",
+        "txType": "Payment",
+        "ledgerIndex": 71,
+        "capturedAt": "2026-07-27T05:11:23.991Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#3",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 3: Enable DepositAuth on Bob"
+      ],
+      "test": "should fail Issuer -> Bob USD mint with DepositAuth enabled",
+      "when": {
+        "en": "Issuer → Bob USD (mint)",
+        "zh": "Issuer → Bob USD (mint)"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "67E2AE190ED1525BEE816D88F2CBAE366978FEBDB0CA34F0A1A92C18C1FED34F",
+        "txType": "Payment",
+        "ledgerIndex": 73,
+        "capturedAt": "2026-07-27T05:11:25.048Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#4",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 3: Enable DepositAuth on Bob"
+      ],
+      "test": "should succeed Bob -> Alice USD transfer with DepositAuth enabled",
+      "when": {
+        "en": "Bob → Alice USD",
+        "zh": "Bob → Alice USD"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        }
+      ],
+      "outcome": {
+        "kind": "success",
+        "note": {
+          "en": "outgoing unrestricted",
+          "zh": "出账不受限"
+        }
+      },
+      "evidence": {
+        "txHash": "CB51F5A1EF990332498C438F028B623F07EF809FA90DED308DD8150F3603D30D",
+        "txType": "Payment",
+        "ledgerIndex": 75,
+        "capturedAt": "2026-07-27T05:11:26.114Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#5",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 3: Enable DepositAuth on Bob"
+      ],
+      "test": "should succeed Bob -> Alice XRP transfer with DepositAuth enabled",
+      "when": {
+        "en": "Bob → Alice XRP",
+        "zh": "Bob → Alice XRP"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        }
+      ],
+      "outcome": {
+        "kind": "success",
+        "note": {
+          "en": "outgoing unrestricted",
+          "zh": "出账不受限"
+        }
+      },
+      "evidence": {
+        "txHash": "A7B43292EE8540545131D8E735AA7A705F78831966BFB9EF7D726F344997220A",
+        "txType": "Payment",
+        "ledgerIndex": 77,
+        "capturedAt": "2026-07-27T05:11:27.167Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#6",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 4: DepositPreauth"
+      ],
+      "test": "should succeed Alice -> Bob USD transfer after preauthorization",
+      "when": {
+        "en": "Alice → Bob USD",
+        "zh": "Alice → Bob USD"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "preauthorized",
+          "zh": "已预授权",
+          "source": "ledger",
+          "predicate": {
+            "kind": "ledgerObject",
+            "account": "bob",
+            "type": "DepositPreauth",
+            "count": 1
+          },
+          "axis": "bob.DepositPreauth"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "4314B676767F8DCCB8F294B42829AFB6B9D6FF43D40F244384E32D89BBFE1971",
+        "txType": "Payment",
+        "ledgerIndex": 81,
+        "capturedAt": "2026-07-27T05:11:29.265Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#7",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 4: DepositPreauth"
+      ],
+      "test": "should succeed Alice -> Bob XRP transfer after preauthorization",
+      "when": {
+        "en": "Alice → Bob XRP",
+        "zh": "Alice → Bob XRP"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "preauthorized",
+          "zh": "已预授权",
+          "source": "ledger",
+          "predicate": {
+            "kind": "ledgerObject",
+            "account": "bob",
+            "type": "DepositPreauth",
+            "count": 1
+          },
+          "axis": "bob.DepositPreauth"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "0CAB73732AB9F53C2CB3DFA96761612C2228007812ADB587A80C4AB556D4D9A5",
+        "txType": "Payment",
+        "ledgerIndex": 83,
+        "capturedAt": "2026-07-27T05:11:30.307Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#8",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 4: DepositPreauth"
+      ],
+      "test": "should fail Alice -> Bob USD transfer after removing preauthorization",
+      "when": {
+        "en": "Alice → Bob USD",
+        "zh": "Alice → Bob USD"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "Alice preauth removed",
+          "zh": "Alice 预授权已移除",
+          "source": "manual",
+          "axis": "bob.DepositPreauth"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "556D30385E744A187CB083E24C36A768DF09AAB7C7A8468497BF1C243D0A23CE",
+        "txType": "Payment",
+        "ledgerIndex": 88,
+        "capturedAt": "2026-07-27T05:11:32.405Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#9",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 4: DepositPreauth"
+      ],
+      "test": "should fail Alice -> Bob XRP transfer after removing preauthorization",
+      "when": {
+        "en": "Alice → Bob XRP",
+        "zh": "Alice → Bob XRP"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "Bob DepositAuth on",
+          "zh": "Bob已开启 DepositAuth",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "bob",
+            "flag": "lsfDepositAuth",
+            "value": true
+          },
+          "axis": "bob.lsfDepositAuth"
+        },
+        {
+          "en": "Alice preauth removed",
+          "zh": "Alice 预授权已移除",
+          "source": "manual",
+          "axis": "bob.DepositPreauth"
+        }
+      ],
+      "outcome": {
+        "kind": "failure",
+        "code": "tecNO_PERMISSION"
+      },
+      "evidence": {
+        "txHash": "58E5AFD04461D0E0D950313907FBF7041E4B7C7C329443C3509BB2862640A619",
+        "txType": "Payment",
+        "ledgerIndex": 90,
+        "capturedAt": "2026-07-27T05:11:33.431Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#10",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 5: Disable DepositAuth"
+      ],
+      "test": "should succeed Alice -> Bob transfer after disabling DepositAuth",
+      "when": {
+        "en": "Alice → Bob USD",
+        "zh": "Alice → Bob USD"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "-",
+          "zh": "-",
+          "source": "manual",
+          "axis": "bob.DepositPreauth"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "CF3A8614F02E6D3139DB00F05B4992558EE85775EA3DA9D40CC4108BFB071FA9",
+        "txType": "Payment",
+        "ledgerIndex": 94,
+        "capturedAt": "2026-07-27T05:11:35.502Z"
+      },
+      "visibility": "public"
+    },
+    {
+      "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#11",
+      "domain": "trust-line-token",
+      "file": "tests/specs/integration/trust-line-token/deposit-auth.test.ts",
+      "suite": [
+        "Trust Line Token DepositAuth",
+        "Phase 5: Disable DepositAuth"
+      ],
+      "test": "should succeed Alice -> Bob XRP transfer after disabling DepositAuth",
+      "when": {
+        "en": "Alice → Bob XRP",
+        "zh": "Alice → Bob XRP"
+      },
+      "given": [
+        {
+          "en": "Issuer DefaultRipple enabled",
+          "zh": "发行方已启用 DefaultRipple",
+          "source": "ledger",
+          "predicate": {
+            "kind": "accountFlag",
+            "account": "issuer",
+            "flag": "lsfDefaultRipple",
+            "value": true
+          },
+          "axis": "issuer.lsfDefaultRipple"
+        },
+        {
+          "en": "-",
+          "zh": "-",
+          "source": "manual",
+          "axis": "bob.DepositPreauth"
+        }
+      ],
+      "outcome": {
+        "kind": "success"
+      },
+      "evidence": {
+        "txHash": "3F4689FC9DDC7A1E3BA9E618A1389B40B4081CDB8A433EFF5F78D46CCB72AEBB",
+        "txType": "Payment",
+        "ledgerIndex": 96,
+        "capturedAt": "2026-07-27T05:11:36.541Z"
+      },
+      "visibility": "public"
+    }
+  ]
+}

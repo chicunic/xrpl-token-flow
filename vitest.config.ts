@@ -33,6 +33,8 @@ export default defineConfig({
     restoreMocks: true,
     env: {
       XRPL_NETWORK: "local",
+      // Knowledge-base capture shards, merged in setup-local.ts teardown. Ignored unless KB_CAPTURE=1.
+      KB_SHARD_DIR: path.resolve(__dirname, ".temp/kb"),
     },
   },
 });

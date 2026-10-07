@@ -4,6 +4,7 @@ import {
   createTrustLine,
   disconnectClient,
   expectTxFail,
+  factSucceeds,
   getTokenBalance,
   mintTokens,
   setupIssuerWithFlags,
@@ -16,6 +17,7 @@ import {
   transferTokens,
   unfreezeTrustLine,
 } from "@/services/trustline-token.service.js";
+import type { Actor } from "@tests/utils/kb-runtime.js";
 import type { Client, Wallet } from "xrpl";
 
 /**
@@ -37,6 +39,14 @@ describe("Trust Line Token Deep Freeze", () => {
   let aliceWallet: Wallet;
   let bobWallet: Wallet;
 
+  // Preconditions are read off the ledger at assertion time, so each fact reports the trust line
+  // state accumulated by earlier phases without restating it here.
+  const actors = (): Actor[] => [
+    { role: "issuer", wallet: issuerWallet },
+    { role: "alice", wallet: aliceWallet, trustLineWith: "issuer" },
+    { role: "bob", wallet: bobWallet, trustLineWith: "issuer" },
+  ];
+
   beforeAll(async () => {
     client = await connectClient("Trust Line Token Deep Freeze Test");
     [issuerWallet, aliceWallet, bobWallet] = await setupWallets(3);
@@ -56,7 +66,12 @@ describe("Trust Line Token Deep Freeze", () => {
     it("should fail to deep freeze a trust line that is not frozen", async () => {
       console.log("\n==================== PHASE 1: DEEP FREEZE PRECONDITIONS ====================");
 
-      await expectTxFail("tecNO_PERMISSION", () => deepFreezeTrustLine(issuerWallet, aliceWallet));
+      await expectTxFail("tecNO_PERMISSION", () => deepFreezeTrustLine(issuerWallet, aliceWallet), {
+        when: { en: "Deep freeze without regular freeze", zh: "未普通冻结时直接深度冻结" },
+        actors: actors(),
+        // The absence of a freeze is the point here, and absent state has no ledger flag to report.
+        givenExtra: [{ en: "Trust line not frozen", zh: "信任线未冻结", source: "manual" }],
+      });
 
       console.log("✅ Deep freeze without regular freeze failed: tecNO_PERMISSION");
     }, 30000);
@@ -77,13 +92,19 @@ describe("Trust Line Token Deep Freeze", () => {
     it("should block the deep-frozen holder from sending", async () => {
       console.log("\n==================== PHASE 3: DEEP-FROZEN TRANSFERS ====================");
 
-      await expectTxFail("tecPATH_DRY", () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet));
+      await expectTxFail("tecPATH_DRY", () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet), {
+        when: { en: "Deep-frozen holder sends", zh: "深度冻结的持有者发送" },
+        actors: actors(),
+      });
 
       console.log("✅ Deep-frozen Alice cannot send");
     }, 30000);
 
     it("should block the deep-frozen holder from receiving", async () => {
-      await expectTxFail("tecPATH_DRY", () => transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet));
+      await expectTxFail("tecPATH_DRY", () => transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet), {
+        when: { en: "Deep-frozen holder receives", zh: "深度冻结的持有者接收" },
+        actors: actors(),
+      });
 
       console.log("✅ Deep-frozen Alice cannot receive");
     }, 30000);
@@ -93,7 +114,12 @@ describe("Trust Line Token Deep Freeze", () => {
     it("should fail to clear the regular freeze while deep-frozen", async () => {
       console.log("\n==================== PHASE 4: CLEAR ORDER ENFORCEMENT ====================");
 
-      await expectTxFail("tecNO_PERMISSION", () => unfreezeTrustLine(issuerWallet, aliceWallet));
+      await expectTxFail("tecNO_PERMISSION", () => unfreezeTrustLine(issuerWallet, aliceWallet), {
+        when: { en: "Clear regular freeze while deep-frozen", zh: "深度冻结未清除时清除冻结" },
+        actors: actors(),
+        // The ledger shows both freezes, but it is the deep freeze that blocks the clear.
+        givenOverride: [{ en: "Deep freeze still set", zh: "深度冻结仍生效", source: "manual" }],
+      });
 
       console.log("✅ Regular freeze cannot be cleared while deep freeze is set");
     }, 30000);
@@ -106,10 +132,19 @@ describe("Trust Line Token Deep Freeze", () => {
       await clearDeepFreezeTrustLine(issuerWallet, aliceWallet);
 
       const aliceBefore = BigInt(await getTokenBalance(aliceWallet, issuerWallet));
-      await transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet);
+      await factSucceeds(
+        {
+          when: { en: "Receive after deep freeze cleared", zh: "清除深度冻结后接收" },
+          actors: actors(),
+        },
+        () => transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet),
+      );
       expect(BigInt(await getTokenBalance(aliceWallet, issuerWallet))).toBe(aliceBefore + BigInt(TRANSFER_AMOUNT));
 
-      await expectTxFail("tecPATH_DRY", () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet));
+      await expectTxFail("tecPATH_DRY", () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet), {
+        when: { en: "Send after deep freeze cleared", zh: "清除深度冻结后发送" },
+        actors: actors(),
+      });
 
       console.log(`✅ Alice received ${TRANSFER_AMOUNT} ${CURRENCY} but still cannot send (regular freeze)`);
     }, 30000);
@@ -122,7 +157,15 @@ describe("Trust Line Token Deep Freeze", () => {
       await unfreezeTrustLine(issuerWallet, aliceWallet);
 
       const bobBefore = BigInt(await getTokenBalance(bobWallet, issuerWallet));
-      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
+      await factSucceeds(
+        {
+          when: { en: "Send after freeze cleared", zh: "解除冻结后发送" },
+          actors: actors(),
+          // Both freezes are gone; a cleared flag leaves nothing on the ledger to observe.
+          givenExtra: [{ en: "All freezes cleared", zh: "所有冻结已清除", source: "manual" }],
+        },
+        () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      );
       expect(BigInt(await getTokenBalance(bobWallet, issuerWallet))).toBe(bobBefore + BigInt(TRANSFER_AMOUNT));
 
       console.log("✅ Transfers restored in both directions");

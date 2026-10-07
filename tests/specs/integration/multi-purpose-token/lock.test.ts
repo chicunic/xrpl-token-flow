@@ -7,7 +7,8 @@ import {
   transferMPToken,
   unlockMPToken,
 } from "@/services/multi-purpose-token.service.js";
-import { connectClient, disconnectClient, expectTxFail, setupWallets } from "@tests/utils/test.helper.js";
+import { connectClient, disconnectClient, expectTxFail, factSucceeds, setupWallets } from "@tests/utils/test.helper.js";
+import type { Actor } from "@tests/utils/kb-runtime.js";
 import type { Client, Wallet } from "xrpl";
 
 /**
@@ -29,6 +30,14 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
   let bobWallet: Wallet;
 
   let mptIssuanceId: string;
+
+  // Lock state is stated per fact: an individual lock lives on the holder's MPToken while a global
+  // lock lives on the issuance, and the table's rows turn entirely on which of the two is in play.
+  const actors = (): Actor[] => [
+    { role: "issuer", wallet: issuerWallet },
+    { role: "alice", wallet: aliceWallet },
+    { role: "bob", wallet: bobWallet },
+  ];
 
   beforeAll(async () => {
     client = await connectClient("MPToken Lock/Unlock Test");
@@ -65,13 +74,21 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
     }, 20000);
 
     it("should fail transfer FROM locked Alice", async () => {
-      await expectTxFail("tecLOCKED", () => transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100"));
+      await expectTxFail("tecLOCKED", () => transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100"), {
+        when: { en: "Alice → Bob transfer", zh: "Alice → Bob 转账" },
+        actors: actors(),
+        givenExtra: [{ en: "Alice individually locked", zh: "Alice 被单独锁定", source: "manual" }],
+      });
 
       console.log("✅ Transfer from locked Alice failed: tecLOCKED");
     }, 20000);
 
     it("should fail transfer TO locked Alice", async () => {
-      await expectTxFail("tecLOCKED", () => transferMPToken(bobWallet, aliceWallet, mptIssuanceId, "100"));
+      await expectTxFail("tecLOCKED", () => transferMPToken(bobWallet, aliceWallet, mptIssuanceId, "100"), {
+        when: { en: "Bob → Alice transfer", zh: "Bob → Alice 转账" },
+        actors: actors(),
+        givenExtra: [{ en: "Alice individually locked", zh: "Alice 被单独锁定", source: "manual" }],
+      });
 
       console.log("✅ Transfer to locked Alice failed: tecLOCKED");
     }, 20000);
@@ -79,7 +96,15 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
     it("should allow issuer to mint to locked Alice", async () => {
       const aliceBefore = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
 
-      await mintMPToken(issuerWallet, aliceWallet, mptIssuanceId, "100");
+      await factSucceeds(
+        {
+          when: { en: "Issuer → Alice mint", zh: "Issuer → Alice mint" },
+          actors: actors(),
+          givenExtra: [{ en: "Alice individually locked", zh: "Alice 被单独锁定", source: "manual" }],
+          note: { en: "Issuer unrestricted", zh: "Issuer 不受限" },
+        },
+        () => mintMPToken(issuerWallet, aliceWallet, mptIssuanceId, "100"),
+      );
 
       expect(BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId))).toBe(aliceBefore + 100n);
 
@@ -96,7 +121,14 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
       const aliceBefore = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
       const bobBefore = BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId));
 
-      await transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100");
+      await factSucceeds(
+        {
+          when: { en: "Alice → Bob transfer", zh: "Alice → Bob 转账" },
+          actors: actors(),
+          givenExtra: [{ en: "Alice unlocked", zh: "Alice 已解锁", source: "manual" }],
+        },
+        () => transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100"),
+      );
 
       expect(BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId))).toBe(aliceBefore - 100n);
       expect(BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId))).toBe(bobBefore + 100n);
@@ -115,13 +147,21 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
     }, 20000);
 
     it("should fail Alice → Bob transfer during global lock", async () => {
-      await expectTxFail("tecLOCKED", () => transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100"));
+      await expectTxFail("tecLOCKED", () => transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100"), {
+        when: { en: "Alice → Bob transfer", zh: "Alice → Bob 转账" },
+        actors: actors(),
+        givenExtra: [{ en: "Global lock", zh: "全局锁定", source: "manual" }],
+      });
 
       console.log("✅ Alice → Bob failed during global lock: tecLOCKED");
     }, 20000);
 
     it("should fail Bob → Alice transfer during global lock", async () => {
-      await expectTxFail("tecLOCKED", () => transferMPToken(bobWallet, aliceWallet, mptIssuanceId, "100"));
+      await expectTxFail("tecLOCKED", () => transferMPToken(bobWallet, aliceWallet, mptIssuanceId, "100"), {
+        when: { en: "Bob → Alice transfer", zh: "Bob → Alice 转账" },
+        actors: actors(),
+        givenExtra: [{ en: "Global lock", zh: "全局锁定", source: "manual" }],
+      });
 
       console.log("✅ Bob → Alice failed during global lock: tecLOCKED");
     }, 20000);
@@ -133,7 +173,15 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
 
       const bobBefore = BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId));
 
-      await mintMPToken(issuerWallet, bobWallet, mptIssuanceId, "200");
+      await factSucceeds(
+        {
+          when: { en: "Issuer → Alice mint", zh: "Issuer → Alice mint" },
+          actors: actors(),
+          givenExtra: [{ en: "Global lock", zh: "全局锁定", source: "manual" }],
+          note: { en: "Issuer unrestricted", zh: "Issuer 不受限" },
+        },
+        () => mintMPToken(issuerWallet, bobWallet, mptIssuanceId, "200"),
+      );
 
       expect(BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId))).toBe(bobBefore + 200n);
 
@@ -150,7 +198,14 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
       const aliceBefore = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
       const bobBefore = BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId));
 
-      await transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100");
+      await factSucceeds(
+        {
+          when: { en: "Alice → Bob transfer", zh: "Alice → Bob 转账" },
+          actors: actors(),
+          givenExtra: [{ en: "Global unlock", zh: "全局解锁", source: "manual" }],
+        },
+        () => transferMPToken(aliceWallet, bobWallet, mptIssuanceId, "100"),
+      );
 
       expect(BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId))).toBe(aliceBefore - 100n);
       expect(BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId))).toBe(bobBefore + 100n);

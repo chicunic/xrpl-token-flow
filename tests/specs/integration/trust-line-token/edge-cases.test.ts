@@ -12,7 +12,7 @@ import {
 } from "@tests/utils/test.helper.js";
 import { currencyToHex, submitTransaction } from "@/services/transaction.service.js";
 import { transferTokens } from "@/services/trustline-token.service.js";
-import type { Client, TransactionMetadata, Wallet } from "xrpl";
+import type { Client, Wallet } from "xrpl";
 import { convertStringToHex } from "xrpl";
 
 describe("Trust Line Token Edge Cases", () => {
@@ -150,17 +150,16 @@ describe("Trust Line Token Edge Cases", () => {
 
       const signed = aliceWallet.sign(payTx);
       const result = await client.submitAndWait(signed.tx_blob);
-      expect((result.result.meta as TransactionMetadata)?.TransactionResult).toBe("tesSUCCESS");
+      expect(result.result.meta).toMatchObject({ TransactionResult: "tesSUCCESS" });
 
       const txResponse = await client.request({
         command: "tx",
         transaction: result.result.hash,
       });
 
-      const txJson = txResponse.result.tx_json as Record<string, any>;
-      const memos = txJson.Memos as { Memo: { MemoType: string; MemoData: string } }[];
-      expect(memos).toBeDefined();
-      expect(memos.length).toBe(1);
+      const txJson = txResponse.result.tx_json;
+      const memos = txJson.Memos ?? [];
+      expect(memos).toHaveLength(1);
       expect(memos[0]?.Memo.MemoType).toBe(convertStringToHex(MEMO_TYPE));
       expect(memos[0]?.Memo.MemoData).toBe(convertStringToHex(MEMO_DATA));
 

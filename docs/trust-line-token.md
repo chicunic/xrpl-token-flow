@@ -82,6 +82,7 @@ Tests [Deep Freeze (XLS-77)](https://xrpl.org/docs/concepts/tokens/fungible-toke
 | Clear regular freeze while deep-frozen | Deep freeze still set  | Failure (tecNO_PERMISSION) |
 | Receive after deep freeze cleared      | Regular freeze remains | Success                    |
 | Send after deep freeze cleared         | Regular freeze remains | Failure (tecPATH_DRY)      |
+| Send after freeze cleared              | All freezes cleared    | Success                    |
 
 ```bash
 pnpm test deep-freeze

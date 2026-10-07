@@ -1,4 +1,3 @@
-import { expect } from "vitest";
 import {
   type AccountLinesTrustline,
   type AccountSet,
@@ -24,10 +23,10 @@ type WalletTuple<N extends number, A extends Wallet[] = []> = number extends N
     ? A
     : WalletTuple<N, [...A, Wallet]>;
 
-// Assert that a transaction fails with the given result code (tec/tef/tem/ter)
-export async function expectTxFail(expectedResult: string, action: () => Promise<unknown>): Promise<void> {
-  await expect(action()).rejects.toThrow(expectedResult);
-}
+// Assert that a transaction fails with the given result code (tec/tef/tem/ter).
+// Lives in kb.ts so it can also record the failure as a behavior fact; re-exported here so the
+// existing import sites keep working.
+export { expectTxFail, factState, factSucceeds } from "./kb.js";
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -5,6 +5,20 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import vitest from "@vitest/eslint-plugin";
 import tseslint from "typescript-eslint";
 
+const sharedExtends = [
+  eslint.configs.recommended,
+  ...tseslint.configs.strictTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
+  eslintConfigPrettier,
+];
+
+const sharedLanguageOptions = {
+  parserOptions: {
+    projectService: true,
+    tsconfigRootDir: import.meta.dirname,
+  },
+};
+
 const sharedRules: Linter.RulesRecord = {
   "sort-imports": ["error", { ignoreDeclarationSort: true }],
   "object-shorthand": "error",
@@ -13,50 +27,30 @@ const sharedRules: Linter.RulesRecord = {
 };
 
 export default defineConfig([
-  globalIgnores(["dist/**", "coverage/**"]),
+  globalIgnores(["dist/**", "coverage/**", ".temp/**", "docs/.local/**"]),
   {
-    files: ["src/**/*.ts"],
-    extends: [
-      eslint.configs.recommended,
-      ...tseslint.configs.strictTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-      eslintConfigPrettier,
-    ],
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    rules: { ...sharedRules },
+    files: ["src/**/*.ts", "scripts/**/*.ts", "*.config.ts"],
+    extends: sharedExtends,
+    languageOptions: sharedLanguageOptions,
+    rules: sharedRules,
   },
   {
     files: ["tests/**/*.ts"],
-    extends: [
-      eslint.configs.recommended,
-      ...tseslint.configs.strictTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-      eslintConfigPrettier,
-    ],
+    extends: sharedExtends,
     plugins: { vitest },
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
+    languageOptions: sharedLanguageOptions,
     rules: {
       ...vitest.configs.recommended.rules,
       ...sharedRules,
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unnecessary-condition": "off",
-      "@typescript-eslint/restrict-template-expressions": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/no-misused-promises": "off",
+      "vitest/expect-expect": ["error", { assertFunctionNames: ["expect", "expectTxFail", "factSucceeds"] }],
+    },
+  },
+  {
+    files: ["tests/specs/integration/**/*.ts"],
+    rules: {
+      // Successful ledger operations also assert by rejecting unsuccessful transactions.
       "vitest/expect-expect": "off",
+      // Ledger response guards narrow optional metadata before checking its fields.
       "vitest/no-conditional-expect": "off",
     },
   },

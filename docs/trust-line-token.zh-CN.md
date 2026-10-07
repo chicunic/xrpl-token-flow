@@ -82,6 +82,7 @@ pnpm test credential-deposit-auth
 | 深度冻结未清除时清除冻结 | 深度冻结仍生效  | 失败 (tecNO_PERMISSION) |
 | 清除深度冻结后接收       | 普通冻结仍生效  | 成功                    |
 | 清除深度冻结后发送       | 普通冻结仍生效  | 失败 (tecPATH_DRY)      |
+| 解除冻结后发送           | 所有冻结已清除  | 成功                    |
 
 ```bash
 pnpm test deep-freeze

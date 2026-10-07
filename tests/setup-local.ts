@@ -11,6 +11,7 @@
  */
 import { execFile } from "node:child_process";
 import net from "node:net";
+import path from "node:path";
 import { promisify } from "node:util";
 import { Client } from "xrpl";
 
@@ -74,7 +75,7 @@ async function composeDown(): Promise<void> {
 
 async function ledgerAccept(): Promise<void> {
   if (client?.isConnected()) {
-    await (client as any).request({ command: "ledger_accept" });
+    await client.connection.request({ command: "ledger_accept" });
   }
 }
 
@@ -87,12 +88,10 @@ async function startLedgerAcceptTimer(): Promise<void> {
     await ledgerAccept();
   }
 
-  timer = setInterval(async () => {
-    try {
-      await ledgerAccept();
-    } catch {
-      // swallow — rippled may be busy
-    }
+  timer = setInterval(() => {
+    void ledgerAccept().catch(() => {
+      // rippled may be busy; retry on the next interval.
+    });
   }, LEDGER_ACCEPT_INTERVAL_MS);
 }
 
@@ -128,6 +127,19 @@ export async function teardown(): Promise<void> {
   if (timer) {
     clearInterval(timer);
     timer = null;
+  }
+
+  // Merge capture shards while the client is still connected — the environment metadata needs it.
+  if (process.env.KB_CAPTURE === "1" && client?.isConnected()) {
+    try {
+      const { exportKnowledgeBase } = await import("../scripts/kb-export.js");
+      await exportKnowledgeBase(client, {
+        shardDir: process.env.KB_SHARD_DIR ?? path.resolve(process.cwd(), ".temp/kb"),
+        outFile: path.resolve(process.cwd(), "docs/kb/behaviors.json"),
+      });
+    } catch (err) {
+      console.error("[kb] export failed:", err);
+    }
   }
   if (client?.isConnected()) {
     await client.disconnect();

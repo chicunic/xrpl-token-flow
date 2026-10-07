@@ -110,8 +110,7 @@ describe("Multi-Purpose Token Clawback", () => {
       });
       const signed = issuerWallet.sign(clawbackTx);
       const result = await client.submitAndWait(signed.tx_blob);
-      const txResult = (result.result.meta as { TransactionResult?: string })?.TransactionResult;
-      expect(txResult).toBe("tecNO_PERMISSION");
+      expect(result.result.meta).toMatchObject({ TransactionResult: "tecNO_PERMISSION" });
 
       expect(await getMPTokenBalance(aliceWallet, noClawbackIssuanceId)).toBe("1000");
 

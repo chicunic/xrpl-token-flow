@@ -19,6 +19,16 @@ export class TransactionResultError extends Error {
   }
 }
 
+/** Notified of every submitted transaction's outcome, successful or not. */
+export type TxObserver = (info: { txType: string; hash: string; ledgerIndex: number | null; result: string }) => void;
+
+let observer: TxObserver | null = null;
+
+/** Used by the behavior knowledge base to anchor facts to real transactions. Unset in production, so zero overhead. */
+export function setTxObserver(next: TxObserver | null): void {
+  observer = next;
+}
+
 export function currencyToHex(currency: string): string {
   if (currency.length === 3) {
     return currency;
@@ -32,12 +42,18 @@ export function currencyToHex(currency: string): string {
 
 function extractMeta(
   tx: SubmittableTransaction,
-  result: { result: { meta?: TransactionMetadata | string; hash: string } },
+  result: { result: { meta?: TransactionMetadata | string; hash: string; ledger_index?: number } },
 ): TransactionMetadata {
   const meta = result.result.meta;
   if (typeof meta !== "object") {
     throw new Error(`${tx.TransactionType} returned unexpected metadata: ${String(meta)}`);
   }
+  observer?.({
+    txType: tx.TransactionType,
+    hash: result.result.hash,
+    ledgerIndex: result.result.ledger_index ?? null,
+    result: meta.TransactionResult,
+  });
   if (meta.TransactionResult !== "tesSUCCESS") {
     throw new TransactionResultError(tx.TransactionType, meta.TransactionResult, result.result.hash);
   }

@@ -32,6 +32,9 @@ jobs:
 
       - run: pnpm check
 
+      - name: Check knowledge-base documentation
+        run: pnpm kb:check
+
       - name: Start local rippled
         run: docker compose up -d --wait
 

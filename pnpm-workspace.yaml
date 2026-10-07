@@ -1,5 +1,4 @@
 allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@types/node@26.1.1'
-  - '@vitest/eslint-plugin@1.6.22'
+  - dotenv@18.0.6

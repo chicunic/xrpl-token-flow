@@ -44,8 +44,8 @@ describe("Multi-Purpose Token Tickets", () => {
 
   it("should execute MPT Creation and Minting cleanly using Tickets", async () => {
     const available = await getAvailableTickets(issuerWallet.address);
-    const ticket1 = available[0]!;
-    const ticket2 = available[1]!;
+    const [ticket1, ticket2] = available;
+    if (ticket1 === undefined || ticket2 === undefined) throw new Error("Expected two available tickets");
 
     // 1. Create MPT using Ticket 1
     const createTx: MPTokenIssuanceCreate = await client.autofill({

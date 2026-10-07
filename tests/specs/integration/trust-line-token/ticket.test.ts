@@ -54,8 +54,8 @@ describe("Trust Line Token Tickets (Out-of-Order Execution)", () => {
 
   it("should execute Mint transactions OUT OF ORDER using Tickets", async () => {
     const available = await getAvailableTickets(issuerWallet.address);
-    const ticket1 = available[0]!;
-    const ticket2 = available[1]!;
+    const [ticket1, ticket2] = available;
+    if (ticket1 === undefined || ticket2 === undefined) throw new Error("Expected two available tickets");
 
     // We pre-construct two minting transactions.
     // Crucial steps for using a Ticket:

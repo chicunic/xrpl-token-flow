@@ -4,6 +4,7 @@ import {
   createTrustLine,
   disconnectClient,
   expectTxFail,
+  factSucceeds,
   getTokenBalance,
   mintTokens,
   setupIssuerWithFlags,
@@ -19,6 +20,7 @@ import {
   transferXRP,
   verifyAccountFlag,
 } from "@/services/trustline-token.service.js";
+import type { Actor } from "@tests/utils/kb-runtime.js";
 import type { Client, Wallet } from "xrpl";
 import { AccountSetAsfFlags } from "xrpl";
 import { AccountRootFlags } from "xrpl/dist/npm/models/ledger/index.js";
@@ -39,6 +41,14 @@ describe("Trust Line Token DepositAuth", () => {
   let aliceWallet: Wallet;
   let bobWallet: Wallet;
   let issuerWallet: Wallet;
+
+  // Bob owns the DepositPreauth object, so counting his ledger objects is what distinguishes
+  // "Alice preauthorized" from "Alice preauth removed" — no account flag changes between them.
+  const actors = (): Actor[] => [
+    { role: "issuer", wallet: issuerWallet },
+    { role: "alice", wallet: aliceWallet },
+    { role: "bob", wallet: bobWallet, ledgerObjects: ["DepositPreauth"] },
+  ];
 
   beforeAll(async () => {
     client = await connectClient("DepositAuth Flag Test");
@@ -89,8 +99,10 @@ describe("Trust Line Token DepositAuth", () => {
     it("should fail Alice -> Bob USD transfer with DepositAuth enabled", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      await expectTxFail("tecNO_PERMISSION", () =>
-        transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      await expectTxFail(
+        "tecNO_PERMISSION",
+        () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+        { when: { en: "Alice → Bob USD", zh: "Alice → Bob USD" }, actors: actors() },
       );
 
       expect(await getTokenBalance(bobWallet, issuerWallet)).toBe(bobBalanceBefore);
@@ -101,7 +113,10 @@ describe("Trust Line Token DepositAuth", () => {
     it("should fail Alice -> Bob XRP transfer with DepositAuth enabled", async () => {
       const bobXrpBalanceBefore = await getXRPBalance(bobWallet);
 
-      await expectTxFail("tecNO_PERMISSION", () => transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT));
+      await expectTxFail("tecNO_PERMISSION", () => transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT), {
+        when: { en: "Alice → Bob XRP", zh: "Alice → Bob XRP" },
+        actors: actors(),
+      });
 
       const bobXrpBalanceAfter = await getXRPBalance(bobWallet);
       expect(bobXrpBalanceAfter).toEqual(bobXrpBalanceBefore);
@@ -112,7 +127,10 @@ describe("Trust Line Token DepositAuth", () => {
     it("should fail Issuer -> Bob USD mint with DepositAuth enabled", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      await expectTxFail("tecNO_PERMISSION", () => transferTokens(issuerWallet, bobWallet, MINT_AMOUNT, issuerWallet));
+      await expectTxFail("tecNO_PERMISSION", () => transferTokens(issuerWallet, bobWallet, MINT_AMOUNT, issuerWallet), {
+        when: { en: "Issuer → Bob USD (mint)", zh: "Issuer → Bob USD (mint)" },
+        actors: actors(),
+      });
 
       expect(await getTokenBalance(bobWallet, issuerWallet)).toBe(bobBalanceBefore);
 
@@ -122,7 +140,14 @@ describe("Trust Line Token DepositAuth", () => {
     it("should succeed Bob -> Alice USD transfer with DepositAuth enabled", async () => {
       const aliceBalanceBefore = await getTokenBalance(aliceWallet, issuerWallet);
 
-      await transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet);
+      await factSucceeds(
+        {
+          when: { en: "Bob → Alice USD", zh: "Bob → Alice USD" },
+          actors: actors(),
+          note: { en: "outgoing unrestricted", zh: "出账不受限" },
+        },
+        () => transferTokens(bobWallet, aliceWallet, TRANSFER_AMOUNT, issuerWallet),
+      );
 
       const aliceBalanceAfter = await getTokenBalance(aliceWallet, issuerWallet);
       expect(BigInt(aliceBalanceAfter)).toEqual(BigInt(aliceBalanceBefore) + BigInt(TRANSFER_AMOUNT));
@@ -133,7 +158,14 @@ describe("Trust Line Token DepositAuth", () => {
     it("should succeed Bob -> Alice XRP transfer with DepositAuth enabled", async () => {
       const aliceXrpBalanceBefore = await getXRPBalance(aliceWallet);
 
-      await transferXRP(bobWallet, aliceWallet, XRP_TRANSFER_AMOUNT);
+      await factSucceeds(
+        {
+          when: { en: "Bob → Alice XRP", zh: "Bob → Alice XRP" },
+          actors: actors(),
+          note: { en: "outgoing unrestricted", zh: "出账不受限" },
+        },
+        () => transferXRP(bobWallet, aliceWallet, XRP_TRANSFER_AMOUNT),
+      );
 
       const aliceXrpBalanceAfter = await getXRPBalance(aliceWallet);
       expect(aliceXrpBalanceAfter).toBeGreaterThan(aliceXrpBalanceBefore);
@@ -154,7 +186,9 @@ describe("Trust Line Token DepositAuth", () => {
     it("should succeed Alice -> Bob USD transfer after preauthorization", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
+      await factSucceeds({ when: { en: "Alice → Bob USD", zh: "Alice → Bob USD" }, actors: actors() }, () =>
+        transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      );
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(BigInt(bobBalanceAfter)).toEqual(BigInt(bobBalanceBefore) + BigInt(TRANSFER_AMOUNT));
@@ -165,7 +199,9 @@ describe("Trust Line Token DepositAuth", () => {
     it("should succeed Alice -> Bob XRP transfer after preauthorization", async () => {
       const bobXrpBalanceBefore = await getXRPBalance(bobWallet);
 
-      await transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT);
+      await factSucceeds({ when: { en: "Alice → Bob XRP", zh: "Alice → Bob XRP" }, actors: actors() }, () =>
+        transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT),
+      );
 
       const bobXrpBalanceAfter = await getXRPBalance(bobWallet);
       expect(bobXrpBalanceAfter).toBeGreaterThan(bobXrpBalanceBefore);
@@ -182,8 +218,18 @@ describe("Trust Line Token DepositAuth", () => {
     it("should fail Alice -> Bob USD transfer after removing preauthorization", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      await expectTxFail("tecNO_PERMISSION", () =>
-        transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      await expectTxFail(
+        "tecNO_PERMISSION",
+        () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+        {
+          when: { en: "Alice → Bob USD", zh: "Alice → Bob USD" },
+          actors: actors(),
+          // A revoked DepositPreauth leaves no object behind, so it reads identically to one that
+          // was never granted; only the test knows which state this is.
+          givenExtra: [
+            { en: "Alice preauth removed", zh: "Alice 预授权已移除", source: "manual", axis: "bob.DepositPreauth" },
+          ],
+        },
       );
 
       expect(await getTokenBalance(bobWallet, issuerWallet)).toBe(bobBalanceBefore);
@@ -194,7 +240,13 @@ describe("Trust Line Token DepositAuth", () => {
     it("should fail Alice -> Bob XRP transfer after removing preauthorization", async () => {
       const bobXrpBalanceBefore = await getXRPBalance(bobWallet);
 
-      await expectTxFail("tecNO_PERMISSION", () => transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT));
+      await expectTxFail("tecNO_PERMISSION", () => transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT), {
+        when: { en: "Alice → Bob XRP", zh: "Alice → Bob XRP" },
+        actors: actors(),
+        givenExtra: [
+          { en: "Alice preauth removed", zh: "Alice 预授权已移除", source: "manual", axis: "bob.DepositPreauth" },
+        ],
+      });
 
       const bobXrpBalanceAfter = await getXRPBalance(bobWallet);
       expect(bobXrpBalanceAfter).toEqual(bobXrpBalanceBefore);
@@ -217,7 +269,15 @@ describe("Trust Line Token DepositAuth", () => {
     it("should succeed Alice -> Bob transfer after disabling DepositAuth", async () => {
       const bobBalanceBefore = await getTokenBalance(bobWallet, issuerWallet);
 
-      await transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet);
+      await factSucceeds(
+        {
+          when: { en: "Alice → Bob USD", zh: "Alice → Bob USD" },
+          actors: actors(),
+          // DepositAuth is off, so preauthorization no longer applies at all.
+          givenExtra: [{ en: "-", zh: "-", source: "manual", axis: "bob.DepositPreauth" }],
+        },
+        () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      );
 
       const bobBalanceAfter = await getTokenBalance(bobWallet, issuerWallet);
       expect(BigInt(bobBalanceAfter)).toEqual(BigInt(bobBalanceBefore) + BigInt(TRANSFER_AMOUNT));
@@ -228,7 +288,15 @@ describe("Trust Line Token DepositAuth", () => {
     it("should succeed Alice -> Bob XRP transfer after disabling DepositAuth", async () => {
       const bobXrpBalanceBefore = await getXRPBalance(bobWallet);
 
-      await transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT);
+      await factSucceeds(
+        {
+          when: { en: "Alice → Bob XRP", zh: "Alice → Bob XRP" },
+          actors: actors(),
+          // DepositAuth is off, so preauthorization no longer applies at all.
+          givenExtra: [{ en: "-", zh: "-", source: "manual", axis: "bob.DepositPreauth" }],
+        },
+        () => transferXRP(aliceWallet, bobWallet, XRP_TRANSFER_AMOUNT),
+      );
 
       const bobXrpBalanceAfter = await getXRPBalance(bobWallet);
       expect(bobXrpBalanceAfter).toBeGreaterThan(bobXrpBalanceBefore);

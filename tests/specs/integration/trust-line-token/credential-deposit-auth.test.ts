@@ -4,6 +4,7 @@ import {
   createTrustLine,
   disconnectClient,
   expectTxFail,
+  factSucceeds,
   getTokenBalance,
   mintTokens,
   setupIssuerWithFlags,
@@ -17,6 +18,7 @@ import {
 } from "@/services/credential.service.js";
 import { setAccountFlag, transferTokens } from "@/services/trustline-token.service.js";
 import { currencyToHex, submitTransaction } from "@/services/transaction.service.js";
+import type { Actor } from "@tests/utils/kb-runtime.js";
 import type { Client, Payment, Wallet } from "xrpl";
 import { AccountSetAsfFlags } from "xrpl";
 
@@ -40,6 +42,14 @@ describe("Trust Line Token Credential Deposit Auth", () => {
   let aliceWallet: Wallet;
   let bobWallet: Wallet;
   let credentialId: string;
+
+  const actors = (): Actor[] => [
+    { role: "issuer", wallet: issuerWallet },
+    { role: "alice", wallet: aliceWallet, trustLineWith: "issuer" },
+    // Bob's DepositPreauth is section-wide setup rather than a per-row condition, and the rows are
+    // distinguished by credential state, which the manual conditions state directly.
+    { role: "bob", wallet: bobWallet, trustLineWith: "issuer" },
+  ];
 
   const payBobWithCredentials = async (credentialIds: string[]): Promise<void> => {
     const tx: Payment = await client.autofill({
@@ -76,8 +86,21 @@ describe("Trust Line Token Credential Deposit Auth", () => {
 
       await setAccountFlag(bobWallet, AccountSetAsfFlags.asfDepositAuth);
 
-      await expectTxFail("tecNO_PERMISSION", () =>
-        transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      await expectTxFail(
+        "tecNO_PERMISSION",
+        () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+        {
+          when: { en: "Alice → Bob transfer", zh: "Alice → Bob 转账" },
+          actors: actors(),
+          givenExtra: [
+            {
+              en: "Bob DepositAuth on, no credential",
+              zh: "Bob 启用 DepositAuth、无凭证",
+              source: "manual",
+              axis: "credential",
+            },
+          ],
+        },
       );
 
       console.log("✅ Payment to DepositAuth-protected Bob failed: tecNO_PERMISSION");
@@ -101,7 +124,13 @@ describe("Trust Line Token Credential Deposit Auth", () => {
       await createCredential(issuerWallet, aliceWallet.address, KYC_CREDENTIAL);
       credentialId = await getCredentialId(aliceWallet.address, issuerWallet.address, KYC_CREDENTIAL);
 
-      await expectTxFail("tecBAD_CREDENTIALS", () => payBobWithCredentials([credentialId]));
+      await expectTxFail("tecBAD_CREDENTIALS", () => payBobWithCredentials([credentialId]), {
+        when: { en: "Payment with unaccepted credential", zh: "携带未接受凭证的付款" },
+        actors: actors(),
+        givenExtra: [
+          { en: "Credential issued, not accepted", zh: "凭证已签发但未接受", source: "manual", axis: "credential" },
+        ],
+      });
 
       console.log("✅ Payment with unaccepted credential failed: tecBAD_CREDENTIALS");
     }, 30000);
@@ -114,7 +143,17 @@ describe("Trust Line Token Credential Deposit Auth", () => {
       await acceptCredential(aliceWallet, issuerWallet.address, KYC_CREDENTIAL);
 
       const bobBefore = BigInt(await getTokenBalance(bobWallet, issuerWallet));
-      await payBobWithCredentials([credentialId]);
+      await factSucceeds(
+        {
+          when: { en: "Payment with accepted credential", zh: "携带已接受凭证的付款" },
+          actors: actors(),
+          // Identical ledger state to Phase 5 — only the transaction differs.
+          givenExtra: [
+            { en: "CredentialIDs referenced", zh: "引用 CredentialIDs", source: "manual", axis: "credential" },
+          ],
+        },
+        () => payBobWithCredentials([credentialId]),
+      );
       expect(BigInt(await getTokenBalance(bobWallet, issuerWallet))).toBe(bobBefore + BigInt(TRANSFER_AMOUNT));
 
       console.log(`✅ KYC-verified Alice paid Bob ${TRANSFER_AMOUNT} ${CURRENCY}`);
@@ -125,8 +164,23 @@ describe("Trust Line Token Credential Deposit Auth", () => {
     it("should still block payments that do not reference the credential", async () => {
       console.log("\n==================== PHASE 5: MISSING CREDENTIAL IDS ====================");
 
-      await expectTxFail("tecNO_PERMISSION", () =>
-        transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+      await expectTxFail(
+        "tecNO_PERMISSION",
+        () => transferTokens(aliceWallet, bobWallet, TRANSFER_AMOUNT, issuerWallet),
+        {
+          when: { en: "Payment without CredentialIDs", zh: "未携带 CredentialIDs" },
+          actors: actors(),
+          // The ledger is identical to Phase 4; the missing transaction field is the whole story,
+          // and a field's absence is not observable in any snapshot.
+          givenExtra: [
+            {
+              en: "Credential accepted but not sent",
+              zh: "凭证已接受但未在交易中引用",
+              source: "manual",
+              axis: "credential",
+            },
+          ],
+        },
       );
 
       console.log("✅ Payment without CredentialIDs failed: tecNO_PERMISSION");

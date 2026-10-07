@@ -5,3 +5,4 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 .temp
 docs/.local
+docs/kb/behaviors.json

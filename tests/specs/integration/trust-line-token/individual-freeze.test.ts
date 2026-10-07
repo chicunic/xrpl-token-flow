@@ -18,7 +18,7 @@ import {
   unfreezeTrustLine,
   verifyAccountFlag,
 } from "@/services/trustline-token.service.js";
-import type { Client, TransactionMetadata, Wallet } from "xrpl";
+import type { Client, Wallet } from "xrpl";
 import { AccountSetAsfFlags, TrustSetFlags } from "xrpl";
 import { AccountRootFlags } from "xrpl/dist/npm/models/ledger/index.js";
 
@@ -194,9 +194,10 @@ describe("Trust Line Token IndividualFreeze", () => {
 
       const signed = issuerWallet.sign(clearNoFreezeTx);
       const result = await client.submitAndWait(signed.tx_blob);
-      const txResult = (result.result.meta as TransactionMetadata)?.TransactionResult;
-      // Flag stays set either way
-      expect(["tesSUCCESS", "tecNO_PERMISSION"]).toContain(txResult);
+      const metadata = result.result.meta;
+      if (typeof metadata !== "object") throw new Error("Expected structured transaction metadata");
+      // Flag stays set either way.
+      expect(["tesSUCCESS", "tecNO_PERMISSION"]).toContain(metadata.TransactionResult);
 
       await verifyAccountFlag(issuerWallet.address, AccountRootFlags.lsfNoFreeze, true);
 
