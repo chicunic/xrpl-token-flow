@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { setTimeout as delay } from "node:timers/promises";
 import {
   type Client,
   ECDSA,
@@ -23,10 +24,6 @@ const MAX_FUND_ATTEMPTS = 6;
 function isSequenceConflict(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error);
   return SEQUENCE_RETRY_RESULTS.some((code) => message.includes(code));
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 interface ActNotFoundError extends XrplError {

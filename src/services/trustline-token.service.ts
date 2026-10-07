@@ -53,7 +53,8 @@ export async function setupIssuerWithDomain(wallet: Wallet): Promise<void> {
 export async function verifyAccountFlag(address: string, flag: number, expected: boolean): Promise<void> {
   const client = getXRPLClient();
   const flags = await getAccountFlags(client, address);
-  if (hasFlag(flags, flag) !== expected) throw new Error(`Expected ${expected}, but got ${hasFlag(flags, flag)}`);
+  const actual = hasFlag(flags, flag);
+  if (actual !== expected) throw new Error(`Expected ${expected}, but got ${actual}`);
 }
 
 // ─── Transfer Rate Operations ───────────────────────────────────────────────
@@ -212,8 +213,8 @@ export async function createCheck(
   const meta = await submitTransaction(client, tx, sender);
 
   const createdNode = meta.AffectedNodes.find(
-    (node) => "CreatedNode" in node && node.CreatedNode.LedgerEntryType === "Check",
-  ) as CreatedNode | undefined;
+    (node): node is CreatedNode => "CreatedNode" in node && node.CreatedNode.LedgerEntryType === "Check",
+  );
 
   const checkId = createdNode?.CreatedNode.LedgerIndex;
   if (checkId === undefined) throw new Error(`checkId is not defined`);

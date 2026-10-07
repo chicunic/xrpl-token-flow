@@ -41,12 +41,7 @@ export async function getAvailableTickets(address: string): Promise<number[]> {
     type: "ticket",
   });
 
-  const objects = response.result.account_objects as unknown as {
-    LedgerEntryType: string;
-    TicketSequence: number;
-  }[];
-
-  return objects
+  return response.result.account_objects
     .filter((obj) => obj.LedgerEntryType === "Ticket")
     .map((obj) => obj.TicketSequence)
     .sort((a, b) => a - b);

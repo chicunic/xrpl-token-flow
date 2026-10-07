@@ -2,6 +2,7 @@ import {
   type Client,
   type SubmittableTransaction,
   type TransactionMetadata,
+  type TxResponse,
   type Wallet,
   convertStringToHex,
   multisign,
@@ -40,10 +41,7 @@ export function currencyToHex(currency: string): string {
   return convertStringToHex(currency).padEnd(40, "0");
 }
 
-function extractMeta(
-  tx: SubmittableTransaction,
-  result: { result: { meta?: TransactionMetadata | string; hash: string; ledger_index?: number } },
-): TransactionMetadata {
+function extractMeta<T extends SubmittableTransaction>(tx: T, result: TxResponse<T>): TransactionMetadata<T> {
   const meta = result.result.meta;
   if (typeof meta !== "object") {
     throw new Error(`${tx.TransactionType} returned unexpected metadata: ${String(meta)}`);
@@ -60,13 +58,13 @@ function extractMeta(
   return meta;
 }
 
-export async function submitTransaction(
+export async function submitTransaction<T extends SubmittableTransaction>(
   client: Client,
-  tx: SubmittableTransaction,
+  tx: T,
   signer: Wallet,
-): Promise<TransactionMetadata> {
+): Promise<TransactionMetadata<T>> {
   const signed = signer.sign(tx);
-  const result = await client.submitAndWait(signed.tx_blob);
+  const result = await client.submitAndWait<T>(signed.tx_blob);
   return extractMeta(tx, result);
 }
 
@@ -74,15 +72,15 @@ export async function submitTransaction(
 export type MultisigSigner = Wallet | { wallet: Wallet; account: string };
 
 /** Submits a transaction signed by multiple signers from the account's SignerList. */
-export async function submitMultisigned(
+export async function submitMultisigned<T extends SubmittableTransaction>(
   client: Client,
-  tx: SubmittableTransaction,
+  tx: T,
   signers: MultisigSigner[],
-): Promise<TransactionMetadata> {
+): Promise<TransactionMetadata<T>> {
   const signedBlobs = signers.map((signer) =>
     "wallet" in signer ? signer.wallet.sign(tx, signer.account).tx_blob : signer.sign(tx, true).tx_blob,
   );
-  const result = await client.submitAndWait(multisign(signedBlobs));
+  const result = await client.submitAndWait<T>(multisign(signedBlobs));
   return extractMeta(tx, result);
 }
 

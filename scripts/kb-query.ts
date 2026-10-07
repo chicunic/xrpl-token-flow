@@ -1,15 +1,4 @@
-/**
- * Queries the verified-behavior knowledge base.
- *
- * Facts carry structured predicates, so this filters on ledger state and result codes rather than
- * matching prose. That is the difference between "a doc mentions DepositAuth somewhere" and "these
- * are the behaviors verified with DepositAuth enabled, and here are their transaction hashes".
- *
- *   tsx scripts/kb-query.ts --feature deep-freeze
- *   tsx scripts/kb-query.ts --code tecNO_PERMISSION
- *   tsx scripts/kb-query.ts --flag lsfDepositAuth --outcome failure
- *   tsx scripts/kb-query.ts --text credential --json
- */
+/** Queries public facts by source file, result code, account flag, outcome, or bilingual text. */
 import fs from "node:fs";
 import path from "node:path";
 import type { BehaviorFact, KnowledgeBase } from "../src/kb/types.js";
@@ -63,9 +52,10 @@ function matches(fact: BehaviorFact, q: Query): boolean {
   if (q.outcome && fact.outcome.kind !== q.outcome) return false;
   if (q.code && !(fact.outcome.kind === "failure" && fact.outcome.code === q.code)) return false;
 
-  if (q.flag) {
+  const flag = q.flag?.toLowerCase();
+  if (flag) {
     const hasFlag = fact.given.some(
-      (g) => g.predicate?.kind === "accountFlag" && g.predicate.flag.toLowerCase() === q.flag?.toLowerCase(),
+      (g) => g.predicate?.kind === "accountFlag" && g.predicate.flag.toLowerCase() === flag,
     );
     if (!hasFlag) return false;
   }
@@ -80,10 +70,12 @@ function matches(fact: BehaviorFact, q: Query): boolean {
 }
 
 function describe(fact: BehaviorFact): string {
-  const result =
-    fact.outcome.kind === "failure"
-      ? `FAILS with ${fact.outcome.code}`
-      : `SUCCEEDS${fact.outcome.note ? ` (${fact.outcome.note.en})` : ""}`;
+  let result = "SUCCEEDS";
+  if (fact.outcome.kind === "failure") {
+    result = `FAILS with ${fact.outcome.code}`;
+  } else if (fact.outcome.note) {
+    result += ` (${fact.outcome.note.en})`;
+  }
   const given = fact.given.map((g) => g.en).join("; ") || "(no distinguishing preconditions)";
 
   return [

@@ -3,7 +3,6 @@ import {
   type AccountSet,
   AccountSetAsfFlags,
   type Client,
-  type Payment,
   type TrustSet,
   Wallet,
   convertStringToHex,
@@ -13,6 +12,7 @@ import { AccountRootFlags } from "xrpl/dist/npm/models/ledger/index.js";
 
 import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config.js";
 import { currencyToHex, getAccountFlags, hasFlag, submitTransaction } from "@/services/transaction.service.js";
+import { transferTokens } from "@/services/trustline-token.service.js";
 import { fundWallet } from "./fund.helper.js";
 import { CURRENCY, DOMAIN, TRUST_AMOUNT } from "./data.js";
 
@@ -23,9 +23,7 @@ type WalletTuple<N extends number, A extends Wallet[] = []> = number extends N
     ? A
     : WalletTuple<N, [...A, Wallet]>;
 
-// Assert that a transaction fails with the given result code (tec/tef/tem/ter).
-// Lives in kb.ts so it can also record the failure as a behavior fact; re-exported here so the
-// existing import sites keep working.
+// Re-export knowledge-base assertions for existing test imports.
 export { expectTxFail, factState, factSucceeds } from "./kb.js";
 
 export function delay(ms: number): Promise<void> {
@@ -146,19 +144,7 @@ export async function createTrustLine(
 
 // Mint (issue) tokens from issuer to destination
 export async function mintTokens(issuer: Wallet, dest: Wallet, amount: string, currency = CURRENCY): Promise<void> {
-  const client = getXRPLClient();
-
-  const mintTx: Payment = await client.autofill({
-    TransactionType: "Payment",
-    Account: issuer.address,
-    Destination: dest.address,
-    Amount: {
-      currency: currencyToHex(currency),
-      issuer: issuer.address,
-      value: amount,
-    },
-  });
-  await submitTransaction(client, mintTx, issuer);
+  await transferTokens(issuer, dest, amount, issuer, { currency });
 }
 
 // Get the token balance of a wallet for a specific issuer/currency

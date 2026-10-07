@@ -4,8 +4,7 @@ import { defineConfig } from "vitest/config";
 
 // Default config targets the local Docker rippled.
 
-// Scale workers to CPUs but cap at 4: all files fund from one genesis account, so more workers mean more
-// sequence collisions (retried in fund.helper.ts). CI runners (2 cores) get 2, dev machines get up to 4.
+// Cap workers at 4 to limit sequence collisions when funding from the shared genesis account.
 const MAX_WORKERS = Math.min(availableParallelism(), 4);
 export default defineConfig({
   test: {
@@ -20,8 +19,8 @@ export default defineConfig({
       exclude: ["src/**/*.d.ts", "src/index.ts"],
     },
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@tests": path.resolve(__dirname, "./tests"),
+      "@": path.resolve(import.meta.dirname, "./src"),
+      "@tests": path.resolve(import.meta.dirname, "./tests"),
     },
     testTimeout: 30000,
     // Files run in parallel; wallets are independent, shared-source funding retries collisions (fund.helper.ts).
@@ -34,7 +33,7 @@ export default defineConfig({
     env: {
       XRPL_NETWORK: "local",
       // Knowledge-base capture shards, merged in setup-local.ts teardown. Ignored unless KB_CAPTURE=1.
-      KB_SHARD_DIR: path.resolve(__dirname, ".temp/kb"),
+      KB_SHARD_DIR: path.resolve(import.meta.dirname, ".temp/kb"),
     },
   },
 });

@@ -1,24 +1,10 @@
-/**
- * Writes generated sections into the docs, replacing the hand-maintained tables.
- *
- * Only sections with captured facts are touched, so this can run while most of the suite is still
- * unmigrated. Run `kb:check` first — this overwrites committed documentation.
- */
+/** Replaces sections backed by captured facts; run kb:check and resolve drift before writing. */
 import fs from "node:fs";
-import path from "node:path";
-import { type Lang, extractSection, formatMarkdown, loadFacts, renderSection } from "./kb-render.js";
+import { documentPath, extractSection, loadFacts, renderSection } from "./kb-render.js";
 import { SECTIONS } from "./kb-sections.js";
 
-const ROOT = process.cwd();
-const KB_PATH = path.join(ROOT, "docs/kb/behaviors.json");
-
-const DOC_PATHS: Record<Lang, (doc: string) => string> = {
-  en: (doc) => path.join(ROOT, `docs/${doc}.md`),
-  zh: (doc) => path.join(ROOT, `docs/${doc}.zh-CN.md`),
-};
-
 async function main(): Promise<void> {
-  const facts = loadFacts(KB_PATH);
+  const facts = loadFacts();
   if (facts.length === 0) {
     console.error("No captured facts found. Run `pnpm kb:capture` first.");
     process.exit(1);
@@ -31,14 +17,14 @@ async function main(): Promise<void> {
     if (sectionFacts.length === 0) continue;
 
     for (const lang of ["en", "zh"] as const) {
-      const docPath = DOC_PATHS[lang](section.doc);
+      const docPath = documentPath(section.doc, lang);
       const current = extractSection(docPath, section.title, section.file);
       if (current === null) {
         console.log(`MISS  ${section.title} [${lang}] — section not found, skipping`);
         continue;
       }
 
-      const generated = (await formatMarkdown(renderSection(section, sectionFacts, lang), docPath)).trimEnd();
+      const generated = await renderSection(section, sectionFacts, lang);
       if (generated === current) {
         console.log(`SAME  ${section.title} [${lang}]`);
         continue;

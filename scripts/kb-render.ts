@@ -1,9 +1,4 @@
-/**
- * Renders captured facts back into the docs' markdown sections.
- *
- * Table alignment is delegated to prettier rather than computed here, so generated tables line up
- * by the same rule as every other markdown file in the repo and cannot drift from it.
- */
+/** Renders captured facts as Markdown sections, using Prettier for consistent table alignment. */
 import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
@@ -20,21 +15,16 @@ function resultCell(fact: BehaviorFact, lang: Lang, style: SectionConfig["result
     return note ? `${base} (${note})` : base;
   }
 
-  const word = lang === "en" ? (style === "backtick" ? "Fails" : "Failure") : "失败";
+  let word = "失败";
+  if (lang === "en") word = style === "backtick" ? "Fails" : "Failure";
   const code = style === "backtick" ? `\`${fact.outcome.code}\`` : fact.outcome.code;
   const inner = note ? `${code}${lang === "en" ? ", " : "，"}${note}` : code;
   return `${word} (${inner})`;
 }
 
-/**
- * Conditions holding for every row of a section are suite-wide setup, not a distinguishing
- * precondition, so they are dropped — a column repeating "Issuer DefaultRipple enabled" on all
- * rows tells a reader nothing about why the rows differ.
- */
+/** Omits conditions shared by all ledger-backed facts so each row highlights what differs. */
 function discriminatingConditions(facts: BehaviorFact[]): (fact: BehaviorFact) => GivenCondition[] {
-  // A condition that never varies across the section describes its setup, not any one row. Rows
-  // carrying an explicit override are excluded from the tally, since they deliberately state a
-  // narrower set and would otherwise make a genuinely constant condition look variable.
+  // Exclude manual overrides from the tally because they may omit suite-wide conditions.
   const tallied = facts.filter((f) => f.given.some((g) => g.source === "ledger"));
   const counts = new Map<string, number>();
   for (const fact of tallied) {
@@ -47,12 +37,7 @@ function discriminatingConditions(facts: BehaviorFact[]): (fact: BehaviorFact) =
   return (fact) => fact.given.filter((g) => !constant.has(g.en));
 }
 
-/**
- * Places conditions into the section's condition columns.
- *
- * A single column absorbs everything. Multiple columns each claim the conditions whose axis they
- * declare, so a value stays in its own column even when a row has nothing for a neighbouring one.
- */
+/** A single column holds all conditions; multiple columns match conditions by axis. */
 function conditionCells(conditions: GivenCondition[], lang: Lang, columns: ConditionColumn[]): string[] {
   if (columns.length === 0) return [];
 
@@ -74,7 +59,7 @@ function conditionCells(conditions: GivenCondition[], lang: Lang, columns: Condi
     return derived && column.present ? column.present[lang] : join(matched);
   });
 
-  // Anything not claimed by an axed column goes to the first column that declared no axis.
+  // Columns without an axis receive the unclaimed conditions.
   const spare = conditions.filter((c) => !claimed.has(c));
   return cells.map((cell, i) => {
     if (cell !== null) return cell;
@@ -83,7 +68,12 @@ function conditionCells(conditions: GivenCondition[], lang: Lang, columns: Condi
   });
 }
 
-export function renderSection(section: SectionConfig, facts: BehaviorFact[], lang: Lang): string {
+export function documentPath(doc: SectionConfig["doc"], lang: Lang): string {
+  const suffix = lang === "zh" ? ".zh-CN" : "";
+  return path.resolve("docs", `${doc}${suffix}.md`);
+}
+
+export async function renderSection(section: SectionConfig, facts: BehaviorFact[], lang: Lang): Promise<string> {
   const heading = `### ${section.title} (\`${path.basename(section.file)}\`)`;
   const parts = [heading, "", section.intro[lang], ""];
 
@@ -111,16 +101,11 @@ export function renderSection(section: SectionConfig, facts: BehaviorFact[], lan
   }
 
   parts.push("```bash", section.command, "```");
-  return parts.join("\n");
+  const config = await prettier.resolveConfig(documentPath(section.doc, lang));
+  return (await prettier.format(parts.join("\n"), { ...config, parser: "markdown" })).trimEnd();
 }
 
-/** Formats a markdown fragment with the repo's prettier config, so table padding matches exactly. */
-export async function formatMarkdown(markdown: string, target: string): Promise<string> {
-  const config = await prettier.resolveConfig(target);
-  return prettier.format(markdown, { ...config, parser: "markdown" });
-}
-
-export function loadFacts(kbPath: string): BehaviorFact[] {
+export function loadFacts(kbPath = path.resolve("docs/kb/behaviors.json")): BehaviorFact[] {
   if (!fs.existsSync(kbPath)) return [];
   const kb = JSON.parse(fs.readFileSync(kbPath, "utf8")) as { facts: BehaviorFact[] };
   return kb.facts.filter((f) => f.visibility === "public");

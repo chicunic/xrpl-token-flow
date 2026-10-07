@@ -4,125 +4,81 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D26-green.svg)](https://nodejs.org/)
 [![XRPL](https://img.shields.io/badge/XRPL-5.x-brightgreen.svg)](https://xrpl.org/)
-[![Vitest](https://img.shields.io/badge/Vitest-4.x-6E9F18.svg)](https://vitest.dev/)
-[![Prettier](https://img.shields.io/badge/Prettier-3.x-F7B93E.svg)](https://prettier.io/)
-[![ESLint](https://img.shields.io/badge/ESLint-10.x-4B32C3.svg)](https://eslint.org/)
-[![pnpm](https://img.shields.io/badge/pnpm-11.x-f69220.svg)](https://pnpm.io/)
-
-一个全面的 TypeScript 测试框架，用于 XRPL (XRP 账本) 代币操作，具有针对各种 XRPL 账户标志和功能的广泛集成测试。
-
-## 概述
-
-本项目为 XRPL 代币流提供强大的测试环境，专注于账户配置、信任线管理、代币发行和支付操作。包含针对关键 XRPL 功能 (如 RequireAuth、DepositAuth、GlobalFreeze 和其他账户标志) 的自动化测试。
-
-## 特性
-
-- **全面的 XRPL 集成测试**: 覆盖所有主要 XRPL 代币操作的测试套件
-- **账户标志测试**: RequireAuth、DepositAuth、GlobalFreeze、DisallowXRP 等
-- **信任线管理**: 创建、授权和追回功能
-- **支付流程测试**: 代币转账、XRP 支付和支票操作
-- **密钥管理与安全**: 常规密钥 (Regular Key) 分配与主密钥隔离
-- **并发与预签名**: 使用 Tickets 实现乱序提交
-- **自动钱包资助**: 智能钱包资助，具有余额检查功能
-- **并行操作优化**: 使用 Promise.all 优化异步操作
-- **网络灵活性**: 精简高效的本地 Docker standalone 测试环境
-
-## 项目结构
-
-```txt
-xrpl-token-flow/
-├── src/
-│   ├── config/
-│   │   └── xrpl.config.ts              # XRPL 客户端配置
-│   └── services/                       # 核心代币与安全服务
-│       ├── transaction.service.ts      # 交易签名与提交（单签与多签）
-│       ├── trustline-token.service.ts  # TrustLine 生命周期管理
-│       ├── multi-purpose-token.service.ts # MPT 生命周期管理
-│       ├── regular-key.service.ts      # 冷热钱包隔离与密钥轮转
-│       ├── signer-list.service.ts      # 多签发行方治理
-│       ├── escrow.service.ts           # 代币托管 Escrow（XLS-85）
-│       ├── credential.service.ts       # KYC 凭证（XLS-70）
-│       └── ticket.service.ts           # 离线签名与并发控制
-├── tests/
-│   ├── setup.ts                        # 全局测试设置
-│   ├── setup-local.ts                  # 本地 Docker 测试设置
-│   ├── specs/integration/
-│   │   ├── trust-line-token/           # Trust Line Token 测试套件
-│   │   └── multi-purpose-token/        # Multi-Purpose Token 测试套件
-│   └── utils/                          # 共享测试辅助工具
-├── docker/                             # Docker rippled 配置
-├── docs/                               # 文档
-├── .prettierrc                         # Prettier 格式化配置
-├── eslint.config.ts                    # ESLint 配置
-├── docker-compose.yaml                 # 本地 rippled 容器
-├── vitest.config.ts                    # Vitest 配置 (本地 Docker)
-├── tsconfig.json                       # TypeScript 项目引用配置
-├── tsconfig.src.json                   # 源码 TypeScript 配置
-├── tsconfig.test.json                  # 测试 TypeScript 配置
-└── package.json                        # 包依赖和脚本
-```
-
-## 先决条件
-
-- **Node.js**: >=26
-- **pnpm**: 包管理器
-- **Docker**: 本地网络测试需要
 
 ## 快速开始
 
-1. 克隆仓库并安装依赖:
+安装 Node.js >=26 和 `package.json` 中指定的 pnpm 版本，然后启动 Docker（例如 Docker Desktop）。
 
 ```bash
 pnpm install
-```
-
-1. 复制环境变量模板并配置:
-
-```bash
-cp .env.example .env
-```
-
-1. 在 `.env` 中配置以下环境变量:
-
-```env
-# XRPL 配置
-# XRPL_ENDPOINT=ws://127.0.0.1:6006
-```
-
-## 本地网络测试
-
-使用本地 Docker standalone rippled 运行测试 — 无需水龙头或密钥。本地节点使用 genesis 账户进行钱包资助，并通过 `docker/rippled.cfg` 中的 `[voting]` 配置与主网一致的 reserve (1 XRP base / 0.2 XRP owner) ([rippled 1.11.0+](https://github.com/XRPLF/rippled/pull/4319))。配置中还设置了 `[network_id]` 为 2 (devnet) — xrpl.js v5 在 `server_info` 缺少 network ID 时会拒绝连接，且 ≤ 1024 的值不会在交易中添加 `NetworkID` 字段。
-
-```bash
-# 启动 rippled 容器
-pnpm docker:up
-
-# 运行测试
 pnpm test
-
-# 停止 rippled 容器
-pnpm docker:down
 ```
 
-## 脚本
+测试设置会通过 Docker Compose 启动 standalone rippled，在测试期间推进账本，并在结束后停止容器；若端口 6006 上已有运行中的节点，则复用该节点并保持其运行。
 
-| 命令                 | 描述                             |
-| -------------------- | -------------------------------- |
-| `pnpm test`          | 使用本地 Docker rippled 运行测试 |
-| `pnpm test <name>`   | 运行指定测试套件                 |
-| `pnpm test:watch`    | 以监听模式运行测试               |
-| `pnpm test:coverage` | 运行测试并生成覆盖率报告         |
-| `pnpm check`         | 运行类型检查 + ESLint + Prettier |
-| `pnpm fix`           | 自动修复代码检查和格式化问题     |
-| `pnpm docker:up`     | 启动本地 rippled 容器            |
-| `pnpm docker:down`   | 停止本地 rippled 容器            |
+默认端点为 `ws://127.0.0.1:6006`，本地测试无需环境变量文件。
+若服务需要连接其他端点，可将 `.env.example` 复制为 `.env` 并设置 `XRPL_ENDPOINT`；集成测试设置仍使用本地节点。
 
-## 测试套件
+测试文件并行运行，但同一文件内的测试共享账本状态并按顺序执行。
+筛选测试时应运行整个套件：
 
-| 分类                | 文档                                                                   |
-| ------------------- | ---------------------------------------------------------------------- |
-| Trust Line Token    | [docs/trust-line-token.zh-CN.md](docs/trust-line-token.zh-CN.md)       |
-| Multi-Purpose Token | [docs/multi-purpose-token.zh-CN.md](docs/multi-purpose-token.zh-CN.md) |
+```bash
+pnpm test trust-line-token/basic
+pnpm test multi-purpose-token/lock
+```
+
+钱包通过 standalone genesis 账户获得资助，并进行余额检查和序列号冲突重试。
+`docker/rippled.cfg` 将本地 reserve 设置为每个账户 1 XRP、每个账户拥有的对象 0.2 XRP，并将 network ID 设置为 2，以兼容 xrpl.js 且不在交易中添加 `NetworkID` 字段。
+
+## 命令
+
+| 命令                 | 描述                                 |
+| -------------------- | ------------------------------------ |
+| `pnpm test`          | 运行全部集成测试                     |
+| `pnpm test <name>`   | 运行文件路径匹配 `<name>` 的测试套件 |
+| `pnpm test:watch`    | 监听文件变化并重新运行测试           |
+| `pnpm test:coverage` | 生成覆盖率报告                       |
+| `pnpm check`         | 检查类型、代码规范和格式             |
+| `pnpm fix`           | 修复代码规范和格式问题               |
+| `pnpm kb:capture`    | 运行测试并采集行为事实               |
+| `pnpm kb:check`      | 对比生成章节与已提交文档             |
+| `pnpm kb:docs`       | 写入有采集事实支持的章节             |
+| `pnpm kb:query`      | 查询已采集的行为                     |
+| `pnpm docker:up`     | 手动启动 rippled，并在测试间保持运行 |
+| `pnpm docker:down`   | 停止手动启动的容器                   |
+
+## 知识库
+
+`docs/kb/behaviors.json` 记录尝试的操作、账本前提条件、结果和交易证据。
+普通测试不采集事实；采集运行按已执行的源文件替换事实，并保留其他文件的事实。
+仅 `scripts/kb-sections.ts` 中配置的章节会自动生成，其他文档章节由人工维护。
+
+```bash
+pnpm kb:query --feature deep-freeze
+pnpm kb:query --code tecNO_PERMISSION
+pnpm kb:query --flag lsfDepositAuth --outcome failure
+pnpm kb:query --text credential --json --limit 10
+```
+
+执行 `pnpm kb:docs` 前先运行 `pnpm kb:check`，处理差异后再覆盖文档。
+注解和维护约定见 [CLAUDE.md](CLAUDE.md)。
+
+## 项目结构
+
+| 路径            | 用途                             |
+| --------------- | -------------------------------- |
+| `src/config/`   | 共享 XRPL 客户端                 |
+| `src/services/` | 代币、交易和账户安全操作         |
+| `src/kb/`       | 行为事实类型                     |
+| `tests/`        | 集成测试、账本设置和共享辅助工具 |
+| `scripts/`      | 知识库采集导出、查询和文档生成   |
+| `docs/`         | 中英文行为指南和采集事实         |
+| `docker/`       | standalone rippled 配置          |
+
+## 行为指南
+
+- [Trust Line Token](docs/trust-line-token.zh-CN.md)
+- [Multi-Purpose Token](docs/multi-purpose-token.zh-CN.md)
 
 ## 许可证
 

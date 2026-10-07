@@ -1,21 +1,7 @@
-/**
- * Diffs generated sections against the committed docs without writing anything.
- *
- * Runs before the generator is ever allowed to overwrite the docs: any difference is either a
- * generator bug or a real drift between what the tests verify and what the docs claim, and both
- * deserve a human decision rather than a silent rewrite.
- */
+/** Checks generated sections without writing; resolve any drift before running kb:docs. */
 import path from "node:path";
-import { type Lang, extractSection, formatMarkdown, loadFacts, renderSection } from "./kb-render.js";
+import { documentPath, extractSection, loadFacts, renderSection } from "./kb-render.js";
 import { SECTIONS } from "./kb-sections.js";
-
-const ROOT = process.cwd();
-const KB_PATH = path.join(ROOT, "docs/kb/behaviors.json");
-
-const DOC_PATHS: Record<Lang, (doc: string) => string> = {
-  en: (doc) => path.join(ROOT, `docs/${doc}.md`),
-  zh: (doc) => path.join(ROOT, `docs/${doc}.zh-CN.md`),
-};
 
 function unifiedDiff(expected: string, actual: string): string {
   const a = expected.split("\n");
@@ -30,7 +16,7 @@ function unifiedDiff(expected: string, actual: string): string {
 }
 
 async function main(): Promise<void> {
-  const facts = loadFacts(KB_PATH);
+  const facts = loadFacts();
   if (facts.length === 0) {
     console.error("No captured facts found. Run `pnpm kb:capture` first.");
     process.exit(1);
@@ -47,7 +33,7 @@ async function main(): Promise<void> {
     }
 
     for (const lang of ["en", "zh"] as const) {
-      const docPath = DOC_PATHS[lang](section.doc);
+      const docPath = documentPath(section.doc, lang);
       const current = extractSection(docPath, section.title, section.file);
       if (current === null) {
         console.log(`MISS  ${section.title} [${lang}] — section not found in ${path.basename(docPath)}`);
@@ -55,7 +41,7 @@ async function main(): Promise<void> {
         continue;
       }
 
-      const generated = (await formatMarkdown(renderSection(section, sectionFacts, lang), docPath)).trimEnd();
+      const generated = await renderSection(section, sectionFacts, lang);
       checked++;
 
       if (generated === current) {

@@ -5,7 +5,6 @@ import type {
   MPTokenIssuanceDestroy,
   MPTokenIssuanceSet,
   Payment,
-  TransactionMetadata,
   Wallet,
 } from "xrpl";
 import { MPTokenIssuanceCreateFlags, encodeMPTokenMetadata } from "xrpl";
@@ -51,7 +50,7 @@ export async function createMPTokenIssuance(
     MPTokenMetadata: metadata,
   });
 
-  const meta = (await submitTransaction(client, tx, issuer)) as TransactionMetadata & { mpt_issuance_id?: string };
+  const meta = await submitTransaction(client, tx, issuer);
   if (meta.mpt_issuance_id === undefined) throw new Error(`meta.mpt_issuance_id is not defined`);
 
   return meta.mpt_issuance_id;
@@ -90,17 +89,7 @@ export async function unauthorizeMPToken(holder: Wallet, mptIssuanceId: string):
 }
 
 export async function mintMPToken(issuer: Wallet, dest: Wallet, mptIssuanceId: string, amount: string): Promise<void> {
-  const client = getXRPLClient();
-  const tx: Payment = await client.autofill({
-    TransactionType: "Payment",
-    Account: issuer.address,
-    Destination: dest.address,
-    Amount: {
-      mpt_issuance_id: mptIssuanceId,
-      value: amount,
-    },
-  });
-  await submitTransaction(client, tx, issuer);
+  await transferMPToken(issuer, dest, mptIssuanceId, amount);
 }
 
 export async function transferMPToken(
@@ -144,28 +133,24 @@ export async function clawbackMPToken(
   await submitTransaction(client, tx, issuer);
 }
 
-export async function lockMPToken(issuer: Wallet, mptIssuanceId: string, holder?: Wallet): Promise<void> {
+async function setMPTokenLock(issuer: Wallet, mptIssuanceId: string, locked: boolean, holder?: Wallet): Promise<void> {
   const client = getXRPLClient();
   const tx: MPTokenIssuanceSet = await client.autofill({
     TransactionType: "MPTokenIssuanceSet",
     Account: issuer.address,
     MPTokenIssuanceID: mptIssuanceId,
     ...(holder ? { Holder: holder.address } : {}),
-    Flags: { tfMPTLock: true },
+    Flags: locked ? { tfMPTLock: true } : { tfMPTUnlock: true },
   });
   await submitTransaction(client, tx, issuer);
 }
 
+export async function lockMPToken(issuer: Wallet, mptIssuanceId: string, holder?: Wallet): Promise<void> {
+  await setMPTokenLock(issuer, mptIssuanceId, true, holder);
+}
+
 export async function unlockMPToken(issuer: Wallet, mptIssuanceId: string, holder?: Wallet): Promise<void> {
-  const client = getXRPLClient();
-  const tx: MPTokenIssuanceSet = await client.autofill({
-    TransactionType: "MPTokenIssuanceSet",
-    Account: issuer.address,
-    MPTokenIssuanceID: mptIssuanceId,
-    ...(holder ? { Holder: holder.address } : {}),
-    Flags: { tfMPTUnlock: true },
-  });
-  await submitTransaction(client, tx, issuer);
+  await setMPTokenLock(issuer, mptIssuanceId, false, holder);
 }
 
 export async function destroyMPTokenIssuance(issuer: Wallet, mptIssuanceId: string): Promise<void> {
