@@ -1,4 +1,4 @@
-import type { TicketCreate, Wallet } from "xrpl";
+import type { AccountObjectsRequest, TicketCreate, Wallet } from "xrpl";
 import { getXRPLClient } from "@/config/xrpl.config.js";
 import { submitTransaction } from "./transaction.service.js";
 
@@ -35,14 +35,22 @@ export async function createTickets(wallet: Wallet, count: number): Promise<numb
  */
 export async function getAvailableTickets(address: string): Promise<number[]> {
   const client = getXRPLClient();
-  const response = await client.request({
+  const request: AccountObjectsRequest = {
     command: "account_objects",
     account: address,
     type: "ticket",
-  });
+    ledger_index: "validated",
+  };
+  const tickets: number[] = [];
 
-  return response.result.account_objects
-    .filter((obj) => obj.LedgerEntryType === "Ticket")
-    .map((obj) => obj.TicketSequence)
-    .sort((a, b) => a - b);
+  do {
+    const { result } = await client.request(request);
+    for (const object of result.account_objects) {
+      if (object.LedgerEntryType === "Ticket") tickets.push(object.TicketSequence);
+    }
+    request.marker = result.marker;
+    request.ledger_index = result.ledger_index ?? request.ledger_index;
+  } while (request.marker);
+
+  return tickets.sort((a, b) => a - b);
 }

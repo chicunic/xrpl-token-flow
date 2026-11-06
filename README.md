@@ -17,7 +17,8 @@ pnpm test
 The test setup starts a standalone rippled with Docker Compose, advances ledgers while tests run, and stops the container afterward; an already-running node on port 6006 is reused and left running.
 
 The default endpoint is `ws://127.0.0.1:6006`, so no environment file is needed for local tests.
-For service use with a different endpoint, copy `.env.example` to `.env` and set `XRPL_ENDPOINT`; the integration test setup still uses the local node.
+For service use with a different endpoint, copy `.env.example` to `.env` and set `XRPL_ENDPOINT`.
+The integration tests always use the local endpoint.
 
 Test files run in parallel, but tests within each file share ledger state and run sequentially.
 Run a whole suite when filtering tests:
@@ -27,7 +28,8 @@ pnpm test trust-line-token/basic
 pnpm test multi-purpose-token/lock
 ```
 
-Wallets are funded from the standalone genesis account, with balance checks and retries for sequence collisions.
+The standalone genesis account prefunds one account per Vitest worker slot, and each worker funds its test wallets from its own account.
+Run `FUND_PROFILE=1 pnpm test` to log the duration, retry count, and retry time for each wallet funding call.
 The local configuration in `docker/rippled.cfg` sets reserves to 1 XRP per account and 0.2 XRP per owned object, and sets network ID 2 for xrpl.js compatibility without adding a `NetworkID` transaction field.
 
 ## Commands
@@ -50,6 +52,7 @@ The local configuration in `docker/rippled.cfg` sets reserves to 1 XRP per accou
 ## Knowledge Base
 
 `docs/kb/behaviors.json` records attempted operations, ledger preconditions, outcomes, and transaction evidence.
+Each fact references the capture that recorded its rippled version, network ID, and amendments.
 Capture is disabled during ordinary tests; capture runs replace facts per executed source file and preserve facts from other files.
 Only sections configured in `scripts/kb-sections.ts` are generated; the other documentation sections are maintained manually.
 

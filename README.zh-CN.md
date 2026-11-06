@@ -17,7 +17,8 @@ pnpm test
 测试设置会通过 Docker Compose 启动 standalone rippled，在测试期间推进账本，并在结束后停止容器；若端口 6006 上已有运行中的节点，则复用该节点并保持其运行。
 
 默认端点为 `ws://127.0.0.1:6006`，本地测试无需环境变量文件。
-若服务需要连接其他端点，可将 `.env.example` 复制为 `.env` 并设置 `XRPL_ENDPOINT`；集成测试设置仍使用本地节点。
+若服务需要连接其他端点，可将 `.env.example` 复制为 `.env` 并设置 `XRPL_ENDPOINT`。
+集成测试始终使用本地端点。
 
 测试文件并行运行，但同一文件内的测试共享账本状态并按顺序执行。
 筛选测试时应运行整个套件：
@@ -27,7 +28,8 @@ pnpm test trust-line-token/basic
 pnpm test multi-purpose-token/lock
 ```
 
-钱包通过 standalone genesis 账户获得资助，并进行余额检查和序列号冲突重试。
+standalone genesis 账户为每个 Vitest worker slot 预先注资，各 worker 再从各自的账户资助测试钱包。
+运行 `FUND_PROFILE=1 pnpm test` 可记录每次钱包资助的耗时、重试次数和重试耗时。
 `docker/rippled.cfg` 将本地 reserve 设置为每个账户 1 XRP、每个账户拥有的对象 0.2 XRP，并将 network ID 设置为 2，以兼容 xrpl.js 且不在交易中添加 `NetworkID` 字段。
 
 ## 命令
@@ -50,6 +52,7 @@ pnpm test multi-purpose-token/lock
 ## 知识库
 
 `docs/kb/behaviors.json` 记录尝试的操作、账本前提条件、结果和交易证据。
+每条事实都关联到对应的采集批次，批次记录 rippled 版本、network ID 和 amendments。
 普通测试不采集事实；采集运行按已执行的源文件替换事实，并保留其他文件的事实。
 仅 `scripts/kb-sections.ts` 中配置的章节会自动生成，其他文档章节由人工维护。
 

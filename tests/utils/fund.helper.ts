@@ -1,8 +1,7 @@
-import "dotenv/config";
 import { setTimeout as delay } from "node:timers/promises";
+import { inject } from "vitest";
 import {
   type Client,
-  ECDSA,
   type Payment,
   type TransactionMetadata,
   Wallet,
@@ -14,12 +13,10 @@ import { getXRPLClient } from "@/config/xrpl.config.js";
 
 const XRP_MINIMUM_DROPS = BigInt(xrpToDrops(2));
 
-// Genesis account on standalone rippled (local mode)
-const GENESIS_SEED = "snoPBrXtMeMyMHUVTgbuqAfg1SUTb";
-
-// Parallel test files pay from one source account, so concurrent autofill() can collide on Sequence; retry on conflict.
+// Retry if concurrent requests from the same worker collide on Sequence.
 const SEQUENCE_RETRY_RESULTS = ["tefPAST_SEQ", "terPRE_SEQ", "tefALREADY"];
 const MAX_FUND_ATTEMPTS = 6;
+const PROFILE_FUNDING = process.env.FUND_PROFILE === "1";
 
 function isSequenceConflict(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error);
@@ -33,20 +30,37 @@ interface ActNotFoundError extends XrplError {
 }
 
 function getFundWallet(): Wallet {
-  return Wallet.fromSeed(GENESIS_SEED, { algorithm: ECDSA.secp256k1 });
+  const poolId = Number(process.env.VITEST_POOL_ID);
+  const seed = inject("fundingSeeds")[poolId - 1];
+  if (!seed) throw new Error(`No funding wallet for Vitest pool slot ${poolId}`);
+  return Wallet.fromSeed(seed);
 }
 
 export async function fundWallet(wallet: Wallet, { amount }: { amount: string }): Promise<void> {
-  for (let attempt = 1; attempt <= MAX_FUND_ATTEMPTS; attempt++) {
-    try {
-      await fundWalletImpl(wallet, { amount });
-      return;
-    } catch (error: unknown) {
-      if (!isSequenceConflict(error) || attempt === MAX_FUND_ATTEMPTS) {
-        throw error;
+  const started = performance.now();
+  let retries = 0;
+  let retryMs = 0;
+  try {
+    for (let attempt = 1; attempt <= MAX_FUND_ATTEMPTS; attempt++) {
+      const attemptStarted = performance.now();
+      try {
+        await fundWalletImpl(wallet, { amount });
+        return;
+      } catch (error: unknown) {
+        if (!isSequenceConflict(error) || attempt === MAX_FUND_ATTEMPTS) {
+          throw error;
+        }
+        // Another concurrent funder won the sequence; back off briefly and re-autofill.
+        await delay(200 * attempt);
+        retries++;
+        retryMs += performance.now() - attemptStarted;
       }
-      // Another concurrent funder won the sequence; back off briefly and re-autofill.
-      await delay(200 * attempt);
+    }
+  } finally {
+    if (PROFILE_FUNDING) {
+      console.log(
+        `[fund] elapsed_ms=${Math.round(performance.now() - started)} retries=${retries} retry_ms=${Math.round(retryMs)}`,
+      );
     }
   }
 }
@@ -102,7 +116,7 @@ async function fundWalletImpl(wallet: Wallet, { amount }: { amount: string }): P
   } catch (error: unknown) {
     const err = error as Partial<ActNotFoundError>;
     if (err.data?.error === "actNotFound") {
-      throw new Error(`Fund wallet (${sourceWallet.address}) does not exist on the network. Is local node running?`, {
+      throw new Error(`Funding wallet ${sourceWallet.address} does not exist on the local ledger`, {
         cause: error,
       });
     }
@@ -112,7 +126,7 @@ async function fundWalletImpl(wallet: Wallet, { amount }: { amount: string }): P
   console.log(`📤 Requested transfer: ${String(dropsToXrp(amountDrops))} XRP to ${targetAddress}`);
   if (currentBalanceDrops < amountDrops + XRP_MINIMUM_DROPS) {
     throw new Error(
-      `Insufficient genesis balance. Need: ${String(dropsToXrp(amountDrops + XRP_MINIMUM_DROPS))} XRP, Have: ${String(dropsToXrp(currentBalanceDrops))} XRP`,
+      `Insufficient funding wallet balance. Need: ${String(dropsToXrp(amountDrops + XRP_MINIMUM_DROPS))} XRP, Have: ${String(dropsToXrp(currentBalanceDrops))} XRP`,
     );
   }
   const paymentTx: Payment = await client.autofill({

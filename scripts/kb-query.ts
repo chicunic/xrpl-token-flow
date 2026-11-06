@@ -1,7 +1,7 @@
 /** Queries public facts by source file, result code, account flag, outcome, or bilingual text. */
-import fs from "node:fs";
 import path from "node:path";
-import type { BehaviorFact, KnowledgeBase } from "../src/kb/types.js";
+import type { BehaviorFact, KnowledgeEnvironment } from "../src/kb/types.js";
+import { readKnowledgeBase } from "./kb-store.js";
 
 interface Query {
   feature?: string;
@@ -69,7 +69,7 @@ function matches(fact: BehaviorFact, q: Query): boolean {
   return true;
 }
 
-function describe(fact: BehaviorFact): string {
+function describe(fact: BehaviorFact, capture: KnowledgeEnvironment | undefined): string {
   let result = "SUCCEEDS";
   if (fact.outcome.kind === "failure") {
     result = `FAILS with ${fact.outcome.code}`;
@@ -81,24 +81,27 @@ function describe(fact: BehaviorFact): string {
   return [
     `${fact.when.en} → ${result}`,
     `  given:    ${given}`,
-    `  verified: ${fact.file}`,
+    `  verified: ${fact.file} (rippled ${capture?.rippledVersion ?? "unknown"})`,
     `  evidence: ${fact.evidence.txType ?? "-"} ${fact.evidence.txHash ?? "(not submitted)"}`,
   ].join("\n");
 }
 
 function main(): void {
-  const kbPath = path.join(process.cwd(), "docs/kb/behaviors.json");
-  if (!fs.existsSync(kbPath)) {
+  const kb = readKnowledgeBase(path.resolve("docs/kb/behaviors.json"));
+  if (!kb) {
     console.error("No knowledge base found. Run `pnpm kb:capture` first.");
     process.exit(1);
   }
 
-  const kb = JSON.parse(fs.readFileSync(kbPath, "utf8")) as KnowledgeBase;
   const q = parseArgs(process.argv.slice(2));
   const hits = kb.facts.filter((f) => f.visibility === "public" && matches(f, q)).slice(0, q.limit);
 
   if (q.json) {
-    console.log(JSON.stringify({ environment: kb.environment, count: hits.length, facts: hits }, null, 2));
+    const used = new Set(hits.map((fact) => fact.captureId));
+    const captures = Object.fromEntries(Object.entries(kb.captures).filter(([id]) => used.has(id)));
+    const environments = Object.values(hits.length ? captures : kb.captures);
+    const environment = environments.length === 1 ? environments[0] : null;
+    console.log(JSON.stringify({ environment, captures, count: hits.length, facts: hits }, null, 2));
     return;
   }
 
@@ -109,8 +112,8 @@ function main(): void {
     return;
   }
 
-  console.log(`${String(hits.length)} verified behavior(s) — rippled ${kb.environment.rippledVersion}\n`);
-  for (const fact of hits) console.log(describe(fact) + "\n");
+  console.log(`${String(hits.length)} verified behavior(s)\n`);
+  for (const fact of hits) console.log(describe(fact, kb.captures[fact.captureId]) + "\n");
 }
 
 main();

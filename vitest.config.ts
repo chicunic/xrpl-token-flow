@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 
 // Default config targets the local Docker rippled.
 
-// Cap workers at 4 to limit sequence collisions when funding from the shared genesis account.
+// Cap workers at 4 to limit load on the standalone node.
 const MAX_WORKERS = Math.min(availableParallelism(), 4);
 export default defineConfig({
   test: {
@@ -23,17 +23,12 @@ export default defineConfig({
       "@tests": path.resolve(import.meta.dirname, "./tests"),
     },
     testTimeout: 30000,
-    // Files run in parallel; wallets are independent, shared-source funding retries collisions (fund.helper.ts).
+    // Files run in parallel with a separate funding account for each worker slot.
     fileParallelism: true,
     maxWorkers: MAX_WORKERS,
     setupFiles: ["./tests/setup.ts"],
     globalSetup: ["./tests/setup-local.ts"],
     clearMocks: true,
     restoreMocks: true,
-    env: {
-      XRPL_NETWORK: "local",
-      // Knowledge-base capture shards, merged in setup-local.ts teardown. Ignored unless KB_CAPTURE=1.
-      KB_SHARD_DIR: path.resolve(import.meta.dirname, ".temp/kb"),
-    },
   },
 });

@@ -90,9 +90,13 @@ export interface KnowledgeEnvironment {
   capturedAt: string;
 }
 
+export interface CapturedBehaviorFact extends BehaviorFact {
+  captureId: string;
+}
+
 export interface KnowledgeBase {
-  schemaVersion: 1;
-  environment: KnowledgeEnvironment;
+  schemaVersion: 2;
+  captures: Record<string, KnowledgeEnvironment>;
   stats: { total: number; captured: number; coverage: number };
-  facts: BehaviorFact[];
+  facts: CapturedBehaviorFact[];
 }

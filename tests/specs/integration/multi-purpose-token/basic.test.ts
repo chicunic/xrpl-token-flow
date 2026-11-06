@@ -114,6 +114,7 @@ describe("Multi-Purpose Token Basic Lifecycle", () => {
 
       await unauthorizeMPToken(aliceWallet, mptIssuanceId);
       await unauthorizeMPToken(bobWallet, mptIssuanceId);
+      expect(await getMPTokenBalance(aliceWallet, mptIssuanceId)).toBe("0");
       await destroyMPTokenIssuance(issuerWallet, mptIssuanceId);
 
       console.log("✅ Holders unauthorized, issuance destroyed");

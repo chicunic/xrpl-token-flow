@@ -1,5 +1,9 @@
 import type {
+  APIVersion,
   Clawback,
+  Client,
+  LedgerEntryJsonRequest,
+  LedgerEntryJsonResponse,
   MPTokenAuthorize,
   MPTokenIssuanceCreate,
   MPTokenIssuanceDestroy,
@@ -7,7 +11,7 @@ import type {
   Payment,
   Wallet,
 } from "xrpl";
-import { MPTokenIssuanceCreateFlags, encodeMPTokenMetadata } from "xrpl";
+import { MPTokenIssuanceCreateFlags, RippledError, encodeMPTokenMetadata } from "xrpl";
 import type { MPToken } from "xrpl/dist/npm/models/ledger/index.js";
 
 import { getXRPLClient } from "@/config/xrpl.config.js";
@@ -163,15 +167,33 @@ export async function destroyMPTokenIssuance(issuer: Wallet, mptIssuanceId: stri
   await submitTransaction(client, tx, issuer);
 }
 
+export async function getMPTokenHolding(
+  client: Client,
+  account: string,
+  mptIssuanceId: string,
+): Promise<MPToken | undefined> {
+  try {
+    const { result } = await client.request<LedgerEntryJsonRequest, APIVersion, LedgerEntryJsonResponse<MPToken>>({
+      command: "ledger_entry",
+      mptoken: { account, mpt_issuance_id: mptIssuanceId },
+      ledger_index: "validated",
+    });
+    return result.node;
+  } catch (error) {
+    const data = error instanceof RippledError ? error.data : undefined;
+    if (
+      data &&
+      typeof data === "object" &&
+      "error" in data &&
+      (data.error === "entryNotFound" || data.error === "objectNotFound")
+    ) {
+      return undefined;
+    }
+    throw error;
+  }
+}
+
 export async function getMPTokenBalance(holder: Wallet, mptIssuanceId: string): Promise<string> {
-  const client = getXRPLClient();
-  const accountObjects = await client.request({
-    command: "account_objects",
-    account: holder.address,
-    type: "mptoken",
-  });
-  // SDK's LedgerEntry union doesn't include MPToken — cast needed
-  const objects = accountObjects.result.account_objects as unknown as MPToken[];
-  const mpt = objects.find((obj) => obj.MPTokenIssuanceID === mptIssuanceId);
-  return mpt?.MPTAmount ?? "0";
+  const holding = await getMPTokenHolding(getXRPLClient(), holder.address, mptIssuanceId);
+  return holding?.MPTAmount ?? "0";
 }

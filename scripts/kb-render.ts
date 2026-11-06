@@ -4,6 +4,7 @@ import path from "node:path";
 import * as prettier from "prettier";
 import type { BehaviorFact, GivenCondition } from "../src/kb/types.js";
 import type { ConditionColumn, SectionConfig } from "./kb-sections.js";
+import { readKnowledgeBase } from "./kb-store.js";
 
 export type Lang = "en" | "zh";
 
@@ -106,9 +107,7 @@ export async function renderSection(section: SectionConfig, facts: BehaviorFact[
 }
 
 export function loadFacts(kbPath = path.resolve("docs/kb/behaviors.json")): BehaviorFact[] {
-  if (!fs.existsSync(kbPath)) return [];
-  const kb = JSON.parse(fs.readFileSync(kbPath, "utf8")) as { facts: BehaviorFact[] };
-  return kb.facts.filter((f) => f.visibility === "public");
+  return readKnowledgeBase(kbPath)?.facts.filter((f) => f.visibility === "public") ?? [];
 }
 
 /** Extracts a section's current text from a doc, so generated output can be diffed against it. */

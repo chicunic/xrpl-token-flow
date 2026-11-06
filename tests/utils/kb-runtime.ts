@@ -11,18 +11,19 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { expect } from "vitest";
+import { expect, inject } from "vitest";
 import type { Client, Wallet } from "xrpl";
 import { AccountRootFlags, RippleStateFlags } from "xrpl/dist/npm/models/ledger/index.js";
 import { getXRPLClient } from "@/config/xrpl.config.js";
 import type { Evidence, GivenCondition, LedgerObjectType, LedgerPredicate, Outcome } from "@/kb/types.js";
+import { getMPTokenHolding } from "@/services/multi-purpose-token.service.js";
 import { currencyToHex, setTxObserver } from "@/services/transaction.service.js";
 import { CURRENCY } from "./data.js";
 import type { FactSpec } from "./kb.js";
 import { phrase } from "./kb-phrases.js";
 
 export const KB_ENABLED = process.env.KB_CAPTURE === "1";
-const SHARD_DIR = process.env.KB_SHARD_DIR ?? path.resolve(process.cwd(), ".temp/kb");
+const shardFile = KB_ENABLED ? path.join(inject("kbShardDir"), `${randomUUID()}.ndjson`) : undefined;
 
 /** A named participant in a fact, so the tracker knows whose ledger state to read. */
 export interface Actor {
@@ -203,20 +204,10 @@ async function mptConditions(client: Client, actor: Actor): Promise<GivenConditi
   const issuanceId = actor.mptIssuanceId;
   if (!issuanceId) return [];
 
-  const response = await client.request({
-    command: "account_objects",
-    account: actor.wallet.address,
-    type: "mptoken",
-    ledger_index: "validated",
-  });
-  const holdings = response.result.account_objects as unknown as {
-    MPTokenIssuanceID?: string;
-    Flags?: number;
-  }[];
-  const holding = holdings.find((h) => h.MPTokenIssuanceID === issuanceId);
+  const holding = await getMPTokenHolding(client, actor.wallet.address, issuanceId);
   if (!holding) return [];
 
-  const flags = holding.Flags ?? 0;
+  const flags = holding.Flags;
   const c = condition({
     kind: "mptHolding",
     account: actor.role,
@@ -278,22 +269,11 @@ export interface RawFact {
   evidence: Omit<Evidence, "capturedAt">;
 }
 
-let stream: fs.WriteStream | null = null;
 const ordinals = new Map<string, number>();
-
-function shardStream(): fs.WriteStream {
-  if (!stream) {
-    fs.mkdirSync(SHARD_DIR, { recursive: true });
-    stream = fs.createWriteStream(path.join(SHARD_DIR, `${String(process.pid)}-${randomUUID()}.ndjson`), {
-      flags: "a",
-    });
-  }
-  return stream;
-}
 
 /** Appends one fact to this worker's shard. Never throws. */
 export function recordFact(raw: RawFact): void {
-  if (!KB_ENABLED) return;
+  if (!shardFile) return;
   try {
     const state = expect.getState();
     const testPath = state.testPath ?? "unknown";
@@ -306,7 +286,8 @@ export function recordFact(raw: RawFact): void {
     const ordinal = (ordinals.get(file) ?? 0) + 1;
     ordinals.set(file, ordinal);
 
-    shardStream().write(
+    fs.appendFileSync(
+      shardFile,
       JSON.stringify({
         id: `${file}#${String(ordinal)}`,
         domain: file.includes("multi-purpose-token") ? "multi-purpose-token" : "trust-line-token",

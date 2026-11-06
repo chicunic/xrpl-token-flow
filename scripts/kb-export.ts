@@ -6,11 +6,13 @@
  * must be recorded alongside the facts rather than inferred later.
  */
 import { execFile } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 import type { Client } from "xrpl";
 import type { BehaviorFact, KnowledgeBase, KnowledgeEnvironment } from "../src/kb/types.js";
+import { readKnowledgeBase } from "./kb-store.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -62,7 +64,6 @@ function readShards(shardDir: string): BehaviorFact[] {
       if (!line.trim()) continue;
       try {
         const fact = JSON.parse(line) as BehaviorFact;
-        // Later writes win, so a re-run supersedes a stale capture of the same fact.
         facts.set(fact.id, fact);
       } catch {
         // A torn final line from a killed worker; every earlier line is still usable.
@@ -75,30 +76,7 @@ function readShards(shardDir: string): BehaviorFact[] {
 }
 
 /** Total `it` count across the suite, used only to report capture coverage. */
-const TOTAL_TESTS = 230;
-
-/**
- * Merges a capture into the existing knowledge base.
- *
- * Replacement is per source file, not per fact: every file this run touched is rebuilt from the
- * capture, so facts deleted from a test disappear, while files the run never executed keep what
- * they had. Without this, running a single test file would discard every other file's facts.
- */
-function mergeFacts(previous: BehaviorFact[], captured: BehaviorFact[]): BehaviorFact[] {
-  const capturedFiles = new Set(captured.map((f) => f.file));
-  const kept = previous.filter((f) => !capturedFiles.has(f.file));
-  return [...kept, ...captured].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
-}
-
-function readExisting(outFile: string): BehaviorFact[] {
-  if (!fs.existsSync(outFile)) return [];
-  try {
-    return (JSON.parse(fs.readFileSync(outFile, "utf8")) as KnowledgeBase).facts;
-  } catch {
-    // A corrupt knowledge base should not block a fresh capture from replacing it.
-    return [];
-  }
-}
+const TOTAL_TESTS = 232;
 
 export async function exportKnowledgeBase(
   client: Client,
@@ -110,32 +88,44 @@ export async function exportKnowledgeBase(
     return;
   }
 
-  const previous = readExisting(options.outFile);
-  const facts = mergeFacts(previous, captured);
-  const carried = facts.length - captured.length;
-
-  const kb: KnowledgeBase = {
-    schemaVersion: 1,
-    environment: await readEnvironment(client),
-    stats: {
-      total: TOTAL_TESTS,
-      captured: facts.length,
-      coverage: Number((facts.length / TOTAL_TESTS).toFixed(4)),
-    },
-    facts,
-  };
-
+  const environment = await readEnvironment(client);
+  const captureId = randomUUID();
   fs.mkdirSync(path.dirname(options.outFile), { recursive: true });
-  // Write-then-rename so a crash mid-write cannot truncate an existing knowledge base.
+  // Hold the temporary file exclusively through the read, merge, and atomic replacement.
   const tmp = `${options.outFile}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(kb, null, 2) + "\n");
-  fs.renameSync(tmp, options.outFile);
+  const fd = fs.openSync(tmp, "wx");
+  let carried: number;
+  try {
+    try {
+      const previous = readKnowledgeBase(options.outFile);
+      const capturedFiles = new Set(captured.map((fact) => fact.file));
+      const kept = previous?.facts.filter((fact) => !capturedFiles.has(fact.file)) ?? [];
+      carried = kept.length;
+      const facts = [...kept, ...captured.map((fact) => ({ ...fact, captureId }))].sort((a, b) =>
+        a.id.localeCompare(b.id, undefined, { numeric: true }),
+      );
+      const used = new Set(facts.map((fact) => fact.captureId));
+      const captures = { ...previous?.captures, [captureId]: environment };
+      const kb: KnowledgeBase = {
+        schemaVersion: 2,
+        captures: Object.fromEntries(Object.entries(captures).filter(([id]) => used.has(id))),
+        stats: {
+          total: TOTAL_TESTS,
+          captured: facts.length,
+          coverage: Number((facts.length / TOTAL_TESTS).toFixed(4)),
+        },
+        facts,
+      };
 
-  console.log(
-    `[kb] wrote ${String(facts.length)} facts to ${path.relative(process.cwd(), options.outFile)} ` +
-      `(${String(captured.length)} captured, ${String(carried)} carried over; rippled ${kb.environment.rippledVersion})`,
-  );
+      fs.writeFileSync(fd, JSON.stringify(kb, null, 2) + "\n");
+    } finally {
+      fs.closeSync(fd);
+    }
+    fs.renameSync(tmp, options.outFile);
+  } catch (error) {
+    fs.rmSync(tmp, { force: true });
+    throw error;
+  }
 
-  // Shards are consumed; clearing them keeps the next run's counts honest.
-  fs.rmSync(options.shardDir, { recursive: true, force: true });
+  console.log(`[kb] captured ${captured.length} facts on rippled ${environment.rippledVersion}, retained ${carried}`);
 }

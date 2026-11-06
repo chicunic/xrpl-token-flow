@@ -10,7 +10,7 @@ import {
 } from "xrpl";
 import { AccountRootFlags } from "xrpl/dist/npm/models/ledger/index.js";
 
-import { getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config.js";
+import { LOCAL_XRPL_ENDPOINT, getXRPLClient, initializeXRPLClient } from "@/config/xrpl.config.js";
 import { currencyToHex, getAccountFlags, hasFlag, submitTransaction } from "@/services/transaction.service.js";
 import { transferTokens } from "@/services/trustline-token.service.js";
 import { fundWallet } from "./fund.helper.js";
@@ -33,7 +33,7 @@ export function delay(ms: number): Promise<void> {
 // Connect the shared XRPL client at suite start, logging the suite name
 export async function connectClient(suiteName: string): Promise<Client> {
   console.log(`🚀 Starting ${suiteName}`);
-  await initializeXRPLClient();
+  await initializeXRPLClient(LOCAL_XRPL_ENDPOINT);
   return getXRPLClient();
 }
 

@@ -3,11 +3,11 @@ import { Client } from "xrpl";
 
 let client: Client | undefined;
 
-const DEFAULT_ENDPOINT = "ws://127.0.0.1:6006";
+export const LOCAL_XRPL_ENDPOINT = "ws://127.0.0.1:6006";
 
-export async function initializeXRPLClient(): Promise<void> {
-  const xrplEndpoint = process.env.XRPL_ENDPOINT ?? DEFAULT_ENDPOINT;
-
+export async function initializeXRPLClient(
+  xrplEndpoint = process.env.XRPL_ENDPOINT ?? LOCAL_XRPL_ENDPOINT,
+): Promise<void> {
   client = new Client(xrplEndpoint);
   await client.connect();
 

@@ -113,6 +113,13 @@ describe("Trust Line Token Tickets (Out-of-Order Execution)", () => {
       );
     }, 30000);
 
+    it("should list all 250 available tickets across pages", async () => {
+      const [owner] = await setupWallets(1, "55");
+      const first = await createTickets(owner, 250);
+
+      expect(await getAvailableTickets(owner.address)).toEqual(Array.from({ length: 250 }, (_, i) => first + i));
+    });
+
     it("should FAIL to reuse an already consumed Ticket", async () => {
       // Grab a new ticket
       const ticketSeq = await createTickets(issuerWallet, 1);
