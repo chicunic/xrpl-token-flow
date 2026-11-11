@@ -64,16 +64,18 @@ pnpm test multi-purpose-token/escrow
 
 Tests [Lock](https://xrpl.org/docs/references/protocol/transactions/types/mptokenissuanceset) functionality.
 
-| Operation            | Lock Status               | Expected                      |
-| -------------------- | ------------------------- | ----------------------------- |
-| Alice → Bob transfer | Alice individually locked | Failure (tecLOCKED)           |
-| Bob → Alice transfer | Alice individually locked | Failure (tecLOCKED)           |
-| Issuer → Alice mint  | Alice individually locked | Success (Issuer unrestricted) |
-| Alice → Bob transfer | Alice unlocked            | Success                       |
-| Alice → Bob transfer | Global lock               | Failure (tecLOCKED)           |
-| Bob → Alice transfer | Global lock               | Failure (tecLOCKED)           |
-| Issuer → Alice mint  | Global lock               | Success (Issuer unrestricted) |
-| Alice → Bob transfer | Global unlock             | Success                       |
+| Operation               | Lock Status               | Expected                      |
+| ----------------------- | ------------------------- | ----------------------------- |
+| Alice → Bob transfer    | Alice individually locked | Failure (tecLOCKED)           |
+| Bob → Alice transfer    | Alice individually locked | Failure (tecLOCKED)           |
+| Issuer → Alice mint     | Alice individually locked | Success (Issuer unrestricted) |
+| Alice → Issuer clawback | Alice individually locked | Success (Issuer unrestricted) |
+| Alice → Bob transfer    | Alice unlocked            | Success                       |
+| Alice → Bob transfer    | Global lock               | Failure (tecLOCKED)           |
+| Bob → Alice transfer    | Global lock               | Failure (tecLOCKED)           |
+| Issuer → Bob mint       | Global lock               | Success (Issuer unrestricted) |
+| Alice → Issuer clawback | Global lock               | Success (Issuer unrestricted) |
+| Alice → Bob transfer    | Global unlock             | Success                       |
 
 ```bash
 pnpm test multi-purpose-token/lock

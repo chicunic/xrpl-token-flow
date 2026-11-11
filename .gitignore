@@ -40,5 +40,9 @@ coverage
 .continue/
 
 # Temporary files
-**/.temp/
-**/.local/
+temp/
+tmp/
+local/
+[._]temp/
+[._]tmp/
+[._]local/

@@ -1,5 +1,6 @@
 import {
   authorizeMPToken,
+  clawbackMPToken,
   createMPTokenIssuance,
   getMPTokenBalance,
   lockMPToken,
@@ -15,11 +16,11 @@ import type { Client, Wallet } from "xrpl";
  * MPToken Lock/Unlock Test
  *
  * Tests individual and global lock (freeze) operations:
- *   Phase 1: Setup issuance with tfMPTCanLock
- *   Phase 2: Individual lock — locked holder cannot send or receive
+ *   Phase 1: Setup issuance with tfMPTCanLock and tfMPTCanClawback
+ *   Phase 2: Individual lock — locked holder cannot send or receive; issuer can still mint and claw back
  *   Phase 3: Individual unlock — transfers resume
  *   Phase 4: Global lock — all peer transfers blocked
- *   Phase 5: Issuer can still mint during global lock
+ *   Phase 5: Issuer can still mint and claw back during global lock
  *   Phase 6: Global unlock — transfers resume
  */
 describe("Multi-Purpose Token Lock/Unlock", () => {
@@ -110,6 +111,24 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
 
       console.log("✅ Issuer can mint to locked Alice");
     }, 20000);
+
+    it("should allow issuer to clawback from locked Alice", async () => {
+      const aliceBefore = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
+
+      await factSucceeds(
+        {
+          when: { en: "Alice → Issuer clawback", zh: "Alice → Issuer clawback" },
+          actors: actors(),
+          givenExtra: [{ en: "Alice individually locked", zh: "Alice 被单独锁定", source: "manual" }],
+          note: { en: "Issuer unrestricted", zh: "Issuer 不受限" },
+        },
+        () => clawbackMPToken(issuerWallet, aliceWallet, mptIssuanceId, "100"),
+      );
+
+      expect(BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId))).toBe(aliceBefore - 100n);
+
+      console.log("✅ Issuer can clawback from locked Alice");
+    }, 20000);
   });
 
   describe("Phase 3: Individual Unlock", () => {
@@ -175,7 +194,7 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
 
       await factSucceeds(
         {
-          when: { en: "Issuer → Alice mint", zh: "Issuer → Alice mint" },
+          when: { en: "Issuer → Bob mint", zh: "Issuer → Bob mint" },
           actors: actors(),
           givenExtra: [{ en: "Global lock", zh: "全局锁定", source: "manual" }],
           note: { en: "Issuer unrestricted", zh: "Issuer 不受限" },
@@ -186,6 +205,24 @@ describe("Multi-Purpose Token Lock/Unlock", () => {
       expect(BigInt(await getMPTokenBalance(bobWallet, mptIssuanceId))).toBe(bobBefore + 200n);
 
       console.log("✅ Issuer can mint during global lock");
+    }, 20000);
+
+    it("should allow issuer to clawback during global lock", async () => {
+      const aliceBefore = BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId));
+
+      await factSucceeds(
+        {
+          when: { en: "Alice → Issuer clawback", zh: "Alice → Issuer clawback" },
+          actors: actors(),
+          givenExtra: [{ en: "Global lock", zh: "全局锁定", source: "manual" }],
+          note: { en: "Issuer unrestricted", zh: "Issuer 不受限" },
+        },
+        () => clawbackMPToken(issuerWallet, aliceWallet, mptIssuanceId, "100"),
+      );
+
+      expect(BigInt(await getMPTokenBalance(aliceWallet, mptIssuanceId))).toBe(aliceBefore - 100n);
+
+      console.log("✅ Issuer can clawback during global lock");
     }, 20000);
   });
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "captures": {
-    "38e50424-2b10-4f73-8e6b-458d453aeca8": {
+    "e3bec346-a50c-4afd-aadd-90974443fef7": {
       "rippledVersion": "3.3.0",
       "networkId": 2,
       "amendments": [
@@ -42,14 +42,58 @@
         "EE3CF852F0506782D05E65D49E5DCC3D16D50898CD1B646BAE274863401CC3CE",
         "FF2D1E13CF6D22427111B967BD504917F63A900CECD320D6FD3AC9FA90344631"
       ],
-      "gitCommit": "69bc467a9602c8b4d828d94181048564d9d9a3fc",
-      "capturedAt": "2026-11-06T06:14:04.084Z"
+      "gitCommit": "ce20633323873767c4242fc6672d58998c811b97",
+      "capturedAt": "2026-11-11T05:56:48.325Z"
+    },
+    "32b2e022-5bad-4c1c-91c9-e50f8dbbed28": {
+      "rippledVersion": "3.3.0",
+      "networkId": 2,
+      "amendments": [
+        "12523DF04B553A0B1AD74F42DDB741DE8DC06A03FC089A0EF197E2A87F1D8107",
+        "138B968F25822EFBF54C00F97031221C47B1EAB8321D93C7C2AEAF85F04EC5DF",
+        "1CB67D082CF7D9102412D34258CEDB400E659352D3B207348889297A6D90F5EF",
+        "1E7ED950F2F13C4F8E2A54103B74D57D5D298FFDBD005936164EE9E6484C438C",
+        "303ACB16CF8DBD3B5C34F131A9D19A7DE01AE05F480A8A682B869D1B4AAC8CFC",
+        "31E0DA76FB8FB527CADCDF0E61CB9C94120966328EFA9DCA202135BAF319C0BA",
+        "32B8614321F7E070419115ABEAB1742EA20F3E3AF34432B5E2F474F8083260DC",
+        "3318EA0CF0755AF15DAC19F2B5C5BCBFF4B78BDD57609ACCAABE2C41309B051A",
+        "35291ADD2D79EB6991343BDA0912269C817D0F094B02226C1C14AD2858962ED4",
+        "41765F664A8D67FF03DDB1C1A893DE6273690BA340A6C2B07C8D29D0DD013D3A",
+        "5E9586DB3D765B4C5794658FB6BB385071E9838DF4016027E6E26820C8526724",
+        "6143A27B71F7DAF9330ECA7C5EC3D54C8083A4FDEF7016737EEC06AB61E82EE0",
+        "677E401A423E3708363A36BA8B3A7D019D21AC5ABD00387BDBEA6BDE4C91247E",
+        "726F944886BCDF7433203787E93DD9AA87FAB74DFE3AF4785BA03BEFC97ADA1F",
+        "755C971C29971C9F20C6F080F2ED96F87884E40AD19554A5EBECDCEC8A1F77FE",
+        "763C37B352BE8C7A04E810F8E462644C45AFEAD624BF3894A08E5C917CF9FF39",
+        "7BB62DC13EC72B775091E9C71BF8CF97E122647693B50C5E87A80DFD6FCFAC50",
+        "7CA70A7674A26FA517412858659EBC7EDEEF7D2D608824464E6FDEFD06854E14",
+        "83FD6594FF83C1D105BD2B41D7E242D86ECB4A8220BD9AF4DA35CB0F69E39B2A",
+        "8CC0774A3BF66D1D22E76BBDA8E8A232E6B6313834301B3B23E8601196AE6455",
+        "8EC4304A06AF03BE953EA6EDA494864F6F3F30AA002BABA35869FBB8C6AE5D52",
+        "9196110C23EA879B4229E51C286180C7D02166DA712559F634372F5264D0EC59",
+        "93E516234E35E08CA689FA33A6D38E103881F8DCB53023F728C307AA89D515A7",
+        "950AE2EA4654E47F04AA8739C0B214E242097E802FD372D24047A89AB1F5EC38",
+        "96FD2F293A519AE1DB6F8BED23E4AD9119342DA7CB6BAFD00953D16C54205D8B",
+        "A730EB18A9D4BB52502C898589558B4CCEB4BE10044500EE5581137A2E80E849",
+        "AB8D932A5F338903FE5BCBD80B611FFED70839ABA3170E9CE01D947C0EDEDCF2",
+        "B32752F7DCC41FB86534118FC4EEC8F56E7BD0A7DB60FD73F93F257233C08E3A",
+        "C1CE18F2A268E6A849C27B3DE485006771B4C01B2FCEC4F18356FE92ECD6BB74",
+        "C7981B764EC4439123A86CC7CCBA436E9B3FF73B3F10A0AE51882E404522FC41",
+        "D3456A862DC07E382827981CA02E21946E641877F19B8889031CC57FDCAC83E2",
+        "DAF3A6EB04FA5DC51E8E4F23E9B7022B693EFA636F23F22664746C77B5786B23",
+        "DB432C3A09D9D5DFC7859F39AE5FF767ABC59AED0A9FB441E83B814D8946C109",
+        "DF8B4536989BDACE3F934F29423848B9F1D76D09BE6A1FCFE7E7F06AA26ABEAD",
+        "EE3CF852F0506782D05E65D49E5DCC3D16D50898CD1B646BAE274863401CC3CE",
+        "FF2D1E13CF6D22427111B967BD504917F63A900CECD320D6FD3AC9FA90344631"
+      ],
+      "gitCommit": "dcb2cbd97f661f61fb59d6434f92d64a6390728a",
+      "capturedAt": "2026-11-11T06:07:17.715Z"
     }
   },
   "stats": {
     "total": 232,
-    "captured": 30,
-    "coverage": 0.1293
+    "captured": 32,
+    "coverage": 0.1379
   },
   "facts": [
     {
@@ -77,13 +121,13 @@
         "code": "tecLOCKED"
       },
       "evidence": {
-        "txHash": "F50F19CEE219EF9A7205358628308296045FA275D3C0DBC7317DDFCAB0F51248",
+        "txHash": "E57B84C22DDEBE2787488A1187A405C49767EF860467CC288959008A2D08FD6B",
         "txType": "Payment",
-        "ledgerIndex": 192,
-        "capturedAt": "2026-11-06T06:12:33.322Z"
+        "ledgerIndex": 34,
+        "capturedAt": "2026-11-11T06:07:04.286Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
       "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#2",
@@ -110,13 +154,13 @@
         "code": "tecLOCKED"
       },
       "evidence": {
-        "txHash": "297618529286B1E12C1A66888823DA0A72676171E292CF95E527E8CEC0EDDB42",
+        "txHash": "F470580899B90703EC8A67A0D6C1A89F04C88D3D2C4E0DD0FC692669E8C102B5",
         "txType": "Payment",
-        "ledgerIndex": 194,
-        "capturedAt": "2026-11-06T06:12:34.443Z"
+        "ledgerIndex": 37,
+        "capturedAt": "2026-11-11T06:07:05.405Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
       "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#3",
@@ -146,16 +190,52 @@
         }
       },
       "evidence": {
-        "txHash": "194D97EC26A44C6DB62E45BC6613E631466822F5A2A0802DFD7749EE1CA21342",
+        "txHash": "835DA70907447F639440B2A616793C68536690B29D282FB358C72359CFF90702",
         "txType": "Payment",
-        "ledgerIndex": 196,
-        "capturedAt": "2026-11-06T06:12:35.564Z"
+        "ledgerIndex": 39,
+        "capturedAt": "2026-11-11T06:07:06.552Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
       "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#4",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 2: Individual Lock"
+      ],
+      "test": "should allow issuer to clawback from locked Alice",
+      "when": {
+        "en": "Alice → Issuer clawback",
+        "zh": "Alice → Issuer clawback"
+      },
+      "given": [
+        {
+          "en": "Alice individually locked",
+          "zh": "Alice 被单独锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success",
+        "note": {
+          "en": "Issuer unrestricted",
+          "zh": "Issuer 不受限"
+        }
+      },
+      "evidence": {
+        "txHash": "8DD42C023CB7C4D2377D4B50FB0AA6BCE7AC9C2B90902197D070FFE2FB2E4539",
+        "txType": "Clawback",
+        "ledgerIndex": 41,
+        "capturedAt": "2026-11-11T06:07:07.691Z"
+      },
+      "visibility": "public",
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#5",
       "domain": "multi-purpose-token",
       "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
       "suite": [
@@ -178,16 +258,16 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "C8602B55451E83B2F9B0DA5E329D951BA2FE08BC7253B30533AB4BE7B5095195",
+        "txHash": "E714A8BDA2846D06451C08A8603AB077FB9A54C8762FC15523A9C42BA8A0D9B1",
         "txType": "Payment",
-        "ledgerIndex": 201,
-        "capturedAt": "2026-11-06T06:12:37.763Z"
+        "ledgerIndex": 46,
+        "capturedAt": "2026-11-11T06:07:09.892Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
-      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#5",
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#6",
       "domain": "multi-purpose-token",
       "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
       "suite": [
@@ -211,16 +291,16 @@
         "code": "tecLOCKED"
       },
       "evidence": {
-        "txHash": "36B802F48A1AAAAC9A03AC59DA12567DB51550B080472097C3E408662B5CBD3C",
+        "txHash": "F98F0227C38CFC893CEC69AB28C0951512F35E21992A577BFAC1543E8BA34DC8",
         "txType": "Payment",
-        "ledgerIndex": 205,
-        "capturedAt": "2026-11-06T06:12:39.926Z"
+        "ledgerIndex": 50,
+        "capturedAt": "2026-11-11T06:07:12.081Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
-      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#6",
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#7",
       "domain": "multi-purpose-token",
       "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
       "suite": [
@@ -244,16 +324,16 @@
         "code": "tecLOCKED"
       },
       "evidence": {
-        "txHash": "40509BC9C483E3D02ABD4F1ED4297A94A11EC856AF71240B244818D0A6332D1A",
+        "txHash": "6589AB38F4DFD6DC67B9C98FEE8A3378C7FFA3A6A6EFB1A3DA14701AB8AA5FB9",
         "txType": "Payment",
-        "ledgerIndex": 207,
-        "capturedAt": "2026-11-06T06:12:41.027Z"
+        "ledgerIndex": 52,
+        "capturedAt": "2026-11-11T06:07:13.206Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
-      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#7",
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#8",
       "domain": "multi-purpose-token",
       "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
       "suite": [
@@ -262,8 +342,8 @@
       ],
       "test": "should allow issuer to mint during global lock",
       "when": {
-        "en": "Issuer → Alice mint",
-        "zh": "Issuer → Alice mint"
+        "en": "Issuer → Bob mint",
+        "zh": "Issuer → Bob mint"
       },
       "given": [
         {
@@ -280,16 +360,52 @@
         }
       },
       "evidence": {
-        "txHash": "6848EA09C3F51A1866EC56344421DB99D40DD74A0E074EA621660ED2A1B8D231",
+        "txHash": "C3E9E8D8999617E903E4FB5FF3233F7264CCA2E8566DCA3CB04F7C46AEC260CD",
         "txType": "Payment",
-        "ledgerIndex": 210,
-        "capturedAt": "2026-11-06T06:12:42.143Z"
+        "ledgerIndex": 54,
+        "capturedAt": "2026-11-11T06:07:14.328Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
-      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#8",
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#9",
+      "domain": "multi-purpose-token",
+      "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
+      "suite": [
+        "Multi-Purpose Token Lock/Unlock",
+        "Phase 5: Issuer Operations During Global Lock"
+      ],
+      "test": "should allow issuer to clawback during global lock",
+      "when": {
+        "en": "Alice → Issuer clawback",
+        "zh": "Alice → Issuer clawback"
+      },
+      "given": [
+        {
+          "en": "Global lock",
+          "zh": "全局锁定",
+          "source": "manual"
+        }
+      ],
+      "outcome": {
+        "kind": "success",
+        "note": {
+          "en": "Issuer unrestricted",
+          "zh": "Issuer 不受限"
+        }
+      },
+      "evidence": {
+        "txHash": "603382182111FCF92F5ED0634CC72ADCC5FF93530880BF8D0693EC45814E236E",
+        "txType": "Clawback",
+        "ledgerIndex": 57,
+        "capturedAt": "2026-11-11T06:07:15.441Z"
+      },
+      "visibility": "public",
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
+    },
+    {
+      "id": "tests/specs/integration/multi-purpose-token/lock.test.ts#10",
       "domain": "multi-purpose-token",
       "file": "tests/specs/integration/multi-purpose-token/lock.test.ts",
       "suite": [
@@ -312,13 +428,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "20EC36763DB560BBB510C63BC9859A2FE21C64DBC6D8BD2B8C62FDEF8F68207D",
+        "txHash": "01F9817719B3FD837DC77B4F45D2D8999EB3E80E2D73A9CD3A1A14242D1916E1",
         "txType": "Payment",
-        "ledgerIndex": 214,
-        "capturedAt": "2026-11-06T06:12:44.346Z"
+        "ledgerIndex": 61,
+        "capturedAt": "2026-11-11T06:07:17.654Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "32b2e022-5bad-4c1c-91c9-e50f8dbbed28"
     },
     {
       "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#1",
@@ -370,13 +486,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "8324D87E48ADA7D27E1D81B08A44F9B15EC99C2DB31E3526A87F4793CD0CF5AB",
+        "txHash": "A328875FE2C7808F9089EFE98901BFAD3AB71062E5E182FD827FE8A8B5F4F73A",
         "txType": "Payment",
-        "ledgerIndex": 271,
-        "capturedAt": "2026-11-06T06:13:12.959Z"
+        "ledgerIndex": 239,
+        "capturedAt": "2026-11-11T05:55:57.992Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#2",
@@ -428,13 +544,13 @@
         "code": "tecBAD_CREDENTIALS"
       },
       "evidence": {
-        "txHash": "DCC016539091BA43306D54364ECA046E29905F031529831464F3E8DA8D865736",
+        "txHash": "0E0D297A376CDE61673BC11E7807AC44158C9210D6186946652F525D3FD2466E",
         "txType": "Payment",
-        "ledgerIndex": 278,
-        "capturedAt": "2026-11-06T06:13:16.212Z"
+        "ledgerIndex": 246,
+        "capturedAt": "2026-11-11T05:56:01.309Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#3",
@@ -485,13 +601,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "D64C23F4CFECF8D9BE248B579F67BDC556F566E99819BF116E3FE4130F6CD64C",
+        "txHash": "219E5CAAD7C5226F47577CA6E0C0BD4D800CA653EEE122AD21B755088DE43558",
         "txType": "Payment",
-        "ledgerIndex": 282,
-        "capturedAt": "2026-11-06T06:13:18.404Z"
+        "ledgerIndex": 251,
+        "capturedAt": "2026-11-11T05:56:03.536Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/credential-deposit-auth.test.ts#4",
@@ -543,13 +659,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "AC253D6493082033E4567F0604A1E8D1406D022EE8F55AECE190572262DA85A5",
+        "txHash": "107349BC88450E0A9CC207B4DFC7F8AEFFCE2B8DC27F723E8C1AFBA2DC6DED17",
         "txType": "Payment",
-        "ledgerIndex": 284,
-        "capturedAt": "2026-11-06T06:13:19.566Z"
+        "ledgerIndex": 253,
+        "capturedAt": "2026-11-11T05:56:04.717Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#1",
@@ -588,13 +704,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "7FDA14296B84C38DEAB6E667773DBEE72EA85B6C5370EAE637BB9F83DC82B78C",
+        "txHash": "8A1519C04255A15E57FE31967F6BCB3945A623DE73268919B8959E968917E168",
         "txType": "TrustSet",
-        "ledgerIndex": 215,
-        "capturedAt": "2026-11-06T06:12:44.710Z"
+        "ledgerIndex": 158,
+        "capturedAt": "2026-11-11T05:55:17.233Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#2",
@@ -644,13 +760,13 @@
         "code": "tecPATH_DRY"
       },
       "evidence": {
-        "txHash": "45B5D5D1B5FBD99A0892963C3AD0F6983300C71024F68A880768A038C0DD518D",
+        "txHash": "A894BEE3DD4E3C461C6689628DB3BAB13497C6EBC7F36490E65605B91E97A7C2",
         "txType": "Payment",
-        "ledgerIndex": 221,
-        "capturedAt": "2026-11-06T06:12:47.939Z"
+        "ledgerIndex": 165,
+        "capturedAt": "2026-11-11T05:55:20.516Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#3",
@@ -700,13 +816,13 @@
         "code": "tecPATH_DRY"
       },
       "evidence": {
-        "txHash": "00BB4C86E71B54211130EF2E30085F7B744600115681AC4AF863DABB83891F84",
+        "txHash": "267AC01F7971FF3F7BB8122BA8A0F7CCB96132D36A882F97EA3D280FA693DFB9",
         "txType": "Payment",
-        "ledgerIndex": 223,
-        "capturedAt": "2026-11-06T06:12:49.100Z"
+        "ledgerIndex": 167,
+        "capturedAt": "2026-11-11T05:55:21.670Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#4",
@@ -733,13 +849,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "D52894581859C791F6E1DEF2F93297E5623EEFB235B1490DB7E0F489CABC3CAA",
+        "txHash": "907436BB48A138513A028B5A79B5D0A43A9F9C5AB733EFA547208D0C9E9D3A23",
         "txType": "TrustSet",
-        "ledgerIndex": 226,
-        "capturedAt": "2026-11-06T06:12:50.178Z"
+        "ledgerIndex": 169,
+        "capturedAt": "2026-11-11T05:55:22.730Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#5",
@@ -788,13 +904,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "DD10B42963A1B05C04CAE6989CEBAADD37C951CEF6857B67F62674F200F7D2A4",
+        "txHash": "8C6677E3D01472AF3B24DD632C0A685D3459B069860064FBC09A1579AD151BCE",
         "txType": "Payment",
-        "ledgerIndex": 230,
-        "capturedAt": "2026-11-06T06:12:52.408Z"
+        "ledgerIndex": 173,
+        "capturedAt": "2026-11-11T05:55:24.953Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#6",
@@ -844,13 +960,13 @@
         "code": "tecPATH_DRY"
       },
       "evidence": {
-        "txHash": "6001B85BFDE5613B29DF807BE3139A15820B19FAA2C5F6433DC04B37FDD678CC",
+        "txHash": "63E0439D99942135CA2F1FFE32B511AE2AEBBE213335D75C88D6AC7C8E0BB926",
         "txType": "Payment",
-        "ledgerIndex": 232,
-        "capturedAt": "2026-11-06T06:12:53.525Z"
+        "ledgerIndex": 176,
+        "capturedAt": "2026-11-11T05:55:26.127Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deep-freeze.test.ts#7",
@@ -888,13 +1004,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "47C7AB1E0B5B9CAF38D577A005DC4DEB2D58D73312AF5D7D7403D7877F95A384",
+        "txHash": "194F0FC2B91330E3FF973C12E7A0AC4459D86F4F12CF921A64CF28AB096FD1B5",
         "txType": "Payment",
-        "ledgerIndex": 237,
-        "capturedAt": "2026-11-06T06:12:55.758Z"
+        "ledgerIndex": 180,
+        "capturedAt": "2026-11-11T05:55:28.369Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#1",
@@ -940,13 +1056,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "BF29097CD07BE531827E58655DD0CCFC3A23BF6787846E26B95534ABE39C3792",
+        "txHash": "D7EB5C26A8CDD36BBDD3E148D33F6F38046EFD5FAAADD6B87B845773BE9CF3D7",
         "txType": "Payment",
-        "ledgerIndex": 26,
-        "capturedAt": "2026-11-06T06:11:10.098Z"
+        "ledgerIndex": 35,
+        "capturedAt": "2026-11-11T05:54:15.362Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#2",
@@ -992,13 +1108,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "8C9EC67AEC7DA69877B555744A269E4F398B87247BED0E2526B5BE7439D23937",
+        "txHash": "03DC83DA080519D4E9C9B94916C3B38272A8E5E6475900F5E3DF6B2C7A5905F5",
         "txType": "Payment",
-        "ledgerIndex": 28,
-        "capturedAt": "2026-11-06T06:11:11.225Z"
+        "ledgerIndex": 37,
+        "capturedAt": "2026-11-11T05:54:16.485Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#3",
@@ -1044,13 +1160,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "BD5125A7BB6217DC12284D84858AE6EC34ECD73468D1A87717780A8CEBDA6735",
+        "txHash": "045024E76896A1831E7E7119C77A6E8021CDD548465813B21C304FEA616D16A4",
         "txType": "Payment",
-        "ledgerIndex": 30,
-        "capturedAt": "2026-11-06T06:11:12.344Z"
+        "ledgerIndex": 39,
+        "capturedAt": "2026-11-11T05:54:17.617Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#4",
@@ -1099,13 +1215,13 @@
         }
       },
       "evidence": {
-        "txHash": "428601E834847BC695A8407C9CF903881638A0DDB3458CF620D5A7AB885F2A27",
+        "txHash": "B3C41C4F7793EBAB16FB8279D70F97202B6C79E0CB41CEC82223322D73EEB194",
         "txType": "Payment",
-        "ledgerIndex": 33,
-        "capturedAt": "2026-11-06T06:11:13.456Z"
+        "ledgerIndex": 41,
+        "capturedAt": "2026-11-11T05:54:18.744Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#5",
@@ -1154,13 +1270,13 @@
         }
       },
       "evidence": {
-        "txHash": "C686FE97D9259D1A046F396BDFE66E829B0436D84AE37F4A9CF0FB536ED2196E",
+        "txHash": "D07E30E4DD0D42BDFC3FA75846462805C91363A98857B8CF32AAA6FE8E6EA28D",
         "txType": "Payment",
-        "ledgerIndex": 35,
-        "capturedAt": "2026-11-06T06:11:14.563Z"
+        "ledgerIndex": 44,
+        "capturedAt": "2026-11-11T05:54:19.877Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#6",
@@ -1217,13 +1333,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "67C8A443E261E0CBE1361EDB967E1FD99C695D315A4FA6D9E04E58F156BBEEDE",
+        "txHash": "549ED22C9FB427EE8874D0B988F1C0F4CD6FDB4E35E0F1D07495ADE5EB7FC32F",
         "txType": "Payment",
-        "ledgerIndex": 39,
-        "capturedAt": "2026-11-06T06:11:16.758Z"
+        "ledgerIndex": 48,
+        "capturedAt": "2026-11-11T05:54:22.093Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#7",
@@ -1280,13 +1396,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "265722BB08E689D6B305E4485961BEE6B51703F23758F161246438176E557FE8",
+        "txHash": "F1085D33F9A19FECF6E6BE063D77B8065E873F1D83925BBBB1F3DB0953E2351B",
         "txType": "Payment",
-        "ledgerIndex": 41,
-        "capturedAt": "2026-11-06T06:11:17.867Z"
+        "ledgerIndex": 50,
+        "capturedAt": "2026-11-11T05:54:23.218Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#8",
@@ -1338,13 +1454,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "AF6D92DB177E4914B770A1AD6ECD740E202CB57D2EB0F621FA24D454B27CF784",
+        "txHash": "AFE8C1AF5020D20F2F3771B955393E53A2BF9189AF313F9E66C18335D843468C",
         "txType": "Payment",
-        "ledgerIndex": 46,
-        "capturedAt": "2026-11-06T06:11:20.047Z"
+        "ledgerIndex": 55,
+        "capturedAt": "2026-11-11T05:54:25.397Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#9",
@@ -1396,13 +1512,13 @@
         "code": "tecNO_PERMISSION"
       },
       "evidence": {
-        "txHash": "6AC665B1DD5FC51349FCC0FB7F2A5DB0BA00271A6B1776BC4921AF0546CABD5B",
+        "txHash": "854970C2E55BA75FD86B77CA2B0DA4DF097EA5C1B934BF59119F6CA6FFEDC51E",
         "txType": "Payment",
-        "ledgerIndex": 48,
-        "capturedAt": "2026-11-06T06:11:21.117Z"
+        "ledgerIndex": 57,
+        "capturedAt": "2026-11-11T05:54:26.530Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#10",
@@ -1441,13 +1557,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "C02BDFBFC51B779FF7B1188E6D5D46D4F37B7745EF74351751AB29CDC5706012",
+        "txHash": "97C07DA8D02A75CC8A66D8221710020344AB8DD596DB6E88F56EA4189347E560",
         "txType": "Payment",
-        "ledgerIndex": 52,
-        "capturedAt": "2026-11-06T06:11:23.304Z"
+        "ledgerIndex": 61,
+        "capturedAt": "2026-11-11T05:54:28.725Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     },
     {
       "id": "tests/specs/integration/trust-line-token/deposit-auth.test.ts#11",
@@ -1486,13 +1602,13 @@
         "kind": "success"
       },
       "evidence": {
-        "txHash": "EF4A7AD0E4D009743E28356607C9ACBA85C9F8BD82E11ED92B74F01624349A91",
+        "txHash": "3529AC2C3228DA10605ED8715C08E0C20A063F3704DB8023987EDE1D6627539C",
         "txType": "Payment",
-        "ledgerIndex": 54,
-        "capturedAt": "2026-11-06T06:11:24.416Z"
+        "ledgerIndex": 63,
+        "capturedAt": "2026-11-11T05:54:29.843Z"
       },
       "visibility": "public",
-      "captureId": "38e50424-2b10-4f73-8e6b-458d453aeca8"
+      "captureId": "e3bec346-a50c-4afd-aadd-90974443fef7"
     }
   ]
 }

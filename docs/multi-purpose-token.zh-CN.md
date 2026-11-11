@@ -64,16 +64,18 @@ pnpm test multi-purpose-token/escrow
 
 测试 [Lock](https://xrpl.org/docs/references/protocol/transactions/types/mptokenissuanceset) 功能。
 
-| 操作                | 锁定状态         | 预期                 |
-| ------------------- | ---------------- | -------------------- |
-| Alice → Bob 转账    | Alice 被单独锁定 | 失败 (tecLOCKED)     |
-| Bob → Alice 转账    | Alice 被单独锁定 | 失败 (tecLOCKED)     |
-| Issuer → Alice mint | Alice 被单独锁定 | 成功 (Issuer 不受限) |
-| Alice → Bob 转账    | Alice 已解锁     | 成功                 |
-| Alice → Bob 转账    | 全局锁定         | 失败 (tecLOCKED)     |
-| Bob → Alice 转账    | 全局锁定         | 失败 (tecLOCKED)     |
-| Issuer → Alice mint | 全局锁定         | 成功 (Issuer 不受限) |
-| Alice → Bob 转账    | 全局解锁         | 成功                 |
+| 操作                    | 锁定状态         | 预期                 |
+| ----------------------- | ---------------- | -------------------- |
+| Alice → Bob 转账        | Alice 被单独锁定 | 失败 (tecLOCKED)     |
+| Bob → Alice 转账        | Alice 被单独锁定 | 失败 (tecLOCKED)     |
+| Issuer → Alice mint     | Alice 被单独锁定 | 成功 (Issuer 不受限) |
+| Alice → Issuer clawback | Alice 被单独锁定 | 成功 (Issuer 不受限) |
+| Alice → Bob 转账        | Alice 已解锁     | 成功                 |
+| Alice → Bob 转账        | 全局锁定         | 失败 (tecLOCKED)     |
+| Bob → Alice 转账        | 全局锁定         | 失败 (tecLOCKED)     |
+| Issuer → Bob mint       | 全局锁定         | 成功 (Issuer 不受限) |
+| Alice → Issuer clawback | 全局锁定         | 成功 (Issuer 不受限) |
+| Alice → Bob 转账        | 全局解锁         | 成功                 |
 
 ```bash
 pnpm test multi-purpose-token/lock
